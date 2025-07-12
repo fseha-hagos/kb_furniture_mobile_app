@@ -7,8 +7,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from 'expo-router';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import debounce from 'lodash/debounce';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import CategoryCardView from '../../components/catagoryView';
 import ItemsCarousel from '../../components/itemCero';
 import MarqueeText from '../../components/MarqueeText';
@@ -16,11 +16,10 @@ import NavBar from '../../components/navbar';
 import NetworkError from '../../components/NetworkError';
 import ProductCards from '../../components/productCards';
 
-      
 
-  interface ProductStackParamList {
-    itemlist: { item: string };
-  }
+interface ProductStackParamList {
+  itemlist: { item: string };
+}
    
 interface SkeletonItemProps {
   width: DimensionValue;
@@ -158,15 +157,6 @@ const Layout = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<productsType[]>([]);
   const [searchLoading , setSearchLoading] = useState<boolean>(false);
-  const [isCompactMode, setIsCompactMode] = useState<boolean>(false);
-  
-  // Scroll animation values
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const headerHeight = useRef(new Animated.Value(1)).current;
-  const categoryOpacity = useRef(new Animated.Value(1)).current;
-  const categoryContainerHeight = useRef(new Animated.Value(126)).current; // 110 + 16 margin
-  const marqueeHeight = useRef(new Animated.Value(40)).current;
- 
   
 useEffect(() => {
   const loadInitialData = async () => {
@@ -424,38 +414,6 @@ useEffect(() => {
       }
     }
 
-    // Handle scroll events for animations
-    const handleScroll = Animated.event(
-      [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-      { useNativeDriver: false }
-    );
-
-    // Animate header and categories based on scroll
-    useEffect(() => {
-      const headerListener = scrollY.addListener(({ value }) => {
-        // Animate header height (compact when scrolling up)
-        const newHeaderHeight = Math.max(0.7, 1 - (value / 200));
-        headerHeight.setValue(newHeaderHeight);
-        
-        // Animate category opacity (fade out images when scrolling up)
-        const newOpacity = Math.max(0, 1 - (value / 100));
-        categoryOpacity.setValue(newOpacity);
-        
-        // Animate category container height (shrink when scrolling up)
-        const newCategoryHeight = Math.max(100, 126 - (value / 2));
-        categoryContainerHeight.setValue(newCategoryHeight);
-        
-        // Animate marquee height (shrink when scrolling up)
-        const newMarqueeHeight = Math.max(25, 40 - (value / 4));
-        marqueeHeight.setValue(newMarqueeHeight);
-        
-        // Set compact mode based on scroll position
-        setIsCompactMode(value > 50);
-      });
-
-      return () => scrollY.removeListener(headerListener);
-    }, [scrollY, headerHeight, categoryOpacity, categoryContainerHeight, marqueeHeight]);
-    
   
   const onSelect = () =>{
     console.log("selected category: ",selectedCategory);
@@ -537,12 +495,7 @@ useEffect(() => {
       ) : (
         <>
           {/* horizontal category */}
-          <Animated.View style={[
-            styles.categoriesContainer,
-            {
-              height: categoryContainerHeight,
-            }
-          ]}>
+          <View style={styles.categoriesContainer}>
             {isCategoryLoading ? 
               <CategorySkeleton /> 
               :
@@ -557,21 +510,18 @@ useEffect(() => {
                     selectedCategory={selectedCategory}
                     onSelect={item => {handleOnCategoryChanged(item)}}
                     index={index}
-                    scrollOpacity={categoryOpacity}
-                    containerHeight={categoryContainerHeight}
-                    isCompact={isCompactMode}
                   />
                 )} 
-                keyExtractor={(item, index) => item.categoryId?.toString() || index.toString()}
+                keyExtractor={(item, index) => item.categoryId?.toString() || "cat-" + index.toString()}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
               />
             }
-          </Animated.View>
+          </View>
 
           {/* Marquee Text */}
-          <Animated.View style={{
-            height: marqueeHeight,
+          <View style={{
+            height: 40,
             overflow: 'hidden',
           }}>
             <MarqueeText 
@@ -580,17 +530,15 @@ useEffect(() => {
               backgroundColor="#FF6B6B"
               textColor="white"
               fontSize={14}
-              height={marqueeHeight}
+              height={40}
             />
-          </Animated.View>
+          </View>
 
           {isProductsLoading ? 
             <ProductsSkeleton /> 
             :
-            <Animated.FlatList     
+            <FlatList     
               numColumns={2}
-              onScroll={handleScroll}
-              scrollEventThrottle={16}
               ListHeaderComponent={
                 <>
                   <ItemsCarousel sliderList={sliderList}/>
@@ -601,11 +549,12 @@ useEffect(() => {
               }
               data={latestItemLists}
               renderItem={({item, index}) => (
+
                 <ProductCards 
                   item={item}
                 />
               )} 
-              keyExtractor={(item, index) => item.productId?.toString() || index.toString()}
+              keyExtractor={(item, index) => item.productId?.toString() || "pro-" +index.toString()}
               ListFooterComponent={
                 <View style={styles.scrollInnerContainer}>
                   <View style={styles.navigationContainer}>
@@ -663,8 +612,6 @@ useEffect(() => {
 }
 
 
-
-
 const Home = () => {
   return(
   <Layout />
@@ -672,7 +619,6 @@ const Home = () => {
 };
 
 export default Home;
-
 
 
 const styles = StyleSheet.create({

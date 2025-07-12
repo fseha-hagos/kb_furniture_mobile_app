@@ -10,7 +10,7 @@ interface MarqueeTextProps {
   backgroundColor?: string;
   textColor?: string;
   fontSize?: number;
-  height?: number | Animated.Value;
+  height?: number;
 }
 
 const MarqueeText: React.FC<MarqueeTextProps> = ({

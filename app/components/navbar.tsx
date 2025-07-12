@@ -314,8 +314,8 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     margin: 10,
-    marginHorizontal: 18,
-    borderRadius: 25,
+    marginHorizontal: 6,
+    borderRadius: 8,
     elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
@@ -328,9 +328,9 @@ const styles = StyleSheet.create({
   searchGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 6,
     paddingVertical: 12,
-    borderRadius: 25,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.05)',
   },

@@ -11,7 +11,7 @@ class ErrorBoundary extends React.Component<
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(error: Error) {
     return { hasError: true };
   }
 
@@ -100,29 +100,29 @@ const ItemsCarousel: React.FC<{ sliderList: slidesType[] }> = ({ sliderList }) =
   const { width } = useWindowDimensions();
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const autoScrollTimer = useRef<NodeJS.Timeout>();
+  const autoScrollTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (sliderList && sliderList.length > 0) {
       setIsLoading(false);
-      startAutoScroll();
+      startAutoScroll(activeDotIndex);
     }
     return () => {
       if (autoScrollTimer.current) {
         clearInterval(autoScrollTimer.current);
       }
     };
-  }, [sliderList]);
+  }, [sliderList, activeDotIndex]);
 
-  const startAutoScroll = () => {
+  const startAutoScroll = (currentIndex: number) => {
     if (autoScrollTimer.current) {
       clearInterval(autoScrollTimer.current);
     }
     
     autoScrollTimer.current = setInterval(() => {
       if (flatListRef.current && sliderList.length > 0) {
-        const nextIndex = (activeDotIndex + 1) % sliderList.length;
+        const nextIndex = (currentIndex + 1) % sliderList.length;
         flatListRef.current.scrollToIndex({
           index: nextIndex,
           animated: true,
@@ -162,7 +162,7 @@ const ItemsCarousel: React.FC<{ sliderList: slidesType[] }> = ({ sliderList }) =
     </Animated.View>
   );
 
-  const renderItem = ({ item, index }: { item: any; index: number }) => {
+  const renderItem = ({ item, index }: { item: slidesType; index: number }) => {
     const inputRange = [
       (index - 1) * width,
       index * width,
@@ -231,7 +231,7 @@ const ItemsCarousel: React.FC<{ sliderList: slidesType[] }> = ({ sliderList }) =
           maxToRenderPerBatch={3}
           windowSize={3}
           removeClippedSubviews={true}
-          getItemLayout={(data, index) => ({
+          getItemLayout={(data: ArrayLike<slidesType> | null | undefined, index: number) => ({
             length: width,
             offset: width * index,
             index,
@@ -249,21 +249,21 @@ const ItemsCarousel: React.FC<{ sliderList: slidesType[] }> = ({ sliderList }) =
 
 const styles = StyleSheet.create({
   container: {
-    height: 200,
-    marginVertical: 10,
+    height: 180,
+    marginVertical: 5,
   },
   flatList: {
     flex: 1,
   },
   slideContainer: {
     width: Dimensions.get('window').width,
-    height: 200,
+    height:180,
     paddingHorizontal: 10,
   },
   slideImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 10,
+    borderRadius: 8,
   },
   paginationContainer: {
     flexDirection: 'row',

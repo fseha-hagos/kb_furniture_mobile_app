@@ -29,8 +29,6 @@ const ProductCards = ({ item }: props) => {
     
     // Animation values
     const scaleAnim = useRef(new Animated.Value(1)).current;
-    const opacityAnim = useRef(new Animated.Value(0)).current;
-    const translateYAnim = useRef(new Animated.Value(30)).current;
     const likeScaleAnim = useRef(new Animated.Value(1)).current;
     
    
@@ -43,21 +41,7 @@ const ProductCards = ({ item }: props) => {
     }
    },[handleLiked])
 
-   // Entrance animation
-   useEffect(() => {
-     Animated.parallel([
-       Animated.timing(opacityAnim, {
-         toValue: 1,
-         duration: 600,
-         useNativeDriver: true,
-       }),
-       Animated.timing(translateYAnim, {
-         toValue: 0,
-         duration: 600,
-         useNativeDriver: true,
-       }),
-     ]).start();
-   }, []);
+
 
    const handlePressIn = () => {
      setIsPressed(true);
@@ -103,9 +87,7 @@ const ProductCards = ({ item }: props) => {
              {
                transform: [
                  { scale: scaleAnim },
-                 { translateY: translateYAnim },
                ],
-               opacity: opacityAnim,
              },
            ]}
          >
@@ -117,7 +99,13 @@ const ProductCards = ({ item }: props) => {
              activeOpacity={0.9}
            > 
              <View style={styles.imageContainer}>
-               <Image source={{uri: item.images[0]}} style={styles.coverImage}/>
+               <Image 
+                 source={{uri: item.images[0]}} 
+                 style={styles.coverImage}
+              
+                 onError={(error) => console.log('Image loading error:', error)}
+                 onLoad={() => console.log('Image loaded successfully')}
+               /> 
                <LinearGradient
                  colors={['transparent', 'rgba(0,0,0,0.3)']}
                  style={styles.imageOverlay}
