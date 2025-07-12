@@ -1,0 +1,276 @@
+//import liraries
+import { productsType } from '@/types/type';
+import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../context/cartContext';
+
+
+interface props {
+    item : productsType,
+  
+   // handleLiked: (items: myProductsFromDatabasePeopsWithId)=> void;
+    //handleLiked: (items: {id: number,name: string, price: number, image: number, color: string, isNew: boolean, isLiked: boolean, rating: number, colors: string[], description: string})=> void;
+}
+ 
+const ProductCards = ({ item }: props) => {
+   
+    const router = useRouter();
+    const [isLiked, setIsLiked] = useState(false);
+    const [isPressed, setIsPressed] = useState(false);
+
+    const {handleLiked, likedProducts} = useAuth();
+    const itemToSend = {
+        ...item,
+        // Already contains `%2F`, DO NOT decode it
+      };
+    
+    // Animation values
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const opacityAnim = useRef(new Animated.Value(0)).current;
+    const translateYAnim = useRef(new Animated.Value(30)).current;
+    const likeScaleAnim = useRef(new Animated.Value(1)).current;
+    
+   
+   useEffect(() => {
+    const isLiked = likedProducts?.some((liked) => liked.productId === item.productId);
+     if (isLiked) {
+        setIsLiked(true)
+    }else{
+        setIsLiked(false)
+    }
+   },[handleLiked])
+
+   // Entrance animation
+   useEffect(() => {
+     Animated.parallel([
+       Animated.timing(opacityAnim, {
+         toValue: 1,
+         duration: 600,
+         useNativeDriver: true,
+       }),
+       Animated.timing(translateYAnim, {
+         toValue: 0,
+         duration: 600,
+         useNativeDriver: true,
+       }),
+     ]).start();
+   }, []);
+
+   const handlePressIn = () => {
+     setIsPressed(true);
+     Animated.spring(scaleAnim, {
+       toValue: 0.95,
+       tension: 100,
+       friction: 8,
+       useNativeDriver: true,
+     }).start();
+   };
+
+   const handlePressOut = () => {
+     setIsPressed(false);
+     Animated.spring(scaleAnim, {
+       toValue: 1,
+       tension: 100,
+       friction: 8,
+       useNativeDriver: true,
+     }).start();
+   };
+
+   const handleLikePress = () => {
+     Animated.sequence([
+       Animated.timing(likeScaleAnim, {
+         toValue: 1.3,
+         duration: 150,
+         useNativeDriver: true,
+       }),
+       Animated.spring(likeScaleAnim, {
+         toValue: 1,
+         tension: 100,
+         friction: 8,
+         useNativeDriver: true,
+       }),
+     ]).start();
+     handleLiked!(item);
+   };
+
+    return (
+         <Animated.View
+           style={[
+             styles.container,
+             {
+               transform: [
+                 { scale: scaleAnim },
+                 { translateY: translateYAnim },
+               ],
+               opacity: opacityAnim,
+             },
+           ]}
+         >
+           <TouchableOpacity  
+             style={styles.cardContainer}
+             onPress={() => router.push({pathname: "/product", params:{"productData": encodeURIComponent(JSON.stringify(itemToSend))} })}
+             onPressIn={handlePressIn}
+             onPressOut={handlePressOut}
+             activeOpacity={0.9}
+           > 
+             <View style={styles.imageContainer}>
+               <Image source={{uri: item.images[0]}} style={styles.coverImage}/>
+               <LinearGradient
+                 colors={['transparent', 'rgba(0,0,0,0.3)']}
+                 style={styles.imageOverlay}
+               />
+             </View>
+             
+             <View style={styles.content}>
+               <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+               <View style={styles.priceContainer}>
+                 <Text style={styles.price}>${item.price}</Text>
+                 <View style={styles.ratingContainer}>
+                   <Ionicons name="star" size={14} color="#FFD700" />
+                   <Text style={styles.rating}>4.5</Text>
+                 </View>
+               </View>
+             </View>
+             
+             <Animated.View style={[styles.likeContainer, { transform: [{ scale: likeScaleAnim }] }]}>
+               <TouchableOpacity 
+                 onPress={handleLikePress}
+                 style={styles.likeButton}
+                 activeOpacity={0.8}
+               >
+                 {isLiked ? (
+                   <LinearGradient
+                     colors={['#FF6B6B', '#FF8E8E']}
+                     style={styles.likeGradient}
+                   >
+                     <FontAwesome name="heart" size={18} color="white" />
+                   </LinearGradient>
+                 ) : (
+                   <View style={styles.likeButtonOutline}>
+                     <Entypo name="heart-outlined" size={20} color="#666" />
+                   </View>
+                 )}
+               </TouchableOpacity>
+             </Animated.View>
+           </TouchableOpacity>
+         </Animated.View>
+            
+        
+    );
+};
+
+// define your styles
+const styles = StyleSheet.create({
+    container: {
+       flex: 1,
+       margin: 6,
+       borderRadius: 16,
+       elevation: 8,
+       shadowColor: '#000',
+       shadowOffset: {
+         width: 0,
+         height: 4,
+       },
+       shadowOpacity: 0.15,
+       shadowRadius: 8,
+       backgroundColor: '#FFFFFF',
+    },
+    cardContainer: {
+       flex: 1,
+       borderRadius: 16,
+       overflow: 'hidden',
+       backgroundColor: '#FFFFFF',
+    },
+    imageContainer: {
+       position: 'relative',
+       height: 200,
+    },
+    coverImage: { 
+        height: 200,    
+        width: '100%',
+        borderRadius: 16,
+    },
+    imageOverlay: {
+       position: 'absolute',
+       bottom: 0,
+       left: 0,
+       right: 0,
+       height: 60,
+       borderRadius: 16,
+    },
+    content: {
+        padding: 16,
+        paddingTop: 12,
+    },
+    title: {
+        fontSize: 16,
+        color: "#1A1A1A",
+        fontWeight: "600",
+        lineHeight: 20,
+        marginBottom: 8,
+    },
+    priceContainer: {
+       flexDirection: 'row',
+       justifyContent: 'space-between',
+       alignItems: 'center',
+    },
+    price: {
+        fontSize: 18,
+        color: "#00685C",
+        fontWeight: "700",
+    },
+    ratingContainer: {
+       flexDirection: 'row',
+       alignItems: 'center',
+       gap: 4,
+    },
+    rating: {
+       fontSize: 14,
+       color: "#666666",
+       fontWeight: "500",
+    },
+    likeContainer: {
+        position: "absolute",
+        top: 12,
+        right: 12,
+        zIndex: 10,
+    },
+    likeButton: {
+       width: 36,
+       height: 36,
+       borderRadius: 18,
+       justifyContent: "center",
+       alignItems: "center",
+    },
+    likeGradient: {
+       width: 36,
+       height: 36,
+       borderRadius: 18,
+       justifyContent: "center",
+       alignItems: "center",
+       elevation: 4,
+       shadowColor: '#FF6B6B',
+       shadowOffset: {
+         width: 0,
+         height: 2,
+       },
+       shadowOpacity: 0.3,
+       shadowRadius: 4,
+    },
+    likeButtonOutline: {
+       width: 36,
+       height: 36,
+       borderRadius: 18,
+       backgroundColor: 'rgba(255, 255, 255, 0.9)',
+       justifyContent: "center",
+       alignItems: "center",
+       borderWidth: 1,
+       borderColor: 'rgba(0, 0, 0, 0.1)',
+    },
+});
+
+//make this component available to the app
+export default ProductCards;
