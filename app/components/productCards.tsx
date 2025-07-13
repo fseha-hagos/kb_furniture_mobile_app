@@ -114,10 +114,18 @@ const ProductCards = ({ item }: props) => {
              
              <View style={styles.content}>
                <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+               
+               {/* Product Description */}
+               <Text style={styles.description} numberOfLines={1}>
+                 {item.description}
+               </Text>
+               
+              
+               
                <View style={styles.priceContainer}>
                  <Text style={styles.price}>${item.price}</Text>
                  <View style={styles.ratingContainer}>
-                   <Ionicons name="star" size={14} color="#FFD700" />
+                   <Ionicons name="star" size={12} color="#FFD700" />
                    <Text style={styles.rating}>4.5</Text>
                  </View>
                </View>
@@ -155,7 +163,7 @@ const styles = StyleSheet.create({
     container: {
        flex: 1,
        margin: 6,
-       borderRadius: 16,
+       borderRadius: 8,
        elevation: 8,
        shadowColor: '#000',
        shadowOffset: {
@@ -168,7 +176,7 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
        flex: 1,
-       borderRadius: 16,
+       borderRadius: 8,
        overflow: 'hidden',
        backgroundColor: '#FFFFFF',
     },
@@ -179,7 +187,7 @@ const styles = StyleSheet.create({
     coverImage: { 
         height: 200,    
         width: '100%',
-        borderRadius: 16,
+        borderRadius: 8,
     },
     imageOverlay: {
        position: 'absolute',
@@ -187,18 +195,18 @@ const styles = StyleSheet.create({
        left: 0,
        right: 0,
        height: 60,
-       borderRadius: 16,
+       borderRadius: 8,
     },
     content: {
-        padding: 16,
-        paddingTop: 12,
+        padding: 12,
+        paddingTop: 8,
     },
     title: {
-        fontSize: 16,
+        fontSize: 12,
         color: "#1A1A1A",
         fontWeight: "600",
-        lineHeight: 20,
-        marginBottom: 8,
+        lineHeight: 14,
+        marginBottom: 4,
     },
     priceContainer: {
        flexDirection: 'row',
@@ -206,7 +214,7 @@ const styles = StyleSheet.create({
        alignItems: 'center',
     },
     price: {
-        fontSize: 18,
+        fontSize: 14,
         color: "#00685C",
         fontWeight: "700",
     },
@@ -216,7 +224,7 @@ const styles = StyleSheet.create({
        gap: 4,
     },
     rating: {
-       fontSize: 14,
+       fontSize: 12,
        color: "#666666",
        fontWeight: "500",
     },
@@ -257,6 +265,31 @@ const styles = StyleSheet.create({
        alignItems: "center",
        borderWidth: 1,
        borderColor: 'rgba(0, 0, 0, 0.1)',
+    },
+    description: {
+      fontSize: 11,
+      color: "#666",
+      marginBottom: 4,
+      lineHeight: 13,
+    },
+    detailsContainer: {
+      marginBottom: 6,
+    },
+    detailItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 2,
+    },
+    detailLabel: {
+      fontSize: 11,
+      color: "#888",
+      fontWeight: "500",
+      marginRight: 4,
+    },
+    detailValue: {
+      fontSize: 11,
+      color: "#333",
+      fontWeight: "400",
     },
 });
 
