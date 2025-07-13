@@ -3,12 +3,11 @@ import { db } from '@/firebaseConfig';
 import { categoriesType, productsType, slidesType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from 'expo-router';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
-import { DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import CategoryCardView from '../../components/catagoryView';
 import ItemsCarousel from '../../components/itemCero';
 import MarqueeText from '../../components/MarqueeText';
@@ -134,7 +133,7 @@ const HomeSkeleton = () => {
 };
 
 const Layout = () => {
-  const pageSize = 14;
+  const pageSize = 6;
   const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = React.useState<categoriesType | null>(null);
@@ -157,6 +156,8 @@ const Layout = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<productsType[]>([]);
   const [searchLoading , setSearchLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
   
 useEffect(() => {
   const loadInitialData = async () => {
@@ -273,6 +274,7 @@ useEffect(() => {
         if (querySnapshot.empty) {
           setLatestItemLists([]);
           setAllProducts([]);
+          setHasMoreData(false);
           return;
         }
 
@@ -284,6 +286,7 @@ useEffect(() => {
         console.log("product lists : ", allProducts)
         setPreviousStart(querySnapshot.docs[(querySnapshot.docs.length - 1)-querySnapshot.docs.length]);
         setStartingDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setHasMoreData(querySnapshot.docs.length === pageSize);
       });
     } catch (error) {
       handleFirestoreError(error);
@@ -291,6 +294,116 @@ useEffect(() => {
       setRefreshing(false);
       setIsProductsLoading(false);
     }
+  };
+
+  const loadMoreItems = async () => {
+    if (isLoadingMore || !hasMoreData) return;
+    
+    setIsLoadingMore(true);
+    try {
+      if (!startingDoc) {
+        setHasMoreData(false);
+        return;
+      }
+      
+      const nextQuery = query(
+        collection(db, `${PRODUCTS_DATA}`),
+        startAfter(startingDoc),
+        limit(pageSize)
+      );
+      
+      const nextSnapshot = await getDocs(nextQuery);
+      
+      if (nextSnapshot.empty) {
+        setHasMoreData(false);
+        return;
+      }
+      
+      const newItems: productsType[] = [];
+      nextSnapshot.forEach((doc) => {
+        newItems.push(doc.data() as productsType);
+      });
+      
+      setLatestItemLists(prev => [...prev, ...newItems]);
+      setAllProducts(prev => [...prev, ...newItems]);
+      setStartingDoc(nextSnapshot.docs[nextSnapshot.docs.length - 1]);
+      setHasMoreData(newItems.length === pageSize);
+      
+    } catch (error) {
+      console.error('Error loading more items:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const handleEndReached = () => {
+    if (hasMoreData && !isLoadingMore) {
+      loadMoreItems();
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    
+    return (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size="small" color="#00685C" />
+        <Text style={styles.loadingText}>Loading more items...</Text>
+      </View>
+    );
+  };
+
+  const renderNoMoreData = () => {
+    if (isLoadingMore || hasMoreData) return null;
+    
+    return (
+      <View style={styles.noMoreDataContainer}>
+        <Ionicons name="checkmark-circle" size={24} color="#00685C" />
+        <Text style={styles.noMoreDataText}>You've seen all available products</Text>
+        <Text style={styles.noMoreDataSubtext}>Check back later for new arrivals!</Text>
+      </View>
+    );
+  };
+
+  const renderErrorState = () => {
+    if (!error) return null;
+    
+    return (
+      <View style={styles.errorContainer}>
+        <Ionicons name="alert-circle" size={48} color="#FF6B6B" />
+        <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
+        <Text style={styles.errorMessage}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={handleRetry}
+        >
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderSearchState = () => {
+    if (!searchQuery) return null;
+    
+    return (
+      <View style={styles.searchStateContainer}>
+        <View style={styles.searchHeader}>
+          <Text style={styles.searchResultsText}>
+            {searchLoading ? 'Searching...' : `Found ${searchResults.length} products`}
+          </Text>
+          <TouchableOpacity 
+            style={styles.clearSearchButton}
+            onPress={() => {
+              setSearchQuery('');
+              setSearchResults([]);
+            }}
+          >
+            <Ionicons name="close" size={20} color="#666" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
   };
 
 
@@ -350,59 +463,7 @@ useEffect(() => {
     };
   }, [debouncedSearch]);
 
-  const handleLoadMore = async (side: number) => {
-    let nextSnapshot:DocumentData | undefined = undefined;
-    
-      setRefreshing(true);
-      if(side===1){
-        console.log("previousStart:  ",previousStart)
-        if (!previousStart){
-          getLatestItems();
-          return;
-        }
-        setLatestItemLists([]);
-        const prevQuery = query(
-          collection(db, `${PRODUCTS_DATA}`),
-            startAfter(previousStart),
-            limit(pageSize)
-        )
-          nextSnapshot = await getDocs(prevQuery);
-      }
-      else{
-        if (!startingDoc){
-          console.log("there is no data here")
-          getLatestItems();
-          return;
-        } 
-        
-        setLatestItemLists([]);
-        let nextQuery = query(
-          collection(db, 'FurnitureData'),
-          startAfter(startingDoc),
-          limit(pageSize)
-      );
-        nextSnapshot = await getDocs(nextQuery);
-        if(nextSnapshot.size === 0){
-        getLatestItems();
-        return;
-        } 
-      }
-
-      // Process data as before
-      nextSnapshot.forEach((doc:DocumentData) => {
-        const productData = doc.data() as productsType
-        setLatestItemLists(latestItemLists => [...latestItemLists, productData]);
-      });
-      
-    
-      setPreviousStart(nextSnapshot.docs[(nextSnapshot.docs.length - 1)-nextSnapshot.docs.length]);
-      setStartingDoc(nextSnapshot.docs[nextSnapshot.docs.length - 1]); // Update cursor
-      setRefreshing(false);
-    };
-
-
-
-    const handleOnCategoryChanged = (item: categoriesType) => {
+  const handleOnCategoryChanged = (item: categoriesType) => {
       setSelectedCategory(item); 
       if(item.name === "All") {
         setLatestItemLists(allProducts);
@@ -469,6 +530,7 @@ useEffect(() => {
       
       {searchQuery ? (
         <>
+          {renderSearchState()}
           {searchLoading ? (
             <ProductsSkeleton />
           ) : (
@@ -556,50 +618,16 @@ useEffect(() => {
               )} 
               keyExtractor={(item, index) => item.productId?.toString() || "pro-" +index.toString()}
               ListFooterComponent={
-                <View style={styles.scrollInnerContainer}>
-                  <View style={styles.navigationContainer}>
-                    <TouchableOpacity 
-                      style={styles.navigationButton} 
-                      onPress={() => handleLoadMore(1)}
-                      activeOpacity={0.8}
-                    >
-                      <LinearGradient
-                        colors={['#00685C', '#00897B']}
-                        style={styles.navigationGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                      >
-                        <Ionicons name="chevron-back" size={20} color="white" />
-                        <Text style={styles.navigationText}>Previous</Text>
-                      </LinearGradient>
-                    </TouchableOpacity>
-                    
-                    <View style={styles.pageIndicatorContainer}>
-                      <View style={[styles.pageIndicator, styles.activeIndicator]} />
-                      <View style={styles.pageIndicator} />
-                      <View style={styles.pageIndicator} />
-                      <View style={styles.pageIndicator} />
-                    </View>
-                    
-                    <TouchableOpacity 
-                      style={styles.navigationButton} 
-                      onPress={() => handleLoadMore(2)}
-                      activeOpacity={0.8}
-                    >
-                      <LinearGradient
-                        colors={['#00685C', '#00897B']}
-                        style={styles.navigationGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                      >
-                        <Text style={styles.navigationText}>Next</Text>
-                        <Ionicons name="chevron-forward" size={20} color="white" />
-                      </LinearGradient>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <>
+                  {renderFooter()}
+                  {renderNoMoreData()}
+                  {renderErrorState()}
+                </>
               }
+              onEndReached={handleEndReached}
+              onEndReachedThreshold={0.5}
               showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 120 }}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={getLatestItems} />
               }
@@ -632,55 +660,7 @@ const styles = StyleSheet.create({
     minHeight: 100,
   },
   scrollInnerContainer: {
-    paddingBottom: 100,
-  },
-  navigationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 20,
-    paddingHorizontal: 20,
-  },
-  navigationButton: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-  },
-  navigationGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    gap: 8,
-  },
-  navigationText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  pageIndicatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  pageIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#E0E0E0',
-  },
-  activeIndicator: {
-    backgroundColor: '#00685C',
-    width: 24,
+    paddingBottom: 120,
   },
   skeletonContainer: {
     marginHorizontal: 16,
@@ -758,5 +738,70 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '500',
+  },
+  loadingFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    paddingBottom: 100,
+  },
+  loadingText: {
+    marginLeft: 10,
+    color: '#00685C',
+    fontSize: 14,
+    
+  },
+  noMoreDataContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingBottom: 100,
+  },
+  noMoreDataText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#00685C',
+    marginTop: 10,
+  },
+  noMoreDataSubtext: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: 5,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingBottom: 100,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FF6B6B',
+    marginTop: 10,
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: '#666666',
+    textAlign: 'center',
+    marginTop: 5,
+    marginBottom: 20,
+  },
+  searchStateContainer: {
+    marginHorizontal: 16,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  searchHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  searchResultsText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  clearSearchButton: {
+    padding: 5,
   },
 });
