@@ -2,11 +2,10 @@ import { PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
 import { productsType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { DocumentData, collection, disableNetwork, enableNetwork, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Navbar from '../../components/navbar';
 import NetworkError from '../../components/NetworkError';
 import ProductCards from '../../components/productCards';
@@ -67,7 +66,7 @@ const SearchSkeleton = () => {
 };
 
 const Search = () => {
-  const pageSize = 14;
+  const pageSize = 6;
   const [refreshing, setRefreshing] = useState(true);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [startingDoc, setStartingDoc] = useState<DocumentData | null>(null);
@@ -77,6 +76,8 @@ const Search = () => {
   const [searchResults, setSearchResults] = useState<productsType[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<productsType | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
   const router = useRouter();
   const { addToRecentlyViewed } = useProduct();
   const [isOffline, setIsOffline] = useState(false);
@@ -135,6 +136,12 @@ const Search = () => {
       const q = query(collection(db, `${PRODUCTS_DATA}`), limit(pageSize));
       const querySnapshot = await getDocs(q);
 
+      if (querySnapshot.empty) {
+        setLatestItemLists([]);
+        setHasMoreData(false);
+        return;
+      }
+
       querySnapshot.forEach((doc) => {
         const productData = doc.data() as productsType;
         setLatestItemLists(latestItemLists => [...latestItemLists, productData]);
@@ -142,11 +149,121 @@ const Search = () => {
 
       setPreviousStart(querySnapshot.docs[(querySnapshot.docs.length - 1)-querySnapshot.docs.length]);
       setStartingDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setHasMoreData(querySnapshot.docs.length === pageSize);
     } catch (error) {
       handleFirestoreError(error);
     } finally {
       setRefreshing(false);
     }
+  };
+
+  const loadMoreItems = async () => {
+    if (isLoadingMore || !hasMoreData) return;
+    
+    setIsLoadingMore(true);
+    try {
+      if (!startingDoc) {
+        setHasMoreData(false);
+        return;
+      }
+      
+      const nextQuery = query(
+        collection(db, `${PRODUCTS_DATA}`),
+        startAfter(startingDoc),
+        limit(pageSize)
+      );
+      
+      const nextSnapshot = await getDocs(nextQuery);
+      
+      if (nextSnapshot.empty) {
+        setHasMoreData(false);
+        return;
+      }
+      
+      const newItems: productsType[] = [];
+      nextSnapshot.forEach((doc) => {
+        newItems.push(doc.data() as productsType);
+      });
+      
+      setLatestItemLists(prev => [...prev, ...newItems]);
+      setStartingDoc(nextSnapshot.docs[nextSnapshot.docs.length - 1]);
+      setHasMoreData(newItems.length === pageSize);
+      
+    } catch (error) {
+      console.error('Error loading more items:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const handleEndReached = () => {
+    if (hasMoreData && !isLoadingMore) {
+      loadMoreItems();
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    
+    return (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size="small" color="#00685C" />
+        <Text style={styles.loadingText}>Loading more items...</Text>
+      </View>
+    );
+  };
+
+  const renderNoMoreData = () => {
+    if (isLoadingMore || hasMoreData) return null;
+    
+    return (
+      <View style={styles.noMoreDataContainer}>
+        <Ionicons name="checkmark-circle" size={24} color="#00685C" />
+        <Text style={styles.noMoreDataText}>You've seen all available products</Text>
+        <Text style={styles.noMoreDataSubtext}>Check back later for new arrivals!</Text>
+      </View>
+    );
+  };
+
+  const renderErrorState = () => {
+    if (!error) return null;
+    
+    return (
+      <View style={styles.errorContainer}>
+        <Ionicons name="alert-circle" size={48} color="#FF6B6B" />
+        <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
+        <Text style={styles.errorMessage}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={handleRetry}
+        >
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderSearchState = () => {
+    if (!searchQuery) return null;
+    
+    return (
+      <View style={styles.searchStateContainer}>
+        <View style={styles.searchHeader}>
+          <Text style={styles.searchResultsText}>
+            {loading ? 'Searching...' : `Found ${searchResults.length} products`}
+          </Text>
+          <TouchableOpacity 
+            style={styles.clearSearchButton}
+            onPress={() => {
+              setSearchQuery('');
+              setSearchResults([]);
+            }}
+          >
+            <Ionicons name="close" size={20} color="#666" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
   };
 
   const handleSearch = async (queryText: string) => {
@@ -191,56 +308,6 @@ const Search = () => {
     });
   };
 
-  const handleLoadMore = async (side: number) => {
-    let nextSnapshot:DocumentData | undefined = undefined;
-    
-    setRefreshing(true);
-    if(side===1){
-      console.log("previousStart:  ",previousStart)
-      if (!previousStart){
-        getLatestItems();
-        return;
-      }
-      setLatestItemLists([]);
-      const prevQuery = query(
-        collection(db, 'FurnitureData'),
-          startAfter(previousStart),
-          limit(pageSize)
-      )
-       nextSnapshot = await getDocs(prevQuery);
-    }
-    else{
-      if (!startingDoc){
-        console.log("there is no data here")
-        getLatestItems();
-        return;
-      } 
-      
-      setLatestItemLists([]);
-      let nextQuery = query(
-        collection(db, 'FurnitureData'),
-        startAfter(startingDoc),
-        limit(pageSize)
-    );
-     nextSnapshot = await getDocs(nextQuery);
-     if(nextSnapshot.size === 0){
-      getLatestItems();
-      return;
-     } 
-    }
-
-    // Process data as before
-    nextSnapshot.forEach((doc:DocumentData) => {
-      const productData = doc.data() as productsType
-      setLatestItemLists(latestItemLists => [...latestItemLists, productData]);
-    });
-    
-  
-    setPreviousStart(nextSnapshot.docs[(nextSnapshot.docs.length - 1)-nextSnapshot.docs.length]);
-    setStartingDoc(nextSnapshot.docs[nextSnapshot.docs.length - 1]); // Update cursor
-    setRefreshing(false);
-  };
-
   if (isOffline) {
     return (
       <View style={styles.container}>
@@ -263,6 +330,7 @@ const Search = () => {
         <SearchSkeleton />
       ) : searchQuery ? (
         <>
+          {renderSearchState()}
           <FlatList
             data={searchResults}
             renderItem={({item}) => (
@@ -299,49 +367,15 @@ const Search = () => {
               keyExtractor={item => item.productId}
               showsVerticalScrollIndicator={false}
               ListFooterComponent={
-                <View style={styles.scrollInnerContainer}>
-                  <View style={styles.navigationContainer}>
-                    <TouchableOpacity 
-                      style={styles.navigationButton} 
-                      onPress={() => handleLoadMore(1)}
-                      activeOpacity={0.8}
-                    >
-                      <LinearGradient
-                        colors={['#00685C', '#00897B']}
-                        style={styles.navigationGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                      >
-                        <Ionicons name="chevron-back" size={20} color="white" />
-                        <Text style={styles.navigationText}>Previous</Text>
-                      </LinearGradient>
-                    </TouchableOpacity>
-                    
-                    <View style={styles.pageIndicatorContainer}>
-                      <View style={[styles.pageIndicator, styles.activeIndicator]} />
-                      <View style={styles.pageIndicator} />
-                      <View style={styles.pageIndicator} />
-                      <View style={styles.pageIndicator} />
-                    </View>
-                    
-                    <TouchableOpacity 
-                      style={styles.navigationButton} 
-                      onPress={() => handleLoadMore(2)}
-                      activeOpacity={0.8}
-                    >
-                      <LinearGradient
-                        colors={['#00685C', '#00897B']}
-                        style={styles.navigationGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                      >
-                        <Text style={styles.navigationText}>Next</Text>
-                        <Ionicons name="chevron-forward" size={20} color="white" />
-                      </LinearGradient>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <>
+                  {renderFooter()}
+                  {renderNoMoreData()}
+                  {renderErrorState()}
+                </>
               }
+              onEndReached={handleEndReached}
+              onEndReachedThreshold={0.5}
+              contentContainerStyle={{ paddingBottom: 120 }}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={getLatestItems} />
               }
@@ -368,54 +402,6 @@ const styles = StyleSheet.create({
   },
   scrollInnerContainer: {
     paddingBottom: 10,
-  },
-  navigationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 20,
-    paddingHorizontal: 20,
-  },
-  navigationButton: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-  },
-  navigationGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    gap: 8,
-  },
-  navigationText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  pageIndicatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  pageIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#E0E0E0',
-  },
-  activeIndicator: {
-    backgroundColor: '#00685C',
-    width: 24,
   },
   noProductTextContainer: {
     flex: 1,
@@ -532,6 +518,78 @@ const styles = StyleSheet.create({
     height: 16,
     backgroundColor: '#d0d0d0',
     borderRadius: 8,
+  },
+  loadingFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+  },
+  loadingText: {
+    marginLeft: 10,
+    color: '#00685C',
+    fontSize: 16,
+  },
+  noMoreDataContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  noMoreDataText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#00685C',
+    marginTop: 10,
+  },
+  noMoreDataSubtext: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 5,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FF6B6B',
+    marginTop: 10,
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#00685C',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  searchStateContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  searchHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  searchResultsText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  clearSearchButton: {
+    padding: 5,
   },
 });
 
