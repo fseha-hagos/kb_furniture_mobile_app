@@ -64,7 +64,7 @@ const TabIcon = ({ focused, color, iconName, label }: {
         )}
         <Ionicons 
           name={focused ? iconName : `${iconName}-outline`} 
-          size={24} 
+          size={20} 
           color={color} 
         />
       </Animated.View>
@@ -95,18 +95,18 @@ export default function Layout() {
         headerShown: false,
         tabBarLabelStyle: {
           fontFamily: "Jakarta",
-          fontSize: 12,
-          fontWeight: '600',
-          marginTop: 6,
+          fontSize: 9,
+          fontWeight: '400',
+          marginTop: 1,
         },
         tabBarStyle: {
           left: 20,
           right: 20,
           elevation: 8,
-          height: 75,
+          height: 65,
           borderTopWidth: 0,
-          paddingBottom: 12,
-          paddingTop: 8,
+          paddingBottom: 4,
+          paddingTop: 4,
           position: 'absolute',
           bottom: 0,
           backgroundColor: 'transparent',
@@ -119,7 +119,7 @@ export default function Layout() {
           shadowRadius: 8,
         },
         tabBarItemStyle: {
-          paddingVertical: 10,
+          paddingVertical: 6,
         },
         tabBarBackground: () => (
           <LinearGradient
@@ -204,22 +204,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    width: 60,
-    height: 55,
+    width: 50,
+    height: 45,
   },
   iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     position: 'relative',
   },
   activeBackground: {
     position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   activeIndicator: {
     position: 'absolute',
