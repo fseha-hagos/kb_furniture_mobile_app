@@ -2,7 +2,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/cartContext';
 
@@ -18,6 +18,77 @@ interface myprops{
 interface ProductStackParamList {
   itemlist: { item: string };
 }
+
+// Dynamic advertising messages
+const advertisingMessages = [
+  "🔥 Special Offer: 20% off all furniture!",
+  "🎉 Free shipping on orders above $500",
+  "💫 New arrivals every week",
+  "🌟 Premium quality furniture at best prices",
+  "✨ Limited time deals - Shop now!",
+  "🎯 Best furniture collection 2024",
+  "💎 Luxury furniture for your home",
+  "🏆 Customer favorite - Top rated"
+];
+
+const DynamicAdText = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Smooth slide and fade transition
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0.3,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: -20,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        // Change text while invisible
+        setCurrentIndex((prevIndex) => 
+          (prevIndex + 1) % advertisingMessages.length
+        );
+        
+        // Slide back and fade in
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      });
+    }, 4000); // Change message every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [fadeAnim, slideAnim]);
+
+  return (
+    <Animated.Text 
+      style={[
+        styles.advertisingText,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        }
+      ]}
+    >
+      {advertisingMessages[currentIndex]}
+    </Animated.Text>
+  );
+};
 
 const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :myprops) => {
 
@@ -106,7 +177,9 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
           </TouchableOpacity>
         )}
 
-        <Text style={styles.title}>{title}</Text>
+        <View style={styles.titleContainer}>
+          <DynamicAdText />
+        </View>
         
         <TouchableOpacity style={styles.cartIcon} onPress={handleMyCart}>
           <LinearGradient
@@ -227,7 +300,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 5,
-    height: 60,
+    height: 50,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: {
@@ -246,23 +319,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoContainer: {
-    width: 140,
-    height: 50,
+    width: 90,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'visible',
   },
   menuIcon: {
-    width: 130,
-    height: 50,
+    width: 90,
+    height: 40,
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
   },
   title: {
-    fontSize: 26,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+    marginBottom: 2,
+  },
+  advertisingText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.9)',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
   cartIcon: {
     width: 40,
