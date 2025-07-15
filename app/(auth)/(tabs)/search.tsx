@@ -3,14 +3,15 @@ import { db } from '@/firebaseConfig';
 import { productsType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { DocumentData, collection, disableNetwork, enableNetwork, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
+import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DataFetchError from '../../components/DataFetchError';
 import Navbar from '../../components/navbar';
-import NetworkError from '../../components/NetworkError';
 import ProductCards from '../../components/productCards';
 import ProductComparison from '../../components/ProductComparison';
 import { useProduct } from '../../context/productContext';
+import { handleFirebaseError } from '../../utils/firebaseErrorHandler';
 
 // create a component
 const SearchSkeleton = () => {
@@ -101,21 +102,27 @@ const Search = () => {
 
   const handleFirestoreError = async (error: any) => {
     console.error("Firestore error:", error);
-    if (error.code === 'failed-precondition' || error.code === 'unavailable') {
-      setIsOffline(true);
-      setError("Your device doesn't have a healthy internet connection at the moment. The app will operate in offline mode until it can successfully connect to the server.");
-      try {
-        await disableNetwork(db);
-        await enableNetwork(db);
-      } catch (e) {
-        console.error("Error reconnecting to Firestore:", e);
-      }
-    } else if (error.message?.includes("Backend didn't respond within 10 seconds")) {
-      setIsOffline(true);
-      setError("The server is taking too long to respond. This might be due to a slow internet connection. Please try again when your connection is more stable.");
-    } else {
-      setError("An error occurred while fetching data. Please check your internet connection and try again.");
+    
+    const result = await handleFirebaseError(error, {
+      enableAppReload: true,
+      showAlert: true
+    });
+    
+    if (result.success) {
+      // Retry was successful, reset error states
+      setIsOffline(false);
+      setError(null);
+      return;
     }
+    
+    if (result.shouldReload) {
+      // App will reload automatically, no need to set error states
+      return;
+    }
+    
+    // For other errors, show the offline state
+    setIsOffline(true);
+    setError("An error occurred while fetching data. Please check your internet connection and try again.");
   };
 
   const handleRetry = async () => {
@@ -308,11 +315,16 @@ const Search = () => {
     });
   };
 
-  if (isOffline) {
+  if (isOffline || error) {
     return (
       <View style={styles.container}>
         <Navbar title="Search" showBack={false} showSearch={true} />
-        <NetworkError onRetry={handleRetry} message={error || undefined} />
+        <DataFetchError
+          message={isOffline ? "No internet connection. Please check your connection and try again." : error || "No data found. Please try again."}
+          onRetry={handleRetry}
+          loading={isProductsLoading}
+          icon={isOffline ? "wifi-off-outline" : "cloud-offline-outline"}
+        />
       </View>
     );
   }
