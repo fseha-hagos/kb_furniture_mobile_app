@@ -1,12 +1,14 @@
 //import liraries
 import { db } from '@/firebaseConfig';
-import { DocumentData, collection, disableNetwork, enableNetwork, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
+import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Navbar from '../../components/navbar';
 import ProductCards from '../../components/productCards';
 // import { myProductsFromDatabasePeopsWithId } from '../../context/constants';
 import { Ionicons } from '@expo/vector-icons';
+import DataFetchError from '../../components/DataFetchError';
+import { handleFirebaseError } from '../../utils/firebaseErrorHandler';
 
 // create a component
 const ItemList = ({ route }: any) => {
@@ -28,22 +30,6 @@ const ItemList = ({ route }: any) => {
         route && getLatestItems();
     }
     ,[route])
-
-    const handleFirestoreError = async (error: any) => {
-        console.error("Firestore error:", error);
-        if (error.code === 'failed-precondition' || error.code === 'unavailable') {
-            setIsOffline(true);
-            setError("No internet connection. Please check your connection and try again.");
-            try {
-                await disableNetwork(db);
-                await enableNetwork(db);
-            } catch (e) {
-                console.error("Error reconnecting to Firestore:", e);
-            }
-        } else {
-            setError("An error occurred while fetching data. Please try again.");
-        }
-    };
 
     const getItemListByCatagory = async () => {
         //const querySnapshots = await getDocs(query(collection(db, 'FurnitureData'), where("values.catagory", "==",catagoryName)));
@@ -77,7 +63,15 @@ const ItemList = ({ route }: any) => {
             setPreviosStart(querySnapshot.docs[(querySnapshot.docs.length - 1)-querySnapshot.docs.length]);
             setStartingDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
         } catch (error) {
-            handleFirestoreError(error);
+            const result = await handleFirebaseError(error, {
+                enableAppReload: true,
+                showAlert: true
+            });
+            
+            if (!result.success && !result.shouldReload) {
+                setIsOffline(true);
+                setError("An error occurred while fetching data. Please try again.");
+            }
         } finally {
             setRefreshing(false);
         }
@@ -133,7 +127,15 @@ const ItemList = ({ route }: any) => {
             setPreviosStart(nextSnapshot.docs[(nextSnapshot.docs.length - 1)-nextSnapshot.docs.length]);
             setStartingDoc(nextSnapshot.docs[nextSnapshot.docs.length - 1]);
         } catch (error) {
-            handleFirestoreError(error);
+            const result = await handleFirebaseError(error, {
+                enableAppReload: true,
+                showAlert: true
+            });
+            
+            if (!result.success && !result.shouldReload) {
+                setIsOffline(true);
+                setError("An error occurred while fetching data. Please try again.");
+            }
         } finally {
             setRefreshing(false);
         }
@@ -143,21 +145,23 @@ const ItemList = ({ route }: any) => {
     //     throw new Error('Function not implemented.');
     // }
 
+    if (error || isOffline) {
+        return (
+            <View style={styles.container}>
+                <Navbar title={catagoryName} showSearch={false} showBack={true} />
+                <DataFetchError
+                    message={isOffline ? "No internet connection. Please check your connection and try again." : error || "No data found. Please try again."}
+                    onRetry={getLatestItems}
+                    loading={refreshing}
+                    icon={isOffline ? "wifi-off-outline" : "cloud-offline-outline"}
+                />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <Navbar title={catagoryName} showSearch={false} showBack={true} />
-
-            {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
-                    <TouchableOpacity 
-                        style={styles.retryButton}
-                        onPress={getLatestItems}
-                    >
-                        <Text style={styles.retryText}>Retry</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
 
             {refreshing ? 
                 (<View style={styles.contentConteiner}>
@@ -201,7 +205,7 @@ const ItemList = ({ route }: any) => {
                     </View>
                 : 
                 <View style={styles.contentConteiner}>
-                    <Text style={styles.notFoundText}>No posts found</Text>
+                    <Text style={styles.notFoundText}>No products found in this category.</Text>
                 </View>
                 )
             }

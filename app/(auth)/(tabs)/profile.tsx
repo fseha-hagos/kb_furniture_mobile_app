@@ -1,475 +1,251 @@
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CacheManager from '../../components/CacheManager';
 import CacheStatusIndicator from '../../components/CacheStatusIndicator';
 import Navbar from '../../components/navbar';
 import { useAuth } from '../../context/cartContext';
 
-
 interface ProductStackParamList {
-  addpost : {item: null }; // Assuming Product is defined elsewhere
+  addpost: { item: null };
 }
+
+const ACTIONS = [
+  {
+    key: 'addProduct',
+    label: 'Add Product',
+    icon: 'add-circle-outline',
+    onPress: (router: any) => router.push('/addPostScreen'),
+  },
+  {
+    key: 'addCategory',
+    label: 'Add Category',
+    icon: 'folder-open',
+    onPress: (router: any) => router.push('/addCategoryScreen'),
+  },
+  {
+    key: 'favorites',
+    label: 'My Favorites',
+    icon: 'heart-outline',
+    onPress: (router: any) => router.push('/favorites'),
+  },
+  {
+    key: 'cupens',
+    label: 'My Cupen',
+    icon: 'ticket-outline',
+    onPress: (router: any) => router.push('/cupens'),
+  },
+  {
+    key: 'clearCache',
+    label: 'Clear Cache',
+    icon: 'trash-outline',
+    onPress: (_router: any, setShowCacheManager: any) => setShowCacheManager(true),
+  },
+  {
+    key: 'terms',
+    label: 'Terms and Conditions',
+    icon: 'document-text-outline',
+    onPress: (router: any) => router.push('/termsAndConditions'),
+  },
+];
 
 const Profile = () => {
   const { signOut } = useClerk();
   const { user } = useUser();
   const router = useRouter();
-  const [firstName, setFirstName] = useState(user?.firstName);
-  const [lastName, setLastName] = useState(user?.lastName);
   const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
-  
-  // Cache manager state
   const [showCacheManager, setShowCacheManager] = useState(false);
   const { refreshCart } = useAuth();
 
-  const ProfileMenu = [
-    {
-      id: 1,
-      name: "My Favorites",
-      path: "Favorites",
-      icon: <Ionicons name="heart-sharp" size={16} color="white" style={styles.shoppingBagIcon}/>
-    },
-    {
-      id : 2,
-      name: "My Cupen",
-      path: "cupens",
-      icon: <Image
-      source={require('@/assets/images/shopping-bag.png')}
-      style={styles.shoppingBagIcon}
-     resizeMode="contain"
-     />
-    },
-    {
-      id : 3,
-      name: "Clear Catch",
-      path: "clear",
-      icon: <Image
-      source={require('@/assets/images/shopping-bag.png')}
-      style={styles.shoppingBagIcon}
-     resizeMode="contain"
-     />
-    },
-    {
-      id : 4,
-      name: "Terms and Conditions",
-      path: "terms",
-      icon: <Image
-      source={require('@/assets/images/shopping-bag.png')}
-      style={styles.shoppingBagIcon}
-     resizeMode="contain"
-     />
-    },
-    // {
-    //   id : 5,
-    //   name: "Add Product",
-    //   path: "addProduct",
-    //   icon: <Image
-    //   source={require('./assets/images/shopping-bag.png')}
-    //   style={styles.shoppingBagIcon}
-    //  resizeMode="contain"
-    //  />
-    // },
-  ]
+  // Contact/social handlers
+  const call = () => Linking.openURL('tel:+251948491265');
+  const telegram = () => Linking.openURL('https://t.me/+251962588731/');
+  const facebook = () => Linking.openURL('https://facebook.com/');
+  const insta = () => Linking.openURL('https://t.me/+251962588731/');
+  const tiktok = () => Linking.openURL('https://t.me/+251962588731/');
 
-  const onSaveUser = async () => {
-    try {
-      // This is not working!
-      const result = await user?.update({
-        firstName: 'John',
-        lastName: 'Doe',
-      });
-      console.log('🚀 ~ file: profile.tsx:16 ~ onSaveUser ~ result:', result);
-    } catch (e) {
-      console.log('🚀 ~ file: profile.tsx:18 ~ onSaveUser ~ e', JSON.stringify(e));
-    }
-  };
-
-  // const handleOnMenuPressed = (path: string) =>{
-  //   console.log(path);
-
-  //   if(path === "clear"){
-  //     console.log("clear all catch");
-  //   }
-  //   else{
-  //     try{
-  //       navigation.navigate(path,{item: null})
-  //     }catch(error){
-  //       console.log(error)
-  //     }
-      
-  //   }
-    
-  // }
-  const call = async () => {
-    Linking.openURL('tel:+251948491265');
-  }
-  const telegram = async () => {
-    const linkk = 'https://t.me/+251962588731/'
-      Linking.openURL(linkk)
-  }
-  const facebook = async () => {
-    const linkk = 'https://facebook.com/'
-      Linking.openURL(linkk)
-  }
-  const insta = async () => {
-    const linkk = 'https://t.me/+251962588731/'
-      Linking.openURL(linkk)
-  }
-  const tiktok = async () => {
-    const linkk = 'https://t.me/+251962588731/'
-      Linking.openURL(linkk)
-  }
-  const handleSignOut = async () => {
-    await signOut();
-    console.log("You have signed out successfully.");
-  };
-
-  // Animated Button Component
-  const AnimatedButton = ({ 
-    icon, 
-    text, 
-    onPress, 
-    gradientColors = ['#00685C', '#00897B'] as const,
-    iconColor = 'white',
-    delay = 0 
-  }: {
-    icon: React.ReactElement;
-    text: string;
-    onPress: () => void;
-    gradientColors?: readonly [string, string];
-    iconColor?: string;
-    delay?: number;
-  }) => {
-    const scaleAnim = useRef(new Animated.Value(1)).current;
-    const opacityAnim = useRef(new Animated.Value(0)).current;
-    const translateYAnim = useRef(new Animated.Value(50)).current;
-
-    useEffect(() => {
-      // Staggered entrance animation
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.parallel([
-          Animated.timing(translateYAnim, {
-            toValue: 0,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-          Animated.timing(opacityAnim, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start();
-    }, []);
-
-    const handlePressIn = () => {
-      Animated.spring(scaleAnim, {
-        toValue: 0.95,
-        tension: 100,
-        friction: 8,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    const handlePressOut = () => {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 100,
-        friction: 8,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    return (
-      <Animated.View
-        style={[
-          styles.animatedButtonContainer,
-          {
-            transform: [
-              { scale: scaleAnim },
-              { translateY: translateYAnim },
-            ],
-            opacity: opacityAnim,
-          },
-        ]}
-      >
-        <TouchableOpacity
-          onPress={onPress}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          activeOpacity={0.9}
-          style={styles.animatedButton}
-        >
-          <LinearGradient
-            colors={gradientColors}
-            style={styles.buttonGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <View style={styles.buttonContent}>
-              <View style={[styles.iconContainer, { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]}>
-                {icon}
-              </View>
-              <Text style={styles.animatedButtonText}>{text}</Text>
-              <Ionicons 
-                name="chevron-forward" 
-                size={20} 
-                color="rgba(255, 255, 255, 0.7)" 
-                style={styles.chevronIcon}
-              />
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
-      </Animated.View>
-    );
-  };
   return (
-    <View style={styles.scrollContainer}>
-      <Navbar title="Profile " showBack ={true} showSearch = {false}/>
-      <View style={styles.profileContainer}>
-        <Image source={require("@/assets/logo/kb-furniture-high-resolution-logo-transparent.png")} style={styles.profileImg}/>
-        <Text style={{fontWeight: 'bold', color:"white"}} onPress={call}>+251948491265</Text>
-        <View style={styles.contactContainer} >
-          <TouchableOpacity style={styles.contactIcons} onPress={facebook}>
-           <Image source={require("@/assets/logo/fb.png")} style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.contactIcons} onPress={telegram}>
-           <Image source={require("@/assets/logo/telegram.png")} style={styles.icon}/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.contactIcons} onPress={insta}>
-           <Image source={require("@/assets/logo/insta.png")} style={styles.icon}/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.contactIcons} onPress={tiktok}>
-           <Image source={require("@/assets/logo/google.png")} style={styles.icon}/>
-          </TouchableOpacity>
+    <View style={styles.container}>
+      <Navbar title="Profile" showBack={true} showSearch={false} />
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Profile Info */}
+        <View style={styles.profileCard}>
+          <Image
+            source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')}
+            style={styles.profileImg}
+          />
+          <Text style={styles.profileName}>{user?.firstName || 'User'} {user?.lastName || ''}</Text>
+          <Text style={styles.profilePhone} onPress={call}>+251948491265</Text>
+          <View style={styles.socialRow}>
+            <TouchableOpacity style={styles.socialIcon} onPress={facebook}>
+              <Image source={require('@/assets/logo/fb.png')} style={styles.iconImg} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialIcon} onPress={telegram}>
+              <Image source={require('@/assets/logo/telegram.png')} style={styles.iconImg} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialIcon} onPress={insta}>
+              <Image source={require('@/assets/logo/insta.png')} style={styles.iconImg} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialIcon} onPress={tiktok}>
+              <Image source={require('@/assets/logo/google.png')} style={styles.iconImg} />
+            </TouchableOpacity>
+          </View>
         </View>
-        
+
         {/* Cache Status Indicator */}
         <View style={styles.cacheStatusContainer}>
-          <CacheStatusIndicator
-            onPress={() => setShowCacheManager(true)}
-            showDetails={true}
-          />
+          <CacheStatusIndicator onPress={() => setShowCacheManager(true)} showDetails={true} />
         </View>
-      </View>
-      <ScrollView 
-        contentContainerStyle={{ alignItems: 'center', paddingBottom: 90}}
-        showsVerticalScrollIndicator={false}
-        >
 
-      
-     
-
-    
-         <View style={[{ width: "100%"},styles.menuContainer]}>
-          <AnimatedButton
-            icon={<Ionicons name="add-circle-outline" size={22} color="white" />}
-            text="Add Product"
-            onPress={() => router.push("/addPostScreen")}
-            gradientColors={['#00685C', '#00897B']}
-            delay={100}
-          />
-          
-          <AnimatedButton
-            icon={<Ionicons name="folder-open" size={22} color="white" />}
-            text="Add Category"
-            onPress={() => router.push("/addCategoryScreen")}
-            gradientColors={['#00685C', '#00897B']}
-            delay={200}
-          />
-          
-          <AnimatedButton
-            icon={<Ionicons name="heart" size={22} color="white" />}
-            text="My Favorites"
-            onPress={() => router.push("/favorites")}
-            gradientColors={['#00685C', '#00897B']}
-            delay={300}
-          />
-          
-          <AnimatedButton
-            icon={<Ionicons name="ticket" size={22} color="white" />}
-            text="My Cupen"
-            onPress={() => router.push("/cupens")}
-            gradientColors={['#00685C', '#00897B']}
-            delay={400}
-          />
-          
-          <AnimatedButton
-            icon={<Ionicons name="trash" size={22} color="white" />}
-            text="Clear Cache"
-            onPress={() => setShowCacheManager(true)}
-            gradientColors={['#00685C', '#00897B']}
-            delay={500}
-          />
-          
-          <AnimatedButton
-            icon={<Ionicons name="document-text" size={22} color="white" />}
-            text="Terms and Conditions"
-            onPress={() => router.push("/termsAndConditions")}
-            gradientColors={['#00685C', '#00897B']}
-            delay={600}
-          />
-          
-          <AnimatedButton
-            icon={<Ionicons name="log-out" size={22} color="white" />}
-            text="Logout"
-            onPress={handleSignOut}
-            gradientColors={['#DC3545', '#C82333']}
-            delay={700}
-          />
-         </View>
-         </ScrollView>
-         
-         {/* Cache Manager Modal */}
-         <CacheManager
-           visible={showCacheManager}
-           onClose={() => setShowCacheManager(false)}
-           onCacheCleared={() => {
-             // Refresh cart and other data after cache is cleared
-             refreshCart?.();
-             setShowCacheManager(false);
-           }}
-         />
+        {/* Action List */}
+        <View style={styles.actionList}>
+          {ACTIONS.map((action, idx) => (
+            <React.Fragment key={action.key}>
+              <TouchableOpacity
+                style={styles.actionRow}
+                onPress={() => action.onPress(router, setShowCacheManager)}
+                activeOpacity={0.7}
+              >
+                <Ionicons name={action.icon as any} size={22} color="#00685C" style={styles.actionIcon} />
+                <Text style={styles.actionLabel}>{action.label}</Text>
+                <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
+              </TouchableOpacity>
+              {idx < ACTIONS.length - 1 && <View style={styles.divider} />}
+            </React.Fragment>
+          ))}
+          {/* Logout row, accent color */}
+          <TouchableOpacity
+            style={[styles.actionRow, styles.logoutRow]}
+            onPress={async () => { await signOut(); }}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="log-out-outline" size={22} color="#DC3545" style={styles.actionIcon} />
+            <Text style={[styles.actionLabel, { color: '#DC3545' }]}>Logout</Text>
+            <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      {/* Cache Manager Modal */}
+      <CacheManager
+        visible={showCacheManager}
+        onClose={() => setShowCacheManager(false)}
+        onCacheCleared={() => {
+          refreshCart?.();
+          setShowCacheManager(false);
+        }}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContainer : {
+  container: {
     flex: 1,
+    backgroundColor: '#F7F7F7',
   },
-
-  contactContainer :{
-    display: "flex",
-    flexDirection: "row",
-    overflow: "hidden",
-    alignItems:"center",
-    marginTop: 5,
-    gap: 14
+  scrollContent: {
+    paddingBottom: 40,
+    paddingHorizontal: 0,
   },
-  contactIcons : {
-    width: 40,
-    height:40,
-    
-  },
-  icon : {
-    width: 40,
-    height:40,
-    resizeMode: "cover"
-  },
-  profileContainer: {
-    width: "98%",
-    borderRadius: 10,
-    height: 190,
-    marginHorizontal: 'auto',
-   backgroundColor: "#00685C",
-    marginTop: 3,
-    alignItems: 'center',
-    justifyContent: "center",
-    elevation: 30,
-    shadowColor: 'black',
-    shadowOffset: {width: 3, height: -6},
-   
-  },
-  profileImg : {
-    resizeMode:"contain",
-    height: 80,
-    marginBottom:10
-  },
-  user : {
-
-  },
-  menuContainer : {
-   
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    alignItems: "center",
-    
-  },
-  buttonContainer: {
-    marginTop: 10,
-    width: "100%"
-  },
-  button: {
-    
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#00685C',
-    paddingVertical: 13,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-  },
-  shoppingBagIcon: {
-   
-    tintColor: 'white',
-    color: "white",
-    marginRight: 15,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '500',
-  },
-  // Animated Button Styles
-  animatedButtonContainer: {
-    marginTop: 12,
-    width: '100%',
-  },
-  animatedButton: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  buttonGradient: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
+  profileCard: {
+    backgroundColor: '#fff',
     borderRadius: 12,
     alignItems: 'center',
+    paddingVertical: 10,
+    marginTop: 10,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+  },
+  profileImg: {
+    width: 255,
+    height: 85,
+    borderRadius: 4,
+    marginBottom: 10,
+    resizeMode: 'contain',
+  },
+  profileName: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 2,
+  },
+  profilePhone: {
+    fontSize: 15,
+    color: '#00685C',
+    marginBottom: 8,
+  },
+  socialRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 6,
+  },
+  socialIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F0F0F0',
+    alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 2,
+  },
+  iconImg: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+  cacheStatusContainer: {
+    marginHorizontal: 16,
+    marginBottom: 10,
+  },
+  actionList: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginHorizontal: 16,
+    paddingVertical: 4,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 2,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    backgroundColor: 'transparent',
+  },
+  actionIcon: {
     marginRight: 16,
   },
-  buttonIcon: {
-    marginRight: 0,
-  },
-  animatedButtonText: {
-    color: '#fff',
+  actionLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    color: '#222',
     flex: 1,
-    marginLeft: 8,
+    fontWeight: '500',
   },
   chevronIcon: {
     marginLeft: 8,
   },
-  cacheStatusContainer: {
-    marginTop: 10,
-    width: '100%',
-    paddingHorizontal: 20,
+  divider: {
+    height: 1,
+    backgroundColor: '#F0F0F0',
+    marginLeft: 54,
+    marginRight: 0,
   },
-  
+  logoutRow: {
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
+  },
 });
 
 export default Profile;

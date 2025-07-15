@@ -9,11 +9,12 @@ import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import CategoryCardView from '../../components/catagoryView';
+import DataFetchError from '../../components/DataFetchError';
 import ItemsCarousel from '../../components/itemCero';
 import MarqueeText from '../../components/MarqueeText';
 import NavBar from '../../components/navbar';
-import NetworkError from '../../components/NetworkError';
 import ProductCards from '../../components/productCards';
+import { handleFirebaseError } from '../../utils/firebaseErrorHandler';
 
 
 interface ProductStackParamList {
@@ -184,14 +185,20 @@ useEffect(() => {
   const handleFirestoreError = async (error: any) => {
     console.error("Firestore error:", error);
     
-    // Check for specific Firebase connection errors
-    if (error.code === 'failed-precondition' || 
-        error.code === 'unavailable' || 
-        error.message?.includes("Backend didn't respond within 10 seconds") ||
-        error.message?.includes("Could not reach Cloud Firestore backend")) {
-      
-      // Redirect to not-found page for connection errors
-      router.push('/+not-found');
+    const result = await handleFirebaseError(error, {
+      enableAppReload: true,
+      showAlert: true
+    });
+    
+    if (result.success) {
+      // Retry was successful, reset error states
+      setIsOffline(false);
+      setError(null);
+      return;
+    }
+    
+    if (result.shouldReload) {
+      // App will reload automatically, no need to set error states
       return;
     }
     
@@ -510,11 +517,16 @@ useEffect(() => {
   //   return <HomeSkeleton />;
   // }
 
-  if (isOffline) {
+  if (isOffline || error) {
     return (
       <View style={styles.container}>
         <NavBar title="Furniture" showBack={false} showSearch={true} />
-        <NetworkError onRetry={handleRetry} message={error || undefined} />
+        <DataFetchError
+          message={isOffline ? "No internet connection. Please check your connection and try again." : error || "No data found. Please try again."}
+          onRetry={handleRetry}
+          loading={isCategoryLoading || isProductsLoading || isSlidesLoading}
+          icon={isOffline ? "wifi-off-outline" : "cloud-offline-outline"}
+        />
       </View>
     );
   }

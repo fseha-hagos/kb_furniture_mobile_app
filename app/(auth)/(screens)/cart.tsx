@@ -18,6 +18,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import CartCard from '../../components/cartCard';
 import NavBar from '../../components/navbar';
 import { useAuth } from '../../context/cartContext';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 const { width } = Dimensions.get('window');
 
@@ -287,7 +288,17 @@ const Cart = () => {
     const scaleAnim = useRef(new Animated.Value(0.9)).current;
     const slideAnim = useRef(new Animated.Value(50)).current;
 
+    // Use the custom back handler hook
+    useBackHandler({
+        onBackPress: () => {
+            // Handle any custom back logic here if needed
+            return false; // Let the default back action happen
+        },
+        enabled: true
+    });
+
     useEffect(() => {
+        // Start animations
         Animated.parallel([
             Animated.timing(fadeAnim, {
                 toValue: 1,
@@ -307,6 +318,23 @@ const Cart = () => {
                 useNativeDriver: true,
             })
         ]).start();
+
+        // Cleanup function to handle any potential back handlers
+        return () => {
+            try {
+                // Stop any running animations
+                fadeAnim.stopAnimation();
+                scaleAnim.stopAnimation();
+                slideAnim.stopAnimation();
+                
+                // Reset animation values
+                fadeAnim.setValue(0);
+                scaleAnim.setValue(0.9);
+                slideAnim.setValue(50);
+            } catch (error) {
+                console.log('Animation cleanup error:', error);
+            }
+        };
     }, []);
 
     const onRefresh = async () => {
