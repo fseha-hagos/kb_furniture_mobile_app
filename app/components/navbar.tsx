@@ -105,6 +105,16 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
     router.push("/cart")
   }
 
+  const handleBackPress = () => {
+    try {
+      router.replace("/home")
+    } catch (error) {
+      console.log('Back navigation error:', error);
+      // Final fallback
+      router.push("/home")
+    }
+  };
+
   const handleSearch = (text: string) => {
     setSearchText(text);
     if (onSearch) {
@@ -163,7 +173,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
         {showBack ? (
           <TouchableOpacity 
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={handleBackPress}
           >
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
