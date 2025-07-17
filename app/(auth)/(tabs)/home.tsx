@@ -2,8 +2,6 @@ import { CATEGORY_DATA, PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
 import { categoriesType, productsType, slidesType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { useNavigation, useRouter } from 'expo-router';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -135,8 +133,7 @@ const HomeSkeleton = () => {
 
 const Layout = () => {
   const pageSize = 6;
-  const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
-  const router = useRouter();
+  
   const [selectedCategory, setSelectedCategory] = React.useState<categoriesType | null>(null);
   const [sliderList, setSliderList] = useState<slidesType[]>([]);
   const [categoryList, setCategoryList] = useState<DocumentData[]>([]);
@@ -546,6 +543,7 @@ useEffect(() => {
           {searchLoading ? (
             <ProductsSkeleton />
           ) : (
+          
             <FlatList
               data={searchResults}
               renderItem={({item}) => (
@@ -579,11 +577,11 @@ useEffect(() => {
                   ...categoryList
                 ]} 
                 renderItem={({item,index}) =>(
+                
                   <CategoryCardView 
                     item={item as categoriesType}
                     selectedCategory={selectedCategory}
                     onSelect={item => {handleOnCategoryChanged(item)}}
-                    index={index}
                   />
                 )} 
                 keyExtractor={(item, index) => item.categoryId?.toString() || "cat-" + index.toString()}
@@ -608,6 +606,7 @@ useEffect(() => {
             />
           </View>
 
+          
           {isProductsLoading ? 
             <ProductsSkeleton /> 
             :
@@ -625,7 +624,7 @@ useEffect(() => {
               renderItem={({item, index}) => (
 
                 <ProductCards 
-                  item={item}
+                  item={item as productsType}
                 />
               )} 
               keyExtractor={(item, index) => item.productId?.toString() || "pro-" +index.toString()}
@@ -667,9 +666,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   categoriesContainer: {
-    marginBottom: 0,
     paddingHorizontal: 4,
     minHeight: 100,
+   
   },
   scrollInnerContainer: {
     paddingBottom: 120,
