@@ -1,19 +1,17 @@
 //import liraries
 import { productsType } from '@/types/type';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/cartContext';
 
 
 interface props {
     item : productsType,
-  
-   // handleLiked: (items: myProductsFromDatabasePeopsWithId)=> void;
-    //handleLiked: (items: {id: number,name: string, price: number, image: number, color: string, isNew: boolean, isLiked: boolean, rating: number, colors: string[], description: string})=> void;
-}
+  }
  
 const ProductCards = ({ item }: props) => {
    
@@ -98,14 +96,18 @@ const ProductCards = ({ item }: props) => {
              onPressOut={handlePressOut}
              activeOpacity={0.9}
            > 
-             <View style={styles.imageContainer}>
-               <Image 
-                 source={{uri: item.images[0]}} 
-                 style={styles.coverImage}
-              
-                 onError={(error) => console.log('Image loading error:', error)}
+             <View style={styles.proImageContainer}>
+               <Image
+                 source={{uri: item.images[1]}} 
+                 style={styles.proCoverImage}
+                 contentFit='cover'
+                  priority="high"
+                  cachePolicy="memory-disk"
+                  transition={300} // Optional smooth fade
+                  placeholder={require("@/assets/logo/kb-furniture-high-resolution-logo-transparent.png")}
+                  onError={(error) => console.log('Image loading error:', error)}
                  onLoad={() => console.log('Image loaded successfully')}
-               /> 
+                /> 
                <LinearGradient
                  colors={['transparent', 'rgba(0,0,0,0.3)']}
                  style={styles.imageOverlay}
@@ -180,11 +182,11 @@ const styles = StyleSheet.create({
        overflow: 'hidden',
        backgroundColor: '#FFFFFF',
     },
-    imageContainer: {
+    proImageContainer: {
        position: 'relative',
        height: 200,
     },
-    coverImage: { 
+    proCoverImage: { 
         height: 200,    
         width: '100%',
         borderRadius: 8,
