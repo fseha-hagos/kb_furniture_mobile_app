@@ -1,20 +1,19 @@
 //import liraries
 import { categoriesType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import React from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const { width } = Dimensions.get('window');
 
 interface prop {
-    index: number,
     item : categoriesType,
     selectedCategory: categoriesType | null,
     onSelect: (item: categoriesType)=> void,
 }
 
 // create a component
-const CategoryCardView = ({index, item, selectedCategory, onSelect}: prop) => {
+const CategoryCardView = ({ item, selectedCategory, onSelect}: prop) => {
     const isSelected = selectedCategory?.categoryId === item.categoryId;
 
     const handlePress = () => {
@@ -34,16 +33,28 @@ const CategoryCardView = ({index, item, selectedCategory, onSelect}: prop) => {
                 ]}
                 activeOpacity={0.7}
             >
-                <View style={styles.imageContainer}>
+                <View style={styles.catImageContainer}>
                                             {item.categoryId !== 'all' ? (
                             <View style={styles.imageWrapper}>
                                 <Image
-                                    source={{uri: item.image}} 
-                                    style={styles.coverImage}
-                                    resizeMode="cover"
+                                    
+                                    source={{ uri: item.image }}
+                                    style={styles.catCoverImage}
+                                    cachePolicy="memory-disk"
+                                    transition={300} // Optional smooth fade
+                                    priority="high"
+                                    placeholder={require("@/assets/logo/kb-furniture-high-resolution-logo-transparent.png")}
                                     onError={(error) => console.log('Category image error:', error)}
                                     onLoad={() => console.log('Category image loaded')}
-                                />
+                                 
+                                    />
+                                {/* <Image
+                                    source={{uri: item.image}} 
+                                    style={styles.catCoverImage}
+                                    // resizeMode="cover"
+                                    // onError={(error) => console.log('Category image error:', error)}
+                                    // onLoad={() => console.log('Category image loaded')}
+                                /> */}
                             </View>
                     ) : (
                         <View style={[
@@ -106,7 +117,7 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 2,
     },
-    imageContainer: {
+    catImageContainer: {
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 8,
@@ -115,7 +126,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         overflow: 'hidden',
     },
-    coverImage: { 
+    catCoverImage: { 
         height: 40,
         width: 60,
         borderRadius: 6,
