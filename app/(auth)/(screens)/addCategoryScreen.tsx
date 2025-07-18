@@ -1,4 +1,5 @@
 import Navbar from '@/app/components/navbar';
+import { RequireAdmin } from '@/app/components/RequireAdmin';
 import { CATEGORY_DATA } from '@/constants/configurations';
 import { db, storage } from '@/firebaseConfig';
 import { categoriesType } from '@/types/type';
@@ -10,8 +11,9 @@ import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import NetworkError from '../../components/NetworkError';
+import { useUserRole } from '../../hooks/useUserRole';
 
-const AddCategoryScreen = () => {
+const AddCategoryContent = () => {
   const [categoryId, setCategoryId] = useState('');
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
@@ -24,6 +26,7 @@ const AddCategoryScreen = () => {
   const [selectedParentName, setSelectedParentName] = useState('');
   const [progress, setProgress] = useState(0);
   const router = useRouter();
+  const { role } = useUserRole();
 
   // Generate unique category ID
   const generateCategoryId = () => {
@@ -176,9 +179,11 @@ const AddCategoryScreen = () => {
         <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
         <Text style={styles.successText}>Category Added Successfully!</Text>
         <View style={styles.successButtonsContainer}>
-          <TouchableOpacity style={styles.successButton} onPress={() => setSuccess(false)}>
-            <Text style={styles.successButtonText}>Add Another</Text>
-          </TouchableOpacity>
+          {role === 'admin' && (
+            <TouchableOpacity style={styles.successButton} onPress={() => setSuccess(false)}>
+              <Text style={styles.successButtonText}>Add Another</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={[styles.successButton, styles.homeButton]} onPress={() => router.push("/(auth)/(tabs)/home")}>
             <Text style={styles.successButtonText}>Go to Home</Text>
           </TouchableOpacity>
@@ -248,13 +253,15 @@ const AddCategoryScreen = () => {
       </View>
 
       {/* Submit Button */}
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
-        onPress={handleSubmit}
-        disabled={loading}
-      >
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Add Category</Text>}
-      </TouchableOpacity>
+      {role === 'admin' && (
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Add Category</Text>}
+        </TouchableOpacity>
+      )}
 
       
 
@@ -298,6 +305,14 @@ const AddCategoryScreen = () => {
   );
 };
 
+
+export default function AddCategoryScreen() {
+  return (
+    <RequireAdmin>
+      <AddCategoryContent />
+    </RequireAdmin>
+  );
+} 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -479,4 +494,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddCategoryScreen;
+

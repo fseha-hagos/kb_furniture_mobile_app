@@ -8,11 +8,13 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 
 import Navbar from '@/app/components/navbar';
+import { RequireAdmin } from '@/app/components/RequireAdmin';
 import { categoriesType, PRODUCT_COLORS, productsType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Switch } from 'react-native';
 import * as Yup from 'yup';
+import { useUserRole } from '../../hooks/useUserRole';
 
 
 interface myErrorProps {
@@ -75,7 +77,7 @@ const validationSchema = Yup.object().shape({
 });
 
 // create a component
-const AddPostScreen = () => {
+const AddPostContent = () => {
   const [selectedImageFiles, setSelectedImageFiles] = useState<ImageFileProps[]>([]);
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [categoryList, setCategoryList] = useState<categoriesType[]>([]);
@@ -86,6 +88,7 @@ const AddPostScreen = () => {
   const [name, setName] = useState('');
   // const navigation = useNavigation();
   const router = useRouter();
+  const { role } = useUserRole();
 
   useEffect(() => {
     getCategoryList();
@@ -265,7 +268,7 @@ const AddPostScreen = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-          innerRef={formikRef}
+          ref={formikRef}
         >
           {({ handleChange, handleSubmit, values, errors, touched, setFieldValue }) => (
             <View style={styles.formContainer}>
@@ -287,7 +290,7 @@ const AddPostScreen = () => {
                 </View>
               )}
 
-              {showSuccess && (
+              {showSuccess && role === 'admin' && (
                 <View style={styles.successOverlay}>
                   <View style={styles.successContent}>
                     <Ionicons name="checkmark-circle" size={150} color="#4CAF50" />
@@ -556,21 +559,22 @@ const AddPostScreen = () => {
                 </View>
               </View>
 
-              {/* Submit Button */}
-              <TouchableOpacity
-                style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-                onPress={() => handleSubmit()}
-                disabled={loading}
-              >
-                {loading ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator color="white" />
-                    <Text style={styles.loadingText}>Adding Product...</Text>
-                  </View>
-                ) : (
-                  <Text style={styles.submitButtonText}>Add Product</Text>
-                )}
-              </TouchableOpacity>
+              {role === 'admin' && (
+                <TouchableOpacity
+                  style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+                  onPress={() => handleSubmit()}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <View style={styles.loadingContainer}>
+                      <ActivityIndicator color="white" />
+                      <Text style={styles.loadingText}>Adding Product...</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.submitButtonText}>Add Product</Text>
+                  )}
+                </TouchableOpacity>
+              )}
             </View>
           )}
         </Formik>
@@ -579,6 +583,15 @@ const AddPostScreen = () => {
   );
 };
 
+
+
+export default function AddPostScreen() {
+  return (
+    <RequireAdmin>
+      <AddPostContent />
+    </RequireAdmin>
+  );
+} 
 
 
 
@@ -887,5 +900,3 @@ const styles = StyleSheet.create({
   },
 });
 
-//make this component available to the app
-export default AddPostScreen;
