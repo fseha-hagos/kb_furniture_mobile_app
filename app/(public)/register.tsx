@@ -1,5 +1,7 @@
-import { useSignUp } from '@clerk/clerk-expo';
-import { Link, Stack, useNavigation, useRouter } from 'expo-router';
+import { useSignIn, useSignUp } from '@clerk/clerk-expo';
+import { Ionicons } from '@expo/vector-icons';
+import * as AuthSession from 'expo-auth-session';
+import { Link, Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Keyboard, KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -12,46 +14,41 @@ const Register = () => {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+ 
+  const { signIn } = useSignIn();
 
-  const navigation = useNavigation();
-  // Create the user and send the verification email
   const onSignUpPress = async () => {
     if (!isLoaded) {
       return;
     }
     setLoading(true);
-
+    setError('');
     try {
-      // Create the user on Clerk
       await signUp.create({
         emailAddress,
         password,
       });
-
-      // Send verification Email
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-
-      // change the UI to verify the email address
       setPendingVerification(true);
     } catch (err: any) {
-      alert(err.errors[0].message);
+      setError(err.errors[0].message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Verify the email address
   const onPressVerify = async () => {
     if (!isLoaded) {
       return;
     }
     setLoading(true);
-
+    setError('');
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
-
       if (completeSignUp.status === 'complete') {
         await setActive({ session: completeSignUp.createdSessionId });
         router.replace('/');
@@ -59,129 +56,268 @@ const Register = () => {
         console.error(JSON.stringify(completeSignUp, null, 2));
       }
     } catch (err: any) {
-      alert(err.errors[0].message);
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
+      setError(err.errors[0].message);
       console.error(JSON.stringify(err, null, 2));
-    }
-      finally {
+    } finally {
       setLoading(false);
+    }
+  };
+
+  const onGoogleSignIn = async () => {
+    try {
+      if (!signIn) return;
+      const redirectUrl = AuthSession.makeRedirectUri();
+      await signIn.create({ strategy: 'oauth_google', redirectUrl });
+    } catch (err: any) {
+      setError(err.errors[0].message);
     }
   };
 
   return (
     <View style={styles.container}>
-   
       <Stack.Screen options={{ headerBackVisible: !pendingVerification }} />
       <Spinner visible={loading} />
-
       {!pendingVerification && (
         <>
-        
-        <View style={{paddingLeft: 19, paddingRight: 19}}>
-      <Image style={{width: "100%", height: 180, marginBottom:20}} source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')} resizeMode='center' />
-    
-      </View>
-        <KeyboardAvoidingView
-  style={styles.contentContainer}
->
-           <Text style={styles.title}>Create Your Account</Text>
-          <Text style={styles.subTitle}>sign up and don't miss any think that can make your home stunning.</Text>
-          <TextInput autoCapitalize="none" placeholder="...@gmail.com" value={emailAddress}  onPressIn={Keyboard.dismiss} onChangeText={setEmailAddress} style={styles.inputField} />
-          <TextInput placeholder="password" value={password} onPressIn={Keyboard.dismiss} onChangeText={setPassword} secureTextEntry style={styles.inputField} />
-          <TouchableOpacity  onPress={onSignUpPress} style={styles.button}><Text style={{fontSize:17, color:"white"}}>Sing up</Text></TouchableOpacity>
-         
-          <View style={styles.signinContainer}>
-
-          <View style={{display: 'flex', flexDirection : "row", marginTop:20}}>
-          <Text>Already have an account?</Text>
-          <Link href="/login" asChild>
-          
-        <Pressable >
-         <Text style={styles.signin}>Sign in</Text>
-        </Pressable>
-      </Link>
-      </View>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logo} source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')} resizeMode='center' />
           </View>
-          
+          <KeyboardAvoidingView style={styles.contentContainer}>
+            <View style={styles.formBox}>
+              <Text style={styles.title}>Create Your Account</Text>
+              <Text style={styles.subTitle}>Sign up and don't miss anything that can make your home stunning.</Text>
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="mail-outline" size={20} color="#00685C" style={styles.inputIcon} />
+                <TextInput
+                  autoCapitalize="none"
+                  placeholder="...@gmail.com"
+                  value={emailAddress}
+                  onChangeText={setEmailAddress}
+                  style={styles.inputField}
+                  keyboardType="email-address"
+                  placeholderTextColor="#aaa"
+                  onPressIn={Keyboard.dismiss}
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="lock-closed-outline" size={20} color="#00685C" style={styles.inputIcon} />
+                <TextInput
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  style={styles.inputField}
+                  placeholderTextColor="#aaa"
+                  onPressIn={Keyboard.dismiss}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                  <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#00685C" />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity onPress={onSignUpPress} style={styles.button} disabled={loading}>
+                <Text style={{ fontSize: 17, color: 'white' }}>Sign up</Text>
+              </TouchableOpacity>
+              <View style={styles.dividerRow}>
+                <View style={styles.divider} />
+                <Text style={styles.orText}>or</Text>
+                <View style={styles.divider} />
+              </View>
+              {/* Social login buttons can go here */}
+              <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 10 }}>
+                <TouchableOpacity
+                  style={[styles.socialBtn, { backgroundColor: '#fff', borderColor: '#4285F4' }]}
+                  onPress={onGoogleSignIn}
+                >
+                  <Ionicons name="logo-google" size={22} color="#4285F4" />
+                  <Text style={styles.socialBtnText}>Continue with Google</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.signinContainer}>
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
+                  <Text>Already have an account?</Text>
+                  <Link href="/login" asChild>
+                    <Pressable>
+                      <Text style={styles.signin}> Sign in</Text>
+                    </Pressable>
+                  </Link>
+                </View>
+                {/* <TouchableOpacity style={styles.backHomeBtn} onPress={() => navigation.navigate('home' as never)}>
+                  <Ionicons name="arrow-back" size={18} color="#00685C" />
+                  <Text style={styles.backHomeText}>Back to Home</Text>
+                </TouchableOpacity> */}
+              </View>
+            </View>
           </KeyboardAvoidingView>
         </>
       )}
-
       {pendingVerification && (
         <>
-          <View>
-            <TextInput value={code} placeholder="Code..." style={styles.inputField} onChangeText={(code) => setCode(code)} />
+          <View style={styles.logoContainer}>
+            <Image style={styles.logo} source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')} resizeMode='center' />
           </View>
-          <TouchableOpacity  onPress={onPressVerify} style={styles.button}><Text style={{fontSize:17, color:"white"}}>Verify Email</Text></TouchableOpacity>
-           </>
+          <View style={styles.formBox}>
+            <Text style={styles.title}>Verify Your Email</Text>
+            <Text style={styles.subTitle}>Enter the code sent to your email address.</Text>
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            <TextInput
+              value={code}
+              placeholder="Verification Code..."
+              style={styles.inputField}
+              onChangeText={setCode}
+              keyboardType="number-pad"
+              placeholderTextColor="#aaa"
+            />
+            <TouchableOpacity onPress={onPressVerify} style={styles.button} disabled={loading}>
+              <Text style={{ fontSize: 17, color: 'white' }}>Verify Email</Text>
+            </TouchableOpacity>
+            {/* <TouchableOpacity style={styles.backHomeBtn} onPress={() => navigation.navigate('home' as never)}>
+              <Ionicons name="arrow-back" size={18} color="#00685C" />
+              <Text style={styles.backHomeText}>Back to Home</Text>
+            </TouchableOpacity> */}
+          </View>
+        </>
       )}
-    
     </View>
-
-
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F7F7F7',
+    justifyContent: 'center',
   },
-  contentContainer :{
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  logo: {
+    width: '100%',
+    height: 110,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  formBox: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
     marginTop: 10,
-    padding: 20,
-   flex: 1,
-   justifyContent: "center",
-   overflow: "scroll",
-   borderTopWidth: 2,
-   borderLeftWidth: 2,
-   borderRightWidth: 2,
-   borderColor: "rgba(0,0,0,0.3)",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20
   },
-  title : {
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "600",
+  title: {
+    textAlign: 'center',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 4,
   },
-  subTitle : {
-    marginTop: 0,
-    marginBottom: 15,
-    padding: 10,
-    textAlign: "center",
-    color : "rgba(0,0,0,0.7)"
+  subTitle: {
+    marginBottom: 18,
+    textAlign: 'center',
+    color: 'rgba(0,0,0,0.7)',
+    fontSize: 15,
+  },
+  errorText: {
+    color: '#DC3545',
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '500',
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 14,
+    marginBottom: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  inputIcon: {
+    marginRight: 6,
   },
   inputField: {
-    marginVertical: 8,
-    height: 47,
-    borderWidth: 1,
-    borderColor: '#00685C',
-    borderRadius: 18,
-    padding: 10,
-    backgroundColor: '#fff',
+    flex: 1,
+    height: 48,
+    fontSize: 16,
+    color: '#222',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  eyeIcon: {
+    padding: 4,
   },
   button: {
-    marginTop: 12,
-    backgroundColor: "#00685C",
-    alignItems: "center",
-    justifyContent: "center",
-   
+    marginTop: 8,
+    backgroundColor: '#00685C',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 13,
     borderRadius: 18,
+    marginBottom: 10,
   },
-  signinContainer : {
-   alignItems: "center",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 15
-   
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
   },
-  signin : {
-    color: "#00685C",
-    fontStyle: 'italic'
-  }
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+  },
+  orText: {
+    marginHorizontal: 8,
+    color: '#888',
+    fontWeight: '500',
+  },
+  signinContainer: {
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  signin: {
+    color: '#00685C',
+    fontWeight: 'bold',
+    marginLeft: 4,
+  },
+  backHomeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 18,
+    padding: 8,
+  },
+  backHomeText: {
+    color: '#00685C',
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  socialBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: 6,
+    marginBottom: 4,
+  },
+  socialBtnText: {
+    marginLeft: 8,
+    fontWeight: '600',
+    color: '#222',
+    fontSize: 15,
+  },
 });
 
 export default Register;

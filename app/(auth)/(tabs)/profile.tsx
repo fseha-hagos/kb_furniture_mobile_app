@@ -1,4 +1,4 @@
-import { useClerk, useUser } from '@clerk/clerk-expo';
+import { useAuth, useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation, useRouter } from 'expo-router';
@@ -7,7 +7,8 @@ import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } 
 import CacheManager from '../../components/CacheManager';
 import CacheStatusIndicator from '../../components/CacheStatusIndicator';
 import Navbar from '../../components/navbar';
-import { useAuth } from '../../context/cartContext';
+import { useAuth as useCartAuth } from '../../context/cartContext';
+import { useUserRole } from '../../hooks/useUserRole';
 
 interface ProductStackParamList {
   addpost: { item: null };
@@ -18,13 +19,15 @@ const ACTIONS = [
     key: 'addProduct',
     label: 'Add Product',
     icon: 'add-circle-outline',
-    onPress: (router: any) => router.push('/addPostScreen'),
+    onPress: (router: any) => router.push('(screens)/addPostScreen'),
+    adminOnly: true,
   },
   {
     key: 'addCategory',
     label: 'Add Category',
     icon: 'folder-open',
-    onPress: (router: any) => router.push('/addCategoryScreen'),
+    onPress: (router: any) => router.push('(screens)/addCategoryScreen'),
+    adminOnly: true,
   },
   {
     key: 'favorites',
@@ -55,10 +58,12 @@ const ACTIONS = [
 const Profile = () => {
   const { signOut } = useClerk();
   const { user } = useUser();
+  const { isSignedIn } = useAuth();
   const router = useRouter();
   const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
   const [showCacheManager, setShowCacheManager] = useState(false);
-  const { refreshCart } = useAuth();
+  const { refreshCart } = useCartAuth();
+  const { role } = useUserRole();
 
   // Contact/social handlers
   const call = () => Linking.openURL('tel:+251948491265');
@@ -66,6 +71,12 @@ const Profile = () => {
   const facebook = () => Linking.openURL('https://facebook.com/');
   const insta = () => Linking.openURL('https://t.me/+251962588731/');
   const tiktok = () => Linking.openURL('https://t.me/+251962588731/');
+
+  // Filter actions based on role
+  const filteredActions = ACTIONS.filter(action => {
+    if (action.adminOnly && role !== 'admin') return false;
+    return true;
+  });
 
   return (
     <View style={styles.container}>
@@ -77,22 +88,49 @@ const Profile = () => {
             source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')}
             style={styles.profileImg}
           />
-          <Text style={styles.profileName}>{user?.firstName || 'User'} {user?.lastName || ''}</Text>
-          <Text style={styles.profilePhone} onPress={call}>+251948491265</Text>
-          <View style={styles.socialRow}>
-            <TouchableOpacity style={styles.socialIcon} onPress={facebook}>
-              <Image source={require('@/assets/logo/fb.png')} style={styles.iconImg} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialIcon} onPress={telegram}>
-              <Image source={require('@/assets/logo/telegram.png')} style={styles.iconImg} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialIcon} onPress={insta}>
-              <Image source={require('@/assets/logo/insta.png')} style={styles.iconImg} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialIcon} onPress={tiktok}>
-              <Image source={require('@/assets/logo/google.png')} style={styles.iconImg} />
-            </TouchableOpacity>
-          </View>
+          {isSignedIn ? (
+            <>
+              <Text style={styles.profileName}>{user?.firstName || 'User'} {user?.lastName || ''}</Text>
+              <Text style={styles.profilePhone} onPress={call}>+251948491265</Text>
+              <View style={styles.socialRow}>
+                <TouchableOpacity style={styles.socialIcon} onPress={facebook}>
+                  <Image source={require('@/assets/logo/fb.png')} style={styles.iconImg} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIcon} onPress={telegram}>
+                  <Image source={require('@/assets/logo/telegram.png')} style={styles.iconImg} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIcon} onPress={insta}>
+                  <Image source={require('@/assets/logo/insta.png')} style={styles.iconImg} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIcon} onPress={tiktok}>
+                  <Image source={require('@/assets/logo/google.png')} style={styles.iconImg} />
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={styles.profileName}>Welcome, Guest!</Text>
+              <Text style={styles.profilePhone}>Sign in to view your profile info</Text>
+              <View style={styles.authButtonRow}>
+                <TouchableOpacity
+                  style={[styles.authButton, styles.signInButton]}
+                  onPress={() => router.push('/login')}
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name="log-in-outline" size={20} color="#fff" style={styles.authButtonIcon} />
+                  <Text style={styles.authButtonText}>Sign In</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.authButton, styles.signUpButton]}
+                  onPress={() => router.push('/register')}
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name="person-add-outline" size={20} color="#fff" style={styles.authButtonIcon} />
+                  <Text style={styles.authButtonText}>Sign Up</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
         </View>
 
         {/* Cache Status Indicator */}
@@ -101,32 +139,34 @@ const Profile = () => {
         </View>
 
         {/* Action List */}
-        <View style={styles.actionList}>
-          {ACTIONS.map((action, idx) => (
-            <React.Fragment key={action.key}>
-              <TouchableOpacity
-                style={styles.actionRow}
-                onPress={() => action.onPress(router, setShowCacheManager)}
-                activeOpacity={0.7}
-              >
-                <Ionicons name={action.icon as any} size={22} color="#00685C" style={styles.actionIcon} />
-                <Text style={styles.actionLabel}>{action.label}</Text>
-                <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
-              </TouchableOpacity>
-              {idx < ACTIONS.length - 1 && <View style={styles.divider} />}
-            </React.Fragment>
-          ))}
-          {/* Logout row, accent color */}
-          <TouchableOpacity
-            style={[styles.actionRow, styles.logoutRow]}
-            onPress={async () => { await signOut(); }}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="log-out-outline" size={22} color="#DC3545" style={styles.actionIcon} />
-            <Text style={[styles.actionLabel, { color: '#DC3545' }]}>Logout</Text>
-            <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
-          </TouchableOpacity>
-        </View>
+        {isSignedIn && (
+          <View style={styles.actionList}>
+            {filteredActions.map((action, idx) => (
+              <React.Fragment key={action.key}>
+                <TouchableOpacity
+                  style={styles.actionRow}
+                  onPress={() => action.onPress(router, setShowCacheManager)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name={action.icon as any} size={22} color="#00685C" style={styles.actionIcon} />
+                  <Text style={styles.actionLabel}>{action.label}</Text>
+                  <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
+                </TouchableOpacity>
+                {idx < filteredActions.length - 1 && <View style={styles.divider} />}
+              </React.Fragment>
+            ))}
+            {/* Logout row, accent color */}
+            <TouchableOpacity
+              style={[styles.actionRow, styles.logoutRow]}
+              onPress={async () => { await signOut(); }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="log-out-outline" size={22} color="#DC3545" style={styles.actionIcon} />
+              <Text style={[styles.actionLabel, { color: '#DC3545' }]}>Logout</Text>
+              <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
       {/* Cache Manager Modal */}
       <CacheManager
@@ -145,6 +185,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F7F7F7',
+    paddingBottom: 40,
   },
   scrollContent: {
     paddingBottom: 40,
@@ -245,6 +286,39 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
+  },
+  authButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 14,
+    gap: 12,
+  },
+  authButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+    marginHorizontal: 4,
+  },
+  signInButton: {
+    backgroundColor: '#00685C',
+  },
+  signUpButton: {
+    backgroundColor: '#00897B',
+  },
+  authButtonIcon: {
+    marginRight: 8,
+  },
+  authButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 
