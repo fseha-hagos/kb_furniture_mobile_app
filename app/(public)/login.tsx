@@ -6,6 +6,7 @@ import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Toast from 'react-native-toast-message';
 
 const Login = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -28,8 +29,19 @@ const Login = () => {
         password,
       });
       await setActive({ session: completeSignIn.createdSessionId });
-    } catch (err: any) {
+      Toast.show({
+        type: 'success',
+        text1: "You have logged in successfuly",
+        text2: "logged in"
+    })
+    } catch (err: any) 
+    { Toast.show({
+      type: 'error',
+      text1: err.errors[0].message,
+      text2: err.errors[0].message
+  })
       setError(err.errors[0].message);
+
     } finally {
       setLoading(false);
     }

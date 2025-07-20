@@ -5,12 +5,64 @@ import * as SecureStore from 'expo-secure-store';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import NetworkError from './components/NetworkError';
 import { AuthProvider } from './context/cartContext';
 import { ProductProvider } from './context/productContext';
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 // const Tab = createBottomTabNavigator();
+
+const toastConfig = {
+  success: (props: any) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: "green", borderRadius: 10 }}
+      contentContainerStyle={{ paddingHorizontal: 15, borderRadius: 10 }}
+      text1Style={{
+        fontSize: 17,
+        fontFamily: "mon-sb",
+      }}
+      text2Style={{
+        fontSize: 15,
+        fontFamily: "mon",
+        fontWeight: "500",
+      }}
+    />
+  ),
+  info: (props: any) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: "#4287f5", borderRadius: 10 }}
+      contentContainerStyle={{ paddingHorizontal: 15, borderRadius: 10 }}
+      text1Style={{
+        fontSize: 17,
+        fontFamily: "mon-sb",
+      }}
+      text2Style={{
+        fontSize: 15,
+        fontFamily: "mon",
+        fontWeight: "500",
+      }}
+    />
+  ),
+  error: (props: any) => (
+    <ErrorToast
+      {...props}
+      style={{ borderLeftColor: "red", borderRadius: 10 }}
+      contentContainerStyle={{ paddingHorizontal: 15, borderRadius: 10 }}
+      text1Style={{
+        fontSize: 17,
+        fontFamily: "Jakarta-Bold",
+      }}
+      text2Style={{
+        fontSize: 15,
+        fontFamily: "Jakarta-Bold",
+        fontWeight: "500",
+      }}
+    />
+  ),
+};
 
 const InitialLayout = () => {
  const { isLoaded, isSignedIn } = useAuth();
@@ -133,6 +185,7 @@ const RootLayout = () => {
           <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>  
             <ProductProvider>
               <InitialLayout />
+              <Toast config={toastConfig} />
             </ProductProvider>
           </ClerkProvider>
         </AuthProvider>
