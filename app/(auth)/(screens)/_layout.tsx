@@ -17,7 +17,7 @@ const Layout = () => {
         <Stack.Screen name="itemList" options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="cupens" options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="termsAndConditions" options={{ headerShown: false }}></Stack.Screen>
-        {/* <Stack.Screen name="TermsAndConditions" options={{ headerShown: false }}></Stack.Screen> */}
+        <Stack.Screen name="support" options={{ headerShown: false }}></Stack.Screen>
        
       </Stack>
     

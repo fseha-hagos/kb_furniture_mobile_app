@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import NetworkError from './components/NetworkError';
 import { AuthProvider } from './context/cartContext';
+import { NetworkProvider, useNetwork } from './context/networkContext';
 import { ProductProvider } from './context/productContext';
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -168,6 +169,42 @@ class GlobalErrorBoundary extends React.Component<
   }
 }
 
+// Network-aware wrapper for the app
+const NetworkAwareApp: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isConnected } = useNetwork();
+  const [hasEverConnected, setHasEverConnected] = React.useState(false);
+  const [showToast, setShowToast] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isConnected) {
+      setHasEverConnected(true);
+      setShowToast(false);
+      Toast.hide();
+    } else if (isConnected === false) {
+      if (hasEverConnected) {
+        setShowToast(true);
+        Toast.show({
+          type: 'error',
+          text1: 'Network Unavailable',
+          text2: 'You are offline. Some features may not work.',
+          position: 'top',
+          autoHide: false,
+        });
+      }
+    }
+  }, [isConnected]);
+
+  // Only show full screen error if the app has never been online
+  if (isConnected === false && !hasEverConnected) {
+    return (
+      <View style={{ flex: 1 }}>
+        <NetworkError onRetry={() => {}} message="No internet connection. Please check your network." showReloadOption={false} />
+      </View>
+    );
+  }
+  return <>{children}</>;
+};
+
 const RootLayout = () => {
   const colorScheme = useColorScheme();
   const router = useRouter();
@@ -181,14 +218,18 @@ const RootLayout = () => {
 // </ImageBackground>
     <GlobalErrorBoundary>
       <SafeAreaProvider>
-        <AuthProvider>
-          <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>  
-            <ProductProvider>
-              <InitialLayout />
-              <Toast config={toastConfig} />
-            </ProductProvider>
-          </ClerkProvider>
-        </AuthProvider>
+        <NetworkProvider>
+          <AuthProvider>
+            <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>  
+              <ProductProvider>
+                <NetworkAwareApp>
+                  <InitialLayout />
+                  <Toast config={toastConfig} />
+                </NetworkAwareApp>
+              </ProductProvider>
+            </ClerkProvider>
+          </AuthProvider>
+        </NetworkProvider>
       </SafeAreaProvider>
     </GlobalErrorBoundary>
   );
