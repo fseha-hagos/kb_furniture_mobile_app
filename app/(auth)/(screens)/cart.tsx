@@ -1,4 +1,4 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import CartCard from '../../components/cartCard';
-import NavBar from '../../components/navbar';
 import { useAuth } from '../../context/cartContext';
 import { useBackHandler } from '../../hooks/useBackHandler';
 
@@ -26,6 +25,91 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F5F5F5',
+    },
+    // Beautiful Navbar Styles
+    navbarContainer: {
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+    },
+    navbarGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 6,
+        paddingTop: 6, // For status bar
+        minHeight: 80,
+    },
+    navbarBackButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        overflow: 'hidden',
+    },
+    backButtonGradient: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 22,
+    },
+    navbarTitleContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 16,
+    },
+    titleIconContainer: {
+        marginRight: 12,
+    },
+    titleIconGradient: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    titleTextContainer: {
+        alignItems: 'center',
+    },
+    navbarTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
+        textShadowColor: 'rgba(0, 0, 0, 0.2)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
+    },
+    navbarSubtitle: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontWeight: '400',
+    },
+    navbarActions: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    navbarActionButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        overflow: 'hidden',
+    },
+    actionButtonGradient: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
     },
     content: {
         flex: 1,
@@ -199,12 +283,11 @@ const styles = StyleSheet.create({
     priceLabel: {
         fontSize: 16,
         color: '#666666',
-        fontWeight: '500',
     },
     priceValue: {
         fontSize: 16,
         color: '#333333',
-        fontWeight: '500',
+        fontWeight: '600',
     },
     totalLabel: {
         fontSize: 18,
@@ -212,32 +295,24 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     totalValue: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 18,
         color: '#00685C',
-    },
-    iconContainer: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: '#F0F0F0',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 16,
+        fontWeight: 'bold',
     },
     cartIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
         backgroundColor: '#00685C',
         justifyContent: 'center',
         alignItems: 'center',
+        position: 'relative',
     },
     cartCount: {
         position: 'absolute',
         top: -5,
         right: -5,
-        backgroundColor: '#FF4444',
+        backgroundColor: '#FF5722',
         borderRadius: 12,
         width: 24,
         height: 24,
@@ -252,31 +327,31 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     sectionContainer: {
-        marginBottom: 16,
-        marginHorizontal: 16,
-        marginTop: 10,
+        paddingHorizontal: 20,
+        paddingVertical: 16,
         backgroundColor: '#FFFFFF',
-        padding: 16,
-        borderRadius: 16,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        borderWidth: 1,
-        borderColor: '#E8E8E8',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E0E0E0',
     },
     sectionTitle: {
         fontSize: 20,
-        fontWeight: '600',
+        fontWeight: 'bold',
         color: '#333333',
         marginBottom: 4,
     },
     sectionSubtitle: {
-        fontSize: 15,
+        fontSize: 14,
         color: '#666666',
-        fontWeight: '500',
-    }
+    },
+    iconContainer: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#F0F8F6',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
 });
 
 const Cart = () => {
@@ -296,6 +371,74 @@ const Cart = () => {
         },
         enabled: true
     });
+
+    // Custom Beautiful Navbar for Cart Page
+    const CartNavbar = () => (
+        <View style={styles.navbarContainer}>
+            <LinearGradient
+                colors={['#00685C', '#00897B', '#26A69A']}
+                style={styles.navbarGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+            >
+                {/* Back Button */}
+                <TouchableOpacity 
+                    style={styles.navbarBackButton}
+                    onPress={() => router.back()}
+                >
+                    <LinearGradient
+                        colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)']}
+                        style={styles.backButtonGradient}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="white" />
+                    </LinearGradient>
+                </TouchableOpacity>
+
+                {/* Title Section */}
+                <View style={styles.navbarTitleContainer}>
+                    <View style={styles.titleIconContainer}>
+                        <LinearGradient
+                            colors={['#FFFFFF', '#F8F9FA']}
+                            style={styles.titleIconGradient}
+                        >
+                            <Ionicons name="cart" size={20} color="#00685C" />
+                        </LinearGradient>
+                    </View>
+                    <View style={styles.titleTextContainer}>
+                        <Text style={styles.navbarTitle}>Shopping Cart</Text>
+                        <Text style={styles.navbarSubtitle}>{carts?.length || 0} items</Text>
+                    </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View style={styles.navbarActions}>
+                    <TouchableOpacity 
+                        style={styles.navbarActionButton}
+                        onPress={() => router.push('/(auth)/(tabs)/home')}
+                    >
+                        <LinearGradient
+                            colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)']}
+                            style={styles.actionButtonGradient}
+                        >
+                            <Ionicons name="home" size={18} color="white" />
+                        </LinearGradient>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                        style={styles.navbarActionButton}
+                        onPress={() => router.push('/(auth)/(tabs)/search')}
+                    >
+                        <LinearGradient
+                            colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)']}
+                            style={styles.actionButtonGradient}
+                        >
+                            <Ionicons name="search" size={18} color="white" />
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
+            </LinearGradient>
+        </View>
+    );
 
     useEffect(() => {
         // Start animations
@@ -356,7 +499,8 @@ const Cart = () => {
     if (!carts || carts.length === 0) {
         return (
             <View style={styles.container}>
-                <NavBar title="My Cart" showBack={true} showSearch={false} />
+                {/* Beautiful Custom Navbar */}
+                <CartNavbar />
                 <Animated.View 
                     style={[
                         styles.emptyContainer,
@@ -392,7 +536,8 @@ const Cart = () => {
 
     return (
         <View style={styles.container}>
-            <NavBar title="Shopping Cart" showBack={true} showSearch={false} />
+            {/* Beautiful Custom Navbar */}
+            <CartNavbar />
          
             <Animated.View 
                 style={[
