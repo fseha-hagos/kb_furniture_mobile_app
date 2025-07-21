@@ -34,13 +34,13 @@ const CategorySkeleton = () => {
   return (
     <View style={styles.categoriesContainer}>
       <SkeletonItem width={100} height={24} style={{ marginBottom: 12 }} />
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        {[1, 2, 3, 4, 5].map((_, index) => (
+      <View style={{ flexDirection: 'row', gap: 12, marginBottom: 8 }}>
+        {[1, 2, 3, 4, 5, 6].map((_, index) => (
           <SkeletonItem 
             key={index} 
-            width={80} 
-            height={80} 
-            style={{ borderRadius: 40 }} 
+            width={70} 
+            height={70} 
+            style={{ borderRadius: 35 }} 
           />
         ))}
       </View>
@@ -62,19 +62,32 @@ const SlidesSkeleton = () => {
 
 const ProductsSkeleton = () => {
   return (
-      <View style={styles.skeletonContainer}>
-          <SkeletonItem width={120} height={24} style={{ marginBottom: 12 }} />
-          <View style={styles.skeletonGrid}>
-            {[1, 2, 3, 4, 5, 6].map((_, index) => (
-              <View key={index} style={styles.skeletonCard}>
-                <SkeletonItem width="100%" height={150} style={{ borderRadius: 8 }} />
-                <SkeletonItem width="80%" height={20} style={{ marginTop: 8 }} />
-                <SkeletonItem width="40%" height={20} style={{ marginTop: 4 }} />
+    <View style={styles.skeletonContainer}>
+      <SkeletonItem width={120} height={24} style={{ marginBottom: 12 }} />
+      <View style={styles.skeletonGrid}>
+        {[1, 2, 3, 4, 5, 6].map((_, index) => (
+          <View key={index} style={styles.skeletonCard}>
+            {/* Image skeleton */}
+            <View style={{ position: 'relative' }}>
+              <SkeletonItem width="100%" height={200} style={{ borderRadius: 8 }} />
+              {/* Like button skeleton */}
+              <View style={{ position: 'absolute', top: 12, right: 12 }}>
+                <SkeletonItem width={36} height={36} style={{ borderRadius: 18, backgroundColor: '#ececec' }} />
               </View>
-            ))}
+            </View>
+            {/* Title skeleton */}
+            <SkeletonItem width="80%" height={14} style={{ marginTop: 12, borderRadius: 4 }} />
+            {/* Description skeleton */}
+            <SkeletonItem width="60%" height={11} style={{ marginTop: 6, borderRadius: 4 }} />
+            {/* Price and rating skeleton */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 8 }}>
+              <SkeletonItem width={50} height={14} style={{ borderRadius: 4 }} />
+              <SkeletonItem width={30} height={14} style={{ borderRadius: 4 }} />
+            </View>
           </View>
-        </View>
-    
+        ))}
+      </View>
+    </View>
   );
 };
 
@@ -88,7 +101,6 @@ const HomeSkeleton = () => {
         refreshControl={
           <RefreshControl refreshing={true} />
         }>
-        
         {/* Slider Skeleton */}
         <View style={styles.skeletonContainer}>
           <SkeletonItem 
@@ -97,35 +109,10 @@ const HomeSkeleton = () => {
             style={{ borderRadius: 12 }} 
           />
         </View>
-
         {/* Categories Skeleton */}
-        <View style={styles.categoriesContainer}>
-          <SkeletonItem width={100} height={24} style={{ marginBottom: 12 }} />
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            {[1, 2, 3, 4, 5].map((_, index) => (
-              <SkeletonItem 
-                key={index} 
-                width={80} 
-                height={80} 
-                style={{ borderRadius: 40 }} 
-              />
-            ))}
-          </View>
-        </View>
-
+        <CategorySkeleton />
         {/* Products Grid Skeleton */}
-        <View style={styles.skeletonContainer}>
-          <SkeletonItem width={120} height={24} style={{ marginBottom: 12 }} />
-          <View style={styles.skeletonGrid}>
-            {[1, 2, 3, 4, 5, 6].map((_, index) => (
-              <View key={index} style={styles.skeletonCard}>
-                <SkeletonItem width="100%" height={150} style={{ borderRadius: 8 }} />
-                <SkeletonItem width="80%" height={20} style={{ marginTop: 8 }} />
-                <SkeletonItem width="40%" height={20} style={{ marginTop: 4 }} />
-              </View>
-            ))}
-          </View>
-        </View>
+        <ProductsSkeleton />
       </ScrollView>
     </View>
   );

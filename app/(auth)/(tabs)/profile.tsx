@@ -4,56 +4,16 @@ import { NavigationProp } from '@react-navigation/native';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import SettingsPage from '../(screens)/settings';
 import CacheManager from '../../components/CacheManager';
-import CacheStatusIndicator from '../../components/CacheStatusIndicator';
 import Navbar from '../../components/navbar';
+import UserDashboard from '../../components/UserDashboard';
 import { useAuth as useCartAuth } from '../../context/cartContext';
 import { useUserRole } from '../../hooks/useUserRole';
 
 interface ProductStackParamList {
   addpost: { item: null };
 }
-
-const ACTIONS = [
-  {
-    key: 'addProduct',
-    label: 'Add Product',
-    icon: 'add-circle-outline',
-    onPress: (router: any) => router.push('(screens)/addPostScreen'),
-    adminOnly: true,
-  },
-  {
-    key: 'addCategory',
-    label: 'Add Category',
-    icon: 'folder-open',
-    onPress: (router: any) => router.push('(screens)/addCategoryScreen'),
-    adminOnly: true,
-  },
-  {
-    key: 'favorites',
-    label: 'My Favorites',
-    icon: 'heart-outline',
-    onPress: (router: any) => router.push('/favorites'),
-  },
-  {
-    key: 'cupens',
-    label: 'My Cupen',
-    icon: 'ticket-outline',
-    onPress: (router: any) => router.push('/cupens'),
-  },
-  {
-    key: 'clearCache',
-    label: 'Clear Cache',
-    icon: 'trash-outline',
-    onPress: (_router: any, setShowCacheManager: any) => setShowCacheManager(true),
-  },
-  {
-    key: 'terms',
-    label: 'Terms and Conditions',
-    icon: 'document-text-outline',
-    onPress: (router: any) => router.push('/termsAndConditions'),
-  },
-];
 
 const Profile = () => {
   const { signOut } = useClerk();
@@ -62,8 +22,30 @@ const Profile = () => {
   const router = useRouter();
   const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
   const [showCacheManager, setShowCacheManager] = useState(false);
-  const { refreshCart } = useCartAuth();
+  const [showDashboard, setShowDashboard] = useState(true);
+  const { refreshCart, likedProducts } = useCartAuth();
   const { role } = useUserRole();
+
+  // Mock data for dashboard
+  const dashboardStats = {
+    ordersCount: 12,
+    favoritesCount: likedProducts?.length || 8,
+    reviewsCount: 5,
+    totalSpent: 2450,
+  };
+
+  const recentOrders = [
+    { id: 'ORD001', status: 'Delivered', date: '2024-01-15', total: 299.99 },
+    { id: 'ORD002', status: 'Shipped', date: '2024-01-10', total: 149.99 },
+    { id: 'ORD003', status: 'Processing', date: '2024-01-08', total: 599.99 },
+  ];
+
+  const personalizedProducts = [
+    { id: '1', name: 'Modern Sofa', price: 899.99 },
+    { id: '2', name: 'Dining Table', price: 449.99 },
+    { id: '3', name: 'Bed Frame', price: 299.99 },
+    { id: '4', name: 'Office Chair', price: 199.99 },
+  ];
 
   // Contact/social handlers
   const call = () => Linking.openURL('tel:+251948491265');
@@ -72,102 +54,99 @@ const Profile = () => {
   const insta = () => Linking.openURL('https://t.me/+251962588731/');
   const tiktok = () => Linking.openURL('https://t.me/+251962588731/');
 
-  // Filter actions based on role
-  const filteredActions = ACTIONS.filter(action => {
-    if (action.adminOnly && role !== 'admin') return false;
-    return true;
-  });
 
   return (
     <View style={styles.container}>
       <Navbar title="Profile" showBack={true} showSearch={false} />
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Profile Info */}
-        <View style={styles.profileCard}>
-          <Image
-            source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')}
-            style={styles.profileImg}
-          />
-          {isSignedIn ? (
-            <>
-              <Text style={styles.profileName}>{user?.firstName || 'User'} {user?.lastName || ''}</Text>
-              <Text style={styles.profilePhone} onPress={call}>+251948491265</Text>
-              <View style={styles.socialRow}>
-                <TouchableOpacity style={styles.socialIcon} onPress={facebook}>
-                  <Image source={require('@/assets/logo/fb.png')} style={styles.iconImg} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.socialIcon} onPress={telegram}>
-                  <Image source={require('@/assets/logo/telegram.png')} style={styles.iconImg} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.socialIcon} onPress={insta}>
-                  <Image source={require('@/assets/logo/insta.png')} style={styles.iconImg} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.socialIcon} onPress={tiktok}>
-                  <Image source={require('@/assets/logo/google.png')} style={styles.iconImg} />
-                </TouchableOpacity>
-              </View>
-            </>
-          ) : (
-            <>
-              <Text style={styles.profileName}>Welcome, Guest!</Text>
-              <Text style={styles.profilePhone}>Sign in to view your profile info</Text>
-              <View style={styles.authButtonRow}>
-                <TouchableOpacity
-                  style={[styles.authButton, styles.signInButton]}
-                  onPress={() => router.push('/login')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="log-in-outline" size={20} color="#fff" style={styles.authButtonIcon} />
-                  <Text style={styles.authButtonText}>Sign In</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.authButton, styles.signUpButton]}
-                  onPress={() => router.push('/register')}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="person-add-outline" size={20} color="#fff" style={styles.authButtonIcon} />
-                  <Text style={styles.authButtonText}>Sign Up</Text>
-                </TouchableOpacity>
-              </View>
-            </>
-          )}
-        </View>
+      
+      {isSignedIn ? (
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Profile Info */}
+          <View style={styles.profileCard}>
+            <Image
+              source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')}
+              style={styles.profileImg}
+            />
+            <Text style={styles.profileName}>{user?.firstName || 'User'} {user?.lastName || ''}</Text>
+            <Text style={styles.profilePhone} onPress={call}>+251948491265</Text>
+            <View style={styles.socialRow}>
+              <TouchableOpacity style={styles.socialIcon} onPress={facebook}>
+                <Image source={require('@/assets/logo/fb.png')} style={styles.iconImg} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.socialIcon} onPress={telegram}>
+                <Image source={require('@/assets/logo/telegram.png')} style={styles.iconImg} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.socialIcon} onPress={insta}>
+                <Image source={require('@/assets/logo/insta.png')} style={styles.iconImg} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.socialIcon} onPress={tiktok}>
+                <Image source={require('@/assets/logo/google.png')} style={styles.iconImg} />
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        {/* Cache Status Indicator */}
-        <View style={styles.cacheStatusContainer}>
-          <CacheStatusIndicator onPress={() => setShowCacheManager(true)} showDetails={true} />
-        </View>
-
-        {/* Action List */}
-        {isSignedIn && (
-          <View style={styles.actionList}>
-            {filteredActions.map((action, idx) => (
-              <React.Fragment key={action.key}>
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={() => action.onPress(router, setShowCacheManager)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name={action.icon as any} size={22} color="#00685C" style={styles.actionIcon} />
-                  <Text style={styles.actionLabel}>{action.label}</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
-                </TouchableOpacity>
-                {idx < filteredActions.length - 1 && <View style={styles.divider} />}
-              </React.Fragment>
-            ))}
-            {/* Logout row, accent color */}
-            <TouchableOpacity
-              style={[styles.actionRow, styles.logoutRow]}
-              onPress={async () => { await signOut(); }}
-              activeOpacity={0.7}
+          {/* Dashboard Toggle */}
+          <View style={styles.dashboardToggle}>
+            <TouchableOpacity 
+              style={[styles.toggleButton, showDashboard && styles.toggleButtonActive]}
+              onPress={() => setShowDashboard(true)}
             >
-              <Ionicons name="log-out-outline" size={22} color="#DC3545" style={styles.actionIcon} />
-              <Text style={[styles.actionLabel, { color: '#DC3545' }]}>Logout</Text>
-              <Ionicons name="chevron-forward" size={20} color="#B0B0B0" style={styles.chevronIcon} />
+              <Text style={[styles.toggleText, showDashboard && styles.toggleTextActive]}>Dashboard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.toggleButton, !showDashboard && styles.toggleButtonActive]}
+              onPress={() => setShowDashboard(false)}
+            >
+              <Text style={[styles.toggleText, !showDashboard && styles.toggleTextActive]}>Settings</Text>
             </TouchableOpacity>
           </View>
-        )}
-      </ScrollView>
+
+          {/* Dashboard View */}
+          {showDashboard ? (
+            <UserDashboard 
+              stats={{
+                ...dashboardStats,
+                ...(role === 'admin' ? { usersCount: 120, pendingOrdersCount: 3 } : {})
+              }}
+              recentOrders={recentOrders}
+              personalizedProducts={personalizedProducts}
+              role={role}
+            />
+          ) : (
+            <>
+            <SettingsPage   />
+            </>
+          )}
+        </ScrollView>
+      ) : (
+        <View style={styles.guestContainer}>
+          <Image
+            source={require('@/assets/logo/kb-furniture-high-resolution-logo-transparent.png')}
+            style={styles.guestLogo}
+          />
+          <Text style={styles.guestTitle}>Welcome, Guest!</Text>
+          <Text style={styles.guestSubtitle}>Sign in to view your profile and manage your account</Text>
+          <View style={styles.authButtonRow}>
+            <TouchableOpacity
+              style={[styles.authButton, styles.signInButton]}
+              onPress={() => router.push('/login')}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="log-in-outline" size={20} color="#fff" style={styles.authButtonIcon} />
+              <Text style={styles.authButtonText}>Sign In</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.authButton, styles.signUpButton]}
+              onPress={() => router.push('/register')}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="person-add-outline" size={20} color="#fff" style={styles.authButtonIcon} />
+              <Text style={styles.authButtonText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
       {/* Cache Manager Modal */}
       <CacheManager
         visible={showCacheManager}
@@ -242,83 +221,130 @@ const styles = StyleSheet.create({
     height: 24,
     resizeMode: 'contain',
   },
+  dashboardToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+    padding: 4,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  toggleButtonActive: {
+    backgroundColor: '#00685C',
+  },
+  toggleText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#666',
+  },
+  toggleTextActive: {
+    color: '#fff',
+  },
   cacheStatusContainer: {
     marginHorizontal: 16,
     marginBottom: 10,
   },
   actionList: {
     backgroundColor: '#fff',
+    marginHorizontal: 10,
     borderRadius: 12,
-    marginHorizontal: 16,
-    paddingVertical: 4,
-    elevation: 1,
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
   },
   actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 18,
-    backgroundColor: 'transparent',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
   },
   actionIcon: {
-    marginRight: 16,
+    marginRight: 15,
   },
   actionLabel: {
-    fontSize: 16,
-    color: '#222',
     flex: 1,
-    fontWeight: '500',
+    fontSize: 16,
+    color: '#333',
   },
   chevronIcon: {
-    marginLeft: 8,
+    marginLeft: 'auto',
   },
   divider: {
     height: 1,
     backgroundColor: '#F0F0F0',
-    marginLeft: 54,
-    marginRight: 0,
+    marginLeft: 57,
   },
   logoutRow: {
-    marginTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
   },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  guestLogo: {
+    width: 200,
+    height: 70,
+    marginBottom: 30,
+    resizeMode: 'contain',
+  },
+  guestTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  guestSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 30,
+    lineHeight: 24,
+  },
   authButtonRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 14,
-    gap: 12,
+    gap: 15,
+    width: '100%',
   },
   authButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    justifyContent: 'center',
+    paddingVertical: 15,
     borderRadius: 10,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 2,
-    marginHorizontal: 4,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   signInButton: {
     backgroundColor: '#00685C',
   },
   signUpButton: {
-    backgroundColor: '#00897B',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#00685C',
+  },
+  authButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
   },
   authButtonIcon: {
     marginRight: 8,
-  },
-  authButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
 });
 
