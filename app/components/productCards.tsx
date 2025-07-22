@@ -98,7 +98,7 @@ const ProductCards = ({ item }: props) => {
            > 
              <View style={styles.proImageContainer}>
                <Image
-                 source={{uri: item.images[1]}} 
+                 source={{uri: item.images[0]}} 
                  style={styles.proCoverImage}
                  contentFit='cover'
                   priority="high"
