@@ -3,16 +3,16 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  Dimensions,
-  Image,
-  Modal,
-  ScrollView,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    Dimensions,
+    Image,
+    Modal,
+    ScrollView,
+    Share,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import NavBar from '../../components/navbar';
@@ -117,19 +117,20 @@ import { useProduct } from '../../context/productContext';
 
 
     useEffect(() => {
+      let isMounted = true;
       const loadData = async () => {
         try {
-          // if(productData.totalPurchase) setTotal(productData.totalPurchase);
           await addToRecentlyViewed(productData);
-          setIsLoading(false);
+          if (isMounted) setIsLoading(false);
         } catch (error) {
-          console.error('Error loading product data:', error);
-          setIsOffline(true);
-          setIsLoading(false);
+          if (isMounted) {
+            setIsOffline(true);
+            setIsLoading(false);
+          }
         }
       };
-      
       loadData();
+      return () => { isMounted = false; };
     },[]);
 
     const handleAddToCart = async (productData:productsType) => {
