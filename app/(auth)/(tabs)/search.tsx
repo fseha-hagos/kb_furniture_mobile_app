@@ -334,7 +334,7 @@ const Search = () => {
       <Navbar 
         title="All Products" 
         showSearch={true} 
-        showBack={true} 
+        showBack={false} 
         onSearch={handleSearch}
       />
       

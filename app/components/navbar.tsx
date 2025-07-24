@@ -193,10 +193,11 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
         
         <TouchableOpacity style={styles.cartIcon} onPress={handleMyCart}>
           <LinearGradient
-            colors={['#FFFFFF', '#F8F9FA']}
+            colors={['#00685C', '#00685C']}
             style={styles.cartGradient}
           >
-            <MaterialCommunityIcons name="cart-outline" size={24} color="#00685C" />
+            {/* <MaterialCommunityIcons name="cart-outline" size={24} color="#00685C" /> */}
+            <MaterialCommunityIcons name="cart-outline" size={24} color="#fff" />
             {carts && carts.length > 0 && (
               <View style={styles.cartCount}>
                 <Text style={styles.cartCountText}>{carts.length}</Text>
@@ -387,15 +388,15 @@ const styles = StyleSheet.create({
   },
   cartCount: {
     position: 'absolute',
-    top: -6,
-    right: -6,
-    backgroundColor: '#FF4444',
+    top: -1,
+    right: -3,
+    backgroundColor: 'red',
     borderRadius: 12,
-    width: 23,
-    height: 23,
+    width: 18,
+    height: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#FFFFFF',
     elevation: 4,
     shadowColor: '#000',
