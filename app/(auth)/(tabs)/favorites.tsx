@@ -1,5 +1,6 @@
 //import liraries
 
+import Navbar from '@/app/components/navbar';
 import ProductCards from '@/app/components/productCards';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -194,26 +195,6 @@ const Favorites = () => {
     </Animated.View>
   );
 
-  const FavoritesHeader = () => (
-    <View style={styles.headerContainer}>
-      <LinearGradient
-        colors={['#00685C', '#00897B']}
-        style={styles.headerGradient}
-      >
-        <View style={styles.headerContent}>
-          <View style={styles.headerLeft}>
-            <Ionicons name="heart" size={24} color="white" />
-            <Text style={styles.headerTitle}>My Favorites</Text>
-          </View>
-          <View style={styles.headerRight}>
-            <Text style={styles.favoritesCount}>{likedProducts?.length || 0}</Text>
-            <Text style={styles.favoritesLabel}>items</Text>
-          </View>
-        </View>
-      </LinearGradient>
-    </View>
-  );
-
   const renderProduct = ({ item, index }: { item: any; index: number }) => (
     <Animated.View
       style={[
@@ -237,29 +218,26 @@ const Favorites = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Navbar title="My Favorites" showSearch={false} showBack={true} /> */}
-      
+      <Navbar title="My Favorites" showSearch={false} showBack={false} />
+      <Text style={styles.simpleTitle}>My Favorites</Text>
       {likedProducts && likedProducts.length > 0 ? (
-        <>
-          <FavoritesHeader />
-          <FlatList
-            data={likedProducts}
-            renderItem={renderProduct}
-            keyExtractor={(item, index) => item.productId || `favorite-${index}`}
-            numColumns={2}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.productsList}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={['#00685C']}
-                tintColor="#00685C"
-              />
-            }
-            ListEmptyComponent={<EmptyFavoritesState />}
-          />
-        </>
+        <FlatList
+          data={likedProducts}
+          renderItem={renderProduct}
+          keyExtractor={(item, index) => item.productId || `favorite-${index}`}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.productsList}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#00685C']}
+              tintColor="#00685C"
+            />
+          }
+          ListEmptyComponent={<EmptyFavoritesState />}
+        />
       ) : (
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
@@ -472,6 +450,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'white',
+  },
+  simpleTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#222',
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 8,
   },
 });
 

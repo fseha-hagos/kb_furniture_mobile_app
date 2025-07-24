@@ -1,3 +1,4 @@
+import FloatingCustomerServiceButton from '@/app/components/FloatingCusSerButton';
 import { CATEGORY_DATA, PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
 import { categoriesType, productsType, slidesType } from '@/types/type';
@@ -523,7 +524,10 @@ useEffect(() => {
         showSearch={true} 
         onSearch={handleSearch}
       />
-      
+      <FloatingCustomerServiceButton onPress={() => {
+        // Navigate to chat screen or open modal
+        // navigation.navigate('CustomerChat');
+      }} />
       {searchQuery ? (
         <>
           {renderSearchState()}

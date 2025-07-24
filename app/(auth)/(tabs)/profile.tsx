@@ -57,7 +57,7 @@ const Profile = () => {
 
   return (
     <View style={styles.container}>
-      <Navbar title="Profile" showBack={true} showSearch={false} />
+      <Navbar title="Profile" showBack={false} showSearch={false} />
       
       {isSignedIn ? (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
