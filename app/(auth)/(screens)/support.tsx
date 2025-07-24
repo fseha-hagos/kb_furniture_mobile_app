@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface FAQItem {
   question: string;
@@ -13,7 +13,7 @@ interface FAQItem {
 const SupportPage = () => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  // Removed: const [searchQuery, setSearchQuery] = useState('');
 
   const categories = [
     { id: 'all', name: 'All', icon: 'help-circle-outline' },
@@ -68,9 +68,10 @@ const SupportPage = () => {
 
   const filteredFAQs = faqs.filter(faq => {
     const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
-    const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    // Removed: const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //                      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    // return matchesCategory && matchesSearch;
+    return matchesCategory;
   });
 
   const handleContact = (method: string) => {
@@ -175,18 +176,7 @@ const SupportPage = () => {
       <SupportNavbar />
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Search Bar */}
-        <View style={styles.searchSection}>
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for help..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
-        </View>
+        {/* Removed Search Bar */}
 
         {/* Contact Options */}
         <View style={styles.contactSection}>

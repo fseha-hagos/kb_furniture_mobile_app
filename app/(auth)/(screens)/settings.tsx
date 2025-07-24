@@ -260,7 +260,7 @@ const SettingsPage = () => {
               icon="information-circle-outline"
               title="About"
               subtitle="App version and information"
-              onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
+              onPress={() => router.push('/(auth)/(screens)/about')}
             />
           </View>
         </View>
