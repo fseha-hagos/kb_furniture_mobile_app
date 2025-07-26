@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Tabs, useRouter } from "expo-router";
@@ -123,7 +124,7 @@ export default function Layout() {
         },
         tabBarBackground: () => (
           <LinearGradient
-            colors={['#00685C', '#00897B']}
+            colors={[Colors.dark.background, Colors.dark.background]}
             style={styles.tabBarBackground}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
