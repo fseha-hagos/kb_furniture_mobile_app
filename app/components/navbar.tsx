@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/Colors';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -165,7 +166,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
   return (
     <View>
       <LinearGradient
-        colors={['#00685C', '#00897B']}
+        colors={[ Colors.dark.background, Colors.dark.background]}
         style={styles.navBar}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -193,7 +194,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
         
         <TouchableOpacity style={styles.cartIcon} onPress={handleMyCart}>
           <LinearGradient
-            colors={['#00685C', '#00685C']}
+            colors={[Colors.dark.background, Colors.dark.background]}
             style={styles.cartGradient}
           >
             {/* <MaterialCommunityIcons name="cart-outline" size={24} color="#00685C" /> */}
