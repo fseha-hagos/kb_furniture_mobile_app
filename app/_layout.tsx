@@ -1,4 +1,3 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -10,6 +9,7 @@ import NetworkError from './components/NetworkError';
 import { AuthProvider } from './context/cartContext';
 import { NetworkProvider, useNetwork } from './context/networkContext';
 import { ProductProvider } from './context/productContext';
+import { ThemeProvider } from './context/themeContext';
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 // const Tab = createBottomTabNavigator();
@@ -206,32 +206,26 @@ const NetworkAwareApp: React.FC<{ children: React.ReactNode }> = ({ children }) 
 };
 
 const RootLayout = () => {
-  const colorScheme = useColorScheme();
   const router = useRouter();
   return (
-   
-//     <ImageBackground style={styles.background} source={require("./src/assets/coffee_assets/americano/portrait/americano_pic_1_portrait.png")}>
-     
-//     <View style={styles.loginBtn}><Text style={styles.loginTxt}>Login</Text></View>
-//     <View style={styles.loginBtn}><Text style={styles.loginTxt}>Sign In</Text></View>
-  
-// </ImageBackground>
-    <GlobalErrorBoundary>
-      <SafeAreaProvider>
-        <NetworkProvider>
-          <AuthProvider>
-            <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>  
-              <ProductProvider>
-                <NetworkAwareApp>
-                  <InitialLayout />
-                  <Toast config={toastConfig} />
-                </NetworkAwareApp>
-              </ProductProvider>
-            </ClerkProvider>
-          </AuthProvider>
-        </NetworkProvider>
-      </SafeAreaProvider>
-    </GlobalErrorBoundary>
+    <ThemeProvider>
+      <GlobalErrorBoundary>
+        <SafeAreaProvider>
+          <NetworkProvider>
+            <AuthProvider>
+              <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>  
+                <ProductProvider>
+                  <NetworkAwareApp>
+                    <InitialLayout />
+                    <Toast config={toastConfig} />
+                  </NetworkAwareApp>
+                </ProductProvider>
+              </ClerkProvider>
+            </AuthProvider>
+          </NetworkProvider>
+        </SafeAreaProvider>
+      </GlobalErrorBoundary>
+    </ThemeProvider>
   );
 };
 
