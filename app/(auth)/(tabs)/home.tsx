@@ -1,6 +1,7 @@
 import FloatingCustomerServiceButton from '@/app/components/FloatingCusSerButton';
 import { CATEGORY_DATA, PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { categoriesType, productsType, slidesType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
@@ -144,6 +145,16 @@ const Layout = () => {
   const [searchLoading , setSearchLoading] = useState<boolean>(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const primaryColor = useThemeColor({}, 'primary');
+  const cardColor = useThemeColor({}, 'card');
+  const textColor = useThemeColor({}, 'text');
+  const accentColor = useThemeColor({}, 'tint');
+  const subtextColor = useThemeColor({}, 'icon'); // Use icon color for subtext
+  const tabIconDefaultColor = useThemeColor({}, 'tabIconDefault');
+  const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
+  const border = useThemeColor({}, 'border');
   
 useEffect(() => {
   const loadInitialData = async () => {
@@ -509,7 +520,7 @@ useEffect(() => {
         <DataFetchError
           message={isOffline ? "No internet connection. Please check your connection and try again." : error || "No data found. Please try again."}
           onRetry={handleRetry}
-          loading={isCategoryLoading || isProductsLoading || isSlidesLoading}
+          // loading={isCategoryLoading || isProductsLoading || isSlidesLoading}
           icon={isOffline ? "wifi-off-outline" : "cloud-offline-outline"}
         />
       </View>
@@ -590,7 +601,7 @@ useEffect(() => {
             <MarqueeText 
               text="🔥 Special Offer: Get 20% off on all furniture this week! 🎉 Free shipping on orders above $500 💫"
               speed={30}
-              backgroundColor="#FF6B6B"
+              backgroundColor={primaryColor}  
               textColor="white"
               fontSize={14}
               height={40}
@@ -649,8 +660,6 @@ const Home = () => {
 };
 
 export default Home;
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -807,3 +816,5 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 });
+
+

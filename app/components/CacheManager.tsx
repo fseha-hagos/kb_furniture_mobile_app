@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import {
   CacheItem,
   CacheStats,
@@ -38,10 +39,216 @@ const CacheManager: React.FC<CacheManagerProps> = ({
 }) => {
   const [cacheStats, setCacheStats] = useState<CacheStats | null>(null);
   const [loading, setLoading] = useState(false);
-  const [clearing, setClearing] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [isClearing, setIsClearing] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
+  
+  const primaryColor = useThemeColor({}, 'primary');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
+  const cardColor = useThemeColor({}, 'card');
+
+  // Create styles with theme colors
+  const getStyles = () => StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    container: {
+      backgroundColor: cardColor,
+      borderRadius: 20,
+      width: width * 0.9,
+      maxWidth: 400,
+      elevation: 10,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: '#f0f0f0',
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: textColor,
+    },
+    closeButton: {
+      padding: 5,
+    },
+    content: {
+      flex: 1,
+      padding: 20,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      marginTop: 10,
+      fontSize: 16,
+      color: textColor,
+    },
+    statsContainer: {
+      marginBottom: 20,
+    },
+    statsGradient: {
+      borderRadius: 15,
+      padding: 20,
+    },
+    statsTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#fff',
+      marginBottom: 15,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    statItem: {
+      alignItems: 'center',
+    },
+    statValue: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+    statLabel: {
+      fontSize: 14,
+      color: '#fff',
+      opacity: 0.8,
+    },
+    section: {
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: textColor,
+      marginBottom: 5,
+    },
+    sectionSubtitle: {
+      fontSize: 14,
+      color: textColor,
+      opacity: 0.7,
+    },
+    itemsContainer: {
+      gap: 10,
+    },
+    cacheItem: {
+      backgroundColor: backgroundColor,
+      borderRadius: 12,
+      padding: 15,
+      marginBottom: 10,
+      borderWidth: 2,
+      borderColor: 'transparent',
+    },
+    selectedItem: {
+      borderColor: primaryColor,
+      backgroundColor: '#e8f5e8',
+    },
+    itemHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    itemInfo: {
+      flex: 1,
+    },
+    itemName: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: textColor,
+      marginBottom: 4,
+    },
+    itemDescription: {
+      fontSize: 14,
+      color: textColor,
+      opacity: 0.7,
+    },
+    itemActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    itemSize: {
+      fontSize: 12,
+      color: textColor,
+      opacity: 0.5,
+      marginRight: 10,
+    },
+    emptyContainer: {
+      alignItems: 'center',
+      paddingVertical: 40,
+    },
+    emptyText: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: textColor,
+      marginTop: 10,
+    },
+    emptySubtext: {
+      fontSize: 14,
+      color: textColor,
+      opacity: 0.7,
+      marginTop: 5,
+    },
+    errorContainer: {
+      alignItems: 'center',
+      paddingVertical: 40,
+    },
+    errorText: {
+      fontSize: 16,
+      color: '#DC3545',
+      marginTop: 10,
+      textAlign: 'center',
+    },
+    retryButton: {
+      marginTop: 15,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      backgroundColor: primaryColor,
+      borderRadius: 8,
+    },
+    retryText: {
+      color: 'white',
+      fontWeight: '600',
+    },
+    footer: {
+      padding: 20,
+      borderTopWidth: 1,
+      borderTopColor: '#f0f0f0',
+      gap: 10,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 15,
+      borderRadius: 12,
+      gap: 8,
+    },
+    clearSelectedButton: {
+      backgroundColor: primaryColor,
+    },
+    clearAllButton: {
+      backgroundColor: '#DC3545',
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
 
   useEffect(() => {
     if (visible) {
@@ -125,7 +332,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({
   };
 
   const performClearSelected = async () => {
-    setClearing(true);
+    setIsClearing(true);
     try {
       const result = await clearSpecificCache(selectedItems);
       
@@ -148,7 +355,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({
     } catch (error) {
       Alert.alert('Error', 'Failed to clear selected cache items');
     } finally {
-      setClearing(false);
+      setIsClearing(false);
     }
   };
 
@@ -174,7 +381,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({
   };
 
   const performClearAll = async () => {
-    setClearing(true);
+    setIsClearing(true);
     try {
       const result = await clearAllCache();
       
@@ -197,7 +404,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({
     } catch (error) {
       Alert.alert('Error', 'Failed to clear all cache');
     } finally {
-      setClearing(false);
+      setIsClearing(false);
     }
   };
 
@@ -218,10 +425,10 @@ const CacheManager: React.FC<CacheManagerProps> = ({
           </View>
           <View style={styles.itemActions}>
             <Text style={styles.itemSize}>{item.size}</Text>
-            <Ionicons
-              name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
-              size={24}
-              color={isSelected ? '#00685C' : '#999'}
+            <Ionicons 
+              name={isSelected ? 'checkmark-circle' : 'ellipse-outline'} 
+              size={24} 
+              color={isSelected ? primaryColor : '#999'} 
             />
           </View>
         </View>
@@ -230,6 +437,8 @@ const CacheManager: React.FC<CacheManagerProps> = ({
   };
 
   if (!visible) return null;
+
+  const styles = getStyles();
 
   return (
     <Modal
@@ -260,14 +469,14 @@ const CacheManager: React.FC<CacheManagerProps> = ({
           <ScrollView style={styles.content} contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
             {loading ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#00685C" />
+                <ActivityIndicator size="large" color={primaryColor} />
                 <Text style={styles.loadingText}>Loading cache information...</Text>
               </View>
             ) : cacheStats ? (
               <>
                 <View style={styles.statsContainer}>
                   <LinearGradient
-                    colors={['#00685C', '#00897B']}
+                    colors={[primaryColor, '#00897B']}
                     style={styles.statsGradient}
                   >
                     <Text style={styles.statsTitle}>Cache Overview</Text>
@@ -297,7 +506,7 @@ const CacheManager: React.FC<CacheManagerProps> = ({
                   </View>
                 ) : (
                   <View style={styles.emptyContainer}>
-                    <Ionicons name="checkmark-circle" size={48} color="#00685C" />
+                    <Ionicons name="checkmark-circle" size={48} color={primaryColor} />
                     <Text style={styles.emptyText}>No cache data found</Text>
                     <Text style={styles.emptySubtext}>Your app is already optimized!</Text>
                   </View>
@@ -314,242 +523,43 @@ const CacheManager: React.FC<CacheManagerProps> = ({
             )}
           </ScrollView>
 
-          <View style={styles.footer}>
-            {cacheStats && cacheStats.items.length > 0 && (
-              <>
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.clearSelectedButton]}
-                  onPress={handleClearSelected}
-                  disabled={selectedItems.length === 0 || clearing}
-                >
-                  {clearing ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Ionicons name="trash" size={20} color="white" />
-                  )}
-                  <Text style={styles.buttonText}>
-                    Clear Selected ({selectedItems.length})
-                  </Text>
-                </TouchableOpacity>
+          {cacheStats && cacheStats.items.length > 0 && (
+            <View style={styles.footer}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.clearSelectedButton]}
+                onPress={handleClearSelected}
+                disabled={selectedItems.length === 0 || isClearing}
+              >
+                {isClearing ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Ionicons name="trash-outline" size={20} color="white" />
+                )}
+                <Text style={styles.buttonText}>
+                  {isClearing ? 'Clearing...' : `Clear Selected (${selectedItems.length})`}
+                </Text>
+              </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.clearAllButton]}
-                  onPress={handleClearAll}
-                  disabled={clearing}
-                >
-                  {clearing ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Ionicons name="trash-bin" size={20} color="white" />
-                  )}
-                  <Text style={styles.buttonText}>Clear All Cache</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.clearAllButton]}
+                onPress={handleClearAll}
+                disabled={isClearing}
+              >
+                {isClearing ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Ionicons name="trash-outline" size={20} color="white" />
+                )}
+                <Text style={styles.buttonText}>
+                  {isClearing ? 'Clearing...' : 'Clear All Cache'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </Animated.View>
       </BlurView>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  container: {
-    width: width * 0.9,
-    maxHeight: '80%',
-    backgroundColor: 'white',
-    borderRadius: 20,
-    overflow: 'hidden',
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#333',
-  },
-  closeButton: {
-    padding: 5,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#666',
-  },
-  statsContainer: {
-    marginBottom: 20,
-  },
-  statsGradient: {
-    padding: 20,
-    borderRadius: 15,
-  },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: 'white',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  statLabel: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 5,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 5,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: '#666',
-  },
-  itemsContainer: {
-    marginBottom: 20,
-  },
-  cacheItem: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  selectedItem: {
-    borderColor: '#00685C',
-    backgroundColor: '#e8f5e8',
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-  },
-  itemDescription: {
-    fontSize: 14,
-    color: '#666',
-  },
-  itemActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  itemSize: {
-    fontSize: 12,
-    color: '#999',
-    marginRight: 10,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginTop: 10,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 5,
-  },
-  errorContainer: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#DC3545',
-    marginTop: 10,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 15,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#00685C',
-    borderRadius: 8,
-  },
-  retryText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  footer: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-    gap: 10,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    borderRadius: 12,
-    gap: 8,
-  },
-  clearSelectedButton: {
-    backgroundColor: '#00685C',
-  },
-  clearAllButton: {
-    backgroundColor: '#DC3545',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
 
 export default CacheManager; 
