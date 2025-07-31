@@ -145,14 +145,15 @@ const NotificationsPage = () => {
     );
   };
 
+  // TODO: Implement notification navigation functionality
   const handleNotificationPress = (notification: Notification) => {
     if (!notification.read) {
       markAsRead(notification.id);
     }
     
-    if (notification.actionUrl) {
-      router.push(notification.actionUrl as any);
-    }
+    Alert.alert('Notification', 'Notification navigation feature coming soon!', [
+      { text: 'OK', style: 'default' }
+    ]);
   };
 
   const filteredNotifications = notifications.filter(notification => {

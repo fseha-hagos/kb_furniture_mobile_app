@@ -115,33 +115,19 @@ const OrdersPage = () => {
     }
   };
 
+  // TODO: Implement order cancellation functionality
   const handleCancelOrder = (orderId: string) => {
     Alert.alert(
       'Cancel Order',
-      'Are you sure you want to cancel this order?',
-      [
-        { text: 'No', style: 'cancel' },
-        { 
-          text: 'Yes, Cancel', 
-          style: 'destructive',
-          onPress: () => {
-            Alert.alert('Order Cancelled', 'Your order has been cancelled successfully.');
-          }
-        }
-      ]
+      'Order cancellation feature coming soon!',
+      [{ text: 'OK', style: 'default' }]
     );
   };
 
+  // TODO: Implement reorder functionality
   const handleReorder = (order: Order) => {
-    Alert.alert('Reorder', 'Add all items from this order to cart?', [
-      { text: 'Cancel', style: 'cancel' },
-      { 
-        text: 'Add to Cart', 
-        onPress: () => {
-          Alert.alert('Success', 'Items added to cart!');
-          router.push('/cart');
-        }
-      }
+    Alert.alert('Reorder', 'Reorder feature coming soon!', [
+      { text: 'OK', style: 'default' }
     ]);
   };
 
