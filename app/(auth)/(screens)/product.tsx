@@ -1,18 +1,19 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { productsType } from '@/types/type';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Dimensions,
-    Image,
-    Modal,
-    ScrollView,
-    Share,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Dimensions,
+  Image,
+  Modal,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import NavBar from '../../components/navbar';
@@ -114,6 +115,16 @@ import { useProduct } from '../../context/productContext';
     const [activeColorIndex, setActiveColorIndex] = React.useState(0);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isFullScreen, setIsFullScreen] = useState(false);
+
+    const backgroundColor = useThemeColor({}, 'background');
+  const primaryColor = useThemeColor({}, 'primary');
+  const cardColor = useThemeColor({}, 'card');
+  const textColor = useThemeColor({}, 'text');
+  const accentColor = useThemeColor({}, 'tint');
+  const subtextColor = useThemeColor({}, 'icon'); // Use icon color for subtext
+  const tabIconDefaultColor = useThemeColor({}, 'tabIconDefault');
+  const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
+  const border = useThemeColor({}, 'border');
 
 
     useEffect(() => {
@@ -241,19 +252,19 @@ if(!productData) return;
                   <FontAwesome
                     name={isFavorite(productData.productId) ? "heart" : "heart-o"}
                     size={24}
-                    color={isFavorite(productData.productId) ? "#FF0000" : "#000000"}
+                    color={isFavorite(productData.productId) ? "#FF0000" : primaryColor}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.shareButton]} 
                   onPress={handleShare}>
-                  <FontAwesome name="share" size={24} color="#000000" />
+                  <FontAwesome name="share" size={24} color={primaryColor} />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity 
                 style={styles.fullScreenButton}
                 onPress={() => setIsFullScreen(true)}>
-                <FontAwesome name="expand" size={24} color="#000000" />
+                <FontAwesome name="expand" size={24} color={primaryColor} />
               </TouchableOpacity>
             </View>
 
@@ -386,7 +397,7 @@ if(!productData) return;
           {/* Add to Cart Button */}
           <View style={styles.bottomContainer}>
             <TouchableOpacity 
-              style={styles.addToCartButton} 
+              style={[styles.addToCartButton,{backgroundColor: primaryColor} ]}
               onPress={() => handleAddToCart(productData)}
               >
               <Image
@@ -589,7 +600,7 @@ if(!productData) return;
       borderTopColor: '#EEEEEE',
     },
     addToCartButton: {
-      backgroundColor: '#00685C',
+      
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',

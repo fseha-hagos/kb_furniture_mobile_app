@@ -1,8 +1,10 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useAuth, useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { useThemePreference } from '../../context/themeContext';
 import { useUserRole } from '../../hooks/useUserRole';
 
 const SettingsPage = () => {
@@ -11,11 +13,22 @@ const SettingsPage = () => {
   const { signOut } = useClerk();
   const { isSignedIn } = useAuth();
   const { role } = useUserRole();
+  const { preference, setPreference } = useThemePreference();
 
   const [notifications, setNotifications] = useState(true);
   const [emailUpdates, setEmailUpdates] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
   const [locationServices, setLocationServices] = useState(true);
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const primaryColor = useThemeColor({}, 'primary');
+  const cardColor = useThemeColor({}, 'card');
+  const textColor = useThemeColor({}, 'text');
+  const accentColor = useThemeColor({}, 'tint');
+  const subtextColor = useThemeColor({}, 'icon'); // Use icon color for subtext
+  const tabIconDefaultColor = useThemeColor({}, 'tabIconDefault');
+  const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
+  const border = useThemeColor({}, 'border');
+
 
   const handleSignOut = () => {
     Alert.alert(
@@ -56,7 +69,7 @@ const SettingsPage = () => {
   const SettingItem = ({ icon, title, subtitle, onPress, showSwitch, switchValue, onSwitchChange, showArrow = true }: any) => (
     <TouchableOpacity style={styles.settingItem} onPress={onPress} disabled={showSwitch}>
       <View style={styles.settingIcon}>
-        <Ionicons name={icon} size={24} color="#00685C" />
+        <Ionicons name={icon} size={24} color={primaryColor} />
       </View>
       <View style={styles.settingContent}>
         <Text style={styles.settingTitle}>{title}</Text>
@@ -170,29 +183,11 @@ const SettingsPage = () => {
               subtitle={user?.emailAddresses?.[0]?.emailAddress || 'No email set'}
               onPress={() => router.push('/(auth)/(tabs)/profile')}
             />
-            <SettingItem
-              icon="card-outline"
-              title="Payment Methods"
-              subtitle="Manage your payment options"
-              onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
-            />
-            <SettingItem
-              icon="location-outline"
-              title="Shipping Addresses"
-              subtitle="Manage your delivery addresses"
-              onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
-            />
-            <SettingItem
-              icon="shield-checkmark-outline"
-              title="Security"
-              subtitle="Password, 2FA, and security settings"
-              onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
-            />
           </View>
         </View>
 
-        {/* Preferences Section */}
-        <View style={styles.section}>
+        {/* Preferences Section - Hidden for v1.0 */}
+        {/* <View style={styles.section}>
           <SectionHeader title="Preferences" />
           <View style={styles.sectionContent}>
             <SettingItem
@@ -216,10 +211,10 @@ const SettingsPage = () => {
             <SettingItem
               icon="moon-outline"
               title="Dark Mode"
-              subtitle="Switch between light and dark themes"
+              subtitle={preference === 'dark' ? 'Dark mode enabled' : 'Light mode enabled'}
               showSwitch={true}
-              switchValue={darkMode}
-              onSwitchChange={setDarkMode}
+              switchValue={preference === 'dark'}
+              onSwitchChange={(val: boolean) => setPreference(val ? 'dark' : 'light')}
               showArrow={false}
             />
             <SettingItem
@@ -232,7 +227,7 @@ const SettingsPage = () => {
               showArrow={false}
             />
           </View>
-        </View>
+        </View> */}
 
         {/* Support Section */}
         <View style={styles.section}>
@@ -270,22 +265,10 @@ const SettingsPage = () => {
           <SectionHeader title="Data & Privacy" />
           <View style={styles.sectionContent}>
             <SettingItem
-              icon="download-outline"
-              title="Export Data"
-              subtitle="Download your personal data"
-              onPress={() => Alert.alert('Export Data', 'Your data export will be sent to your email.')}
-            />
-            <SettingItem
               icon="trash-outline"
               title="Clear Cache"
               subtitle="Free up storage space"
               onPress={() => Alert.alert('Cache Cleared', 'App cache has been cleared successfully.')}
-            />
-            <SettingItem
-              icon="eye-outline"
-              title="Data Usage"
-              subtitle="Manage your data consumption"
-              onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
             />
           </View>
         </View>
@@ -301,17 +284,6 @@ const SettingsPage = () => {
               <View style={styles.settingContent}>
                 <Text style={styles.dangerText}>Sign Out</Text>
                 <Text style={styles.settingSubtitle}>Sign out of your account</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#ccc" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.dangerItem} onPress={handleDeleteAccount}>
-              <View style={styles.settingIcon}>
-                <Ionicons name="trash-outline" size={24} color="#F44336" />
-              </View>
-              <View style={styles.settingContent}>
-                <Text style={styles.dangerText}>Delete Account</Text>
-                <Text style={styles.settingSubtitle}>Permanently delete your account</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#ccc" />
             </TouchableOpacity>
