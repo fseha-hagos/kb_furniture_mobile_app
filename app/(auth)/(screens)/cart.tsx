@@ -15,6 +15,7 @@ import {
     View
 } from 'react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { useThemeColor } from '../../../hooks/useThemeColor';
 import CartCard from '../../components/cartCard';
 import { useAuth } from '../../context/cartContext';
 import { useBackHandler } from '../../hooks/useBackHandler';
@@ -363,6 +364,11 @@ const Cart = () => {
     const scaleAnim = useRef(new Animated.Value(0.9)).current;
     const slideAnim = useRef(new Animated.Value(50)).current;
 
+    const primaryColor = useThemeColor({}, 'primary');
+    const textColor = useThemeColor({}, 'text');
+    const backgroundColor = useThemeColor({}, 'background');
+    const cardColor = useThemeColor({}, 'card');
+
     // Use the custom back handler hook
     useBackHandler({
         onBackPress: () => {
@@ -376,7 +382,7 @@ const Cart = () => {
     const CartNavbar = () => (
         <View style={styles.navbarContainer}>
             <LinearGradient
-                colors={['#00685C', '#00897B', '#26A69A']}
+                colors={[primaryColor, primaryColor]}
                 style={styles.navbarGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -398,10 +404,10 @@ const Cart = () => {
                 <View style={styles.navbarTitleContainer}>
                     <View style={styles.titleIconContainer}>
                         <LinearGradient
-                            colors={['#FFFFFF', '#F8F9FA']}
+                            colors={[primaryColor, primaryColor]}
                             style={styles.titleIconGradient}
                         >
-                            <Ionicons name="cart" size={20} color="#00685C" />
+                            <Ionicons name="cart" size={20} color={primaryColor} />
                         </LinearGradient>
                     </View>
                     <View style={styles.titleTextContainer}>
@@ -514,7 +520,7 @@ const Cart = () => {
                     ]}
                 >
                     <View style={styles.iconContainer}>
-                        <FontAwesome name="shopping-cart" size={40} color="#00685C" />
+                        <FontAwesome name="shopping-cart" size={40} color={primaryColor} />
                     </View>
                     <Text style={styles.emptyText}>Your Cart is Empty</Text>
                     <Text style={styles.emptySubText}>Looks like you haven't added anything to your cart yet. Start shopping to add items to your cart.</Text>
@@ -523,7 +529,7 @@ const Cart = () => {
                         onPress={() => router.push('/(auth)/(tabs)/home')}
                     >
                         <LinearGradient
-                            colors={['#00685C', '#00897B']}
+                            colors={[primaryColor, '#00897B']}
                             style={styles.gradientButton}
                         >
                             <Text style={styles.shopNowText}>Start Shopping</Text>
@@ -685,8 +691,8 @@ const Cart = () => {
                 showConfirmButton={true}
                 cancelText="Telegram"
                 confirmText="Payment"
-                cancelButtonColor='#00685C'
-                confirmButtonColor="#00685C"
+                cancelButtonColor={primaryColor}
+                confirmButtonColor={primaryColor}
                 onDismiss={() => {
                     setShowAlert(false);
                 }}

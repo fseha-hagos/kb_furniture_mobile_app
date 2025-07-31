@@ -102,14 +102,11 @@ const Cupens = () => {
         return coupon.isActive && coupon.category === selectedCategory;
     });
 
+    // TODO: Implement coupon application functionality
     const handleApplyCoupon = (coupon: Coupon) => {
-        if (appliedCoupons.includes(coupon.id)) {
-            setAppliedCoupons(prev => prev.filter(id => id !== coupon.id));
-            Alert.alert('Coupon Removed', `${coupon.code} has been removed from your cart.`);
-        } else {
-            setAppliedCoupons(prev => [...prev, coupon.id]);
-            Alert.alert('Coupon Applied', `${coupon.code} has been applied to your cart!`);
-        }
+        Alert.alert('Coupon Feature', 'Coupon application feature coming soon!', [
+            { text: 'OK', style: 'default' }
+        ]);
     };
 
     const isCouponApplied = (couponId: string) => appliedCoupons.includes(couponId);
