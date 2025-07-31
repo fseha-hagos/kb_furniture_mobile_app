@@ -1,6 +1,7 @@
 import { Video } from "expo-av";
 import { BlurView } from "expo-blur";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useThemeColor } from '../../hooks/useThemeColor';
 import ProgressBar from "./ProgressBar";
 
 interface props{
@@ -10,6 +11,8 @@ interface props{
 }
 
 export function UploadingAndroid({ image, video, progress }: props) {
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
   // The component has the same logic. However, the blur effect works differently on Android.
   return (
     <View
@@ -40,7 +43,7 @@ export function UploadingAndroid({ image, video, progress }: props) {
             paddingVertical: 10,
             rowGap: 12,
             borderRadius: 14,
-            backgroundColor: "#FFFFFF",
+            backgroundColor,
           }}
         >
           {image && (
@@ -70,18 +73,18 @@ export function UploadingAndroid({ image, video, progress }: props) {
               // useNativeControls
             />
           )}
-          <Text style={{ fontSize: 12 }}>Uploading...</Text>
+          <Text style={{ fontSize: 12, color: textColor }}>Uploading...</Text>
           <ProgressBar progress={progress} />
           <View
             style={{
               height: 1,
               borderWidth: StyleSheet.hairlineWidth,
               width: "100%",
-              borderColor: "#00000020",
+              borderColor: textColor + '20',
             }}
           />
           <TouchableOpacity>
-            <Text style={{ fontWeight: "500", color: "#3478F6", fontSize: 17 }}>
+            <Text style={{ fontWeight: "500", color: textColor, fontSize: 17 }}>
               Cancel
             </Text>
           </TouchableOpacity>

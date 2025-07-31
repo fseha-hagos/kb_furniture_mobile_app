@@ -35,7 +35,9 @@ export const Colors = {
   light: {
     text: '#333333',               // Dark gray for readability
     background: '#F9F6F1',         // Very light beige background
-    primary: '#E87E1C', // Burnt orange (brand color)
+    // primary: '#E87E1C', // Burnt orange (brand color)
+    primary: '#2C1B14',
+    secondary: '#E87E1C',
     tint: '#E87E1C',               // Burnt orange from the logo
     icon: '#7A6C5D',               // Muted brown-gray for icons
     tabIconDefault: '#C1B9B0',     // Soft neutral for inactive icons
@@ -48,6 +50,7 @@ export const Colors = {
     background: '#2C1B14',         // Deep brown background
     tint: '#FF9C3F',               // Lighter orange for better contrast
     primary: '#E87E1C', // Keep it consistent in dark mode
+    secondary: '#E87E1C',
     icon: '#D4C6B4',               // Warm light brown icons
     tabIconDefault: '#8A7E75',     // Subtle icon tone
     tabIconSelected: '#FF9C3F',    // Highlighted icon

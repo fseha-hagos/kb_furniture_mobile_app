@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
 
 interface DashboardStats {
@@ -28,6 +29,262 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
 }) => {
   const router = useRouter();
   const { carts } = useAuth();
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const cardColor = useThemeColor({}, 'card');
+  const textColor = useThemeColor({}, 'text');
+  const accentColor = useThemeColor({}, 'tint');
+  const primaryColor = useThemeColor({}, 'primary');
+  const borderColor = useThemeColor({}, 'border');
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: backgroundColor
+    },
+    welcomeSection: {
+      padding: 20,
+      backgroundColor: cardColor,
+      marginHorizontal: 10,
+      marginBottom: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 3,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    welcomeText: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 5,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: accentColor,
+    },
+    statsSection: {
+      padding: 20,
+      backgroundColor: cardColor,
+      marginHorizontal: 10,
+      marginBottom: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 3,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: textColor,
+      marginBottom: 15,
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    statCard: {
+      width: '48%',
+      backgroundColor: backgroundColor,
+      padding: 15,
+      borderRadius: 10,
+      marginBottom: 10,
+      borderLeftWidth: 4,
+      borderLeftColor: primaryColor,
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    statIcon: {
+      marginBottom: 8,
+    },
+    statNumber: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: textColor,
+      marginBottom: 4,
+    },
+    statLabel: {
+      fontSize: 14,
+      color: accentColor,
+    },
+    quickActionsSection: {
+      padding: 20,
+      backgroundColor: cardColor,
+      marginHorizontal: 10,
+      marginBottom: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 3,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    actionsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    actionCard: {
+      width: '48%',
+      backgroundColor: backgroundColor,
+      padding: 20,
+      borderRadius: 10,
+      marginBottom: 10,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    actionText: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: textColor,
+      marginTop: 8,
+      textAlign: 'center',
+    },
+    ordersSection: {
+      padding: 20,
+      backgroundColor: cardColor,
+      marginHorizontal: 10,
+      marginBottom: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 3,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 15,
+    },
+    viewAllText: {
+      fontSize: 14,
+      color: primaryColor,
+      fontWeight: '500',
+    },
+    orderCard: {
+      width: 200,
+      backgroundColor: backgroundColor,
+      padding: 15,
+      borderRadius: 10,
+      marginRight: 15,
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    orderHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    orderId: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: textColor,
+    },
+    statusBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+      backgroundColor: primaryColor,
+    },
+    statusText: {
+      fontSize: 12,
+      color: cardColor,
+      fontWeight: '500',
+    },
+    orderDate: {
+      fontSize: 12,
+      color: accentColor,
+      marginBottom: 4,
+    },
+    orderTotal: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: primaryColor,
+    },
+    recommendationsSection: {
+      padding: 20,
+      backgroundColor: cardColor,
+      marginHorizontal: 10,
+      marginBottom: 10,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 3,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    productCard: {
+      width: 150,
+      backgroundColor: backgroundColor,
+      padding: 15,
+      borderRadius: 10,
+      marginRight: 15,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: borderColor,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    productImage: {
+      width: 80,
+      height: 80,
+      backgroundColor: cardColor,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: borderColor,
+    },
+    productName: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: textColor,
+      textAlign: 'center',
+      marginBottom: 5,
+    },
+    productPrice: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: primaryColor,
+    },
+  });
 
   const StatCard = ({ icon, value, label, color }: any) => (
     <View style={[styles.statCard, { borderLeftColor: color }]}>
@@ -116,15 +373,15 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               <Text style={styles.actionText}>Add Category</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/addPostScreen')}>
-              <Ionicons name="add-circle-outline" size={24} color="#00897B" />
+              <Ionicons name="add-circle-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>Add Product</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/cupens')}>
-              <Ionicons name="pricetags-outline" size={24} color="#2196F3" />
+              <Ionicons name="pricetags-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>Manage Coupons</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/orders')}>
-              <Ionicons name="list-outline" size={24} color="#FF9800" />
+              <Ionicons name="list-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>View Orders</Text>
             </TouchableOpacity>
           </View>
@@ -150,15 +407,25 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     );
   }
 
+  // Define action interface for better type safety
+  interface DashboardAction {
+    icon: any;
+    value?: number | string;
+    label: string;
+    color: string;
+    onPress?: () => void;
+  }
+
   // Merged Activity & Actions for normal users
-  const mergedActions = [
-    {
-      icon: 'bag-outline' as any,
-      value: stats.ordersCount,
-      label: 'Orders',
-      color: '#4CAF50',
-      onPress: () => router.push('/(auth)/(screens)/itemList'),
-    },
+  const mergedActions: DashboardAction[] = [
+    // TODO: Implement orders functionality
+    // {
+    //   icon: 'bag-outline' as any,
+    //   value: stats.ordersCount,
+    //   label: 'Orders',
+    //   color: '#4CAF50',
+    //   onPress: () => router.push('/(auth)/(screens)/itemList'),
+    // },
     {
       icon: 'heart-outline' as any,
       value: stats.favoritesCount,
@@ -166,20 +433,22 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       color: '#E91E63',
       onPress: () => router.push('/favorites'),
     },
-    {
-      icon: 'star-outline' as any,
-      value: stats.reviewsCount,
-      label: 'Reviews',
-      color: '#FF9800',
-      onPress: undefined, // No action for reviews if no screen exists
-    },
-    {
-      icon: 'wallet-outline' as any,
-      value: `$${stats.totalSpent}`,
-      label: 'Total Spent',
-      color: '#2196F3',
-      onPress: undefined, // No action for total spent
-    },
+    // TODO: Implement reviews functionality
+    // {
+    //   icon: 'star-outline' as any,
+    //   value: stats.reviewsCount,
+    //   label: 'Reviews',
+    //   color: '#FF9800',
+    //   onPress: () => Alert.alert('Coming Soon', 'Reviews management will be available in the next update.'),
+    // },
+    // TODO: Implement total spent tracking
+    // {
+    //   icon: 'wallet-outline' as any,
+    //   value: `$${stats.totalSpent}`,
+    //   label: 'Total Spent',
+    //   color: '#2196F3',
+    //   onPress: undefined,
+    // },
     {
       icon: 'cart-outline' as any,
       value: carts?.length || 0,
@@ -226,8 +495,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         </View>
       </View>
 
-      {/* Recent Orders */}
-      {recentOrders.length > 0 && (
+      {/* Recent Orders - Hidden for v1.0 */}
+      {/* {recentOrders.length > 0 && (
         <View style={styles.ordersSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent Orders</Text>
@@ -241,10 +510,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             ))}
           </ScrollView>
         </View>
-      )}
+      )} */}
 
       {/* Personalized Recommendations */}
-      {personalizedProducts.length > 0 && (
+      {/* {personalizedProducts.length > 0 && (
         <View style={styles.recommendationsSection}>
           <Text style={styles.sectionTitle}>Recommended for You</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -253,201 +522,201 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             ))}
           </ScrollView>
         </View>
-      )}
+      )} */}
     </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F7F7F7',
-  },
-  welcomeSection: {
-    padding: 20,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-  statsSection: {
-    padding: 20,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 15,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  statCard: {
-    width: '48%',
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    elevation: 2,
-    // shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  statIcon: {
-    marginBottom: 8,
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  quickActionsSection: {
-    padding: 20,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  actionCard: {
-    width: '48%',
-    backgroundColor: '#f8f9fa',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 10,
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  actionText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  ordersSection: {
-    padding: 20,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  viewAllText: {
-    fontSize: 14,
-    color: '#00685C',
-    fontWeight: '500',
-  },
-  orderCard: {
-    width: 200,
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 10,
-    marginRight: 15,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  orderHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  orderId: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '500',
-  },
-  orderDate: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-  },
-  orderTotal: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#00685C',
-  },
-  recommendationsSection: {
-    padding: 20,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  productCard: {
-    width: 150,
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 10,
-    marginRight: 15,
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  productImage: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  productName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 5,
-  },
-  productPrice: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#00685C',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: backgroundColor
+//   },
+//   welcomeSection: {
+//     padding: 20,
+//     backgroundColor: '#fff',
+//     marginBottom: 10,
+//   },
+//   welcomeText: {
+//     fontSize: 24,
+//     fontWeight: 'bold',
+//     color: '#333',
+//     marginBottom: 5,
+//   },
+//   subtitle: {
+//     fontSize: 16,
+//     color: '#666',
+//   },
+//   statsSection: {
+//     padding: 20,
+//     backgroundColor: '#fff',
+//     marginBottom: 10,
+//   },
+//   sectionTitle: {
+//     fontSize: 18,
+//     fontWeight: '600',
+//     color: '#333',
+//     marginBottom: 15,
+//   },
+//   statsGrid: {
+//     flexDirection: 'row',
+//     flexWrap: 'wrap',
+//     justifyContent: 'space-between',
+//   },
+//   statCard: {
+//     width: '48%',
+//     backgroundColor: '#f8f9fa',
+//     padding: 15,
+//     borderRadius: 10,
+//     marginBottom: 10,
+//     borderLeftWidth: 4,
+//     elevation: 2,
+//     // shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 4,
+//   },
+//   statIcon: {
+//     marginBottom: 8,
+//   },
+//   statNumber: {
+//     fontSize: 24,
+//     fontWeight: 'bold',
+//     color: '#333',
+//     marginBottom: 4,
+//   },
+//   statLabel: {
+//     fontSize: 14,
+//     color: '#666',
+//   },
+//   quickActionsSection: {
+//     padding: 20,
+//     backgroundColor: '#fff',
+//     marginBottom: 10,
+//   },
+//   actionsGrid: {
+//     flexDirection: 'row',
+//     flexWrap: 'wrap',
+//     justifyContent: 'space-between',
+//   },
+//   actionCard: {
+//     width: '48%',
+//     backgroundColor: '#f8f9fa',
+//     padding: 20,
+//     borderRadius: 10,
+//     marginBottom: 10,
+//     alignItems: 'center',
+//     elevation: 2,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 4,
+//   },
+//   actionText: {
+//     fontSize: 14,
+//     fontWeight: '500',
+//     color: '#333',
+//     marginTop: 8,
+//     textAlign: 'center',
+//   },
+//   ordersSection: {
+//     padding: 20,
+//     backgroundColor: '#fff',
+//     marginBottom: 10,
+//   },
+//   sectionHeader: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 15,
+//   },
+//   viewAllText: {
+//     fontSize: 14,
+//     color: '#00685C',
+//     fontWeight: '500',
+//   },
+//   orderCard: {
+//     width: 200,
+//     backgroundColor: '#f8f9fa',
+//     padding: 15,
+//     borderRadius: 10,
+//     marginRight: 15,
+//     elevation: 2,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 4,
+//   },
+//   orderHeader: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 8,
+//   },
+//   orderId: {
+//     fontSize: 14,
+//     fontWeight: '600',
+//     color: '#333',
+//   },
+//   statusBadge: {
+//     paddingHorizontal: 8,
+//     paddingVertical: 4,
+//     borderRadius: 12,
+//   },
+//   statusText: {
+//     fontSize: 12,
+//     color: '#fff',
+//     fontWeight: '500',
+//   },
+//   orderDate: {
+//     fontSize: 12,
+//     color: '#666',
+//     marginBottom: 4,
+//   },
+//   orderTotal: {
+//     fontSize: 16,
+//     fontWeight: '600',
+//     color: '#00685C',
+//   },
+//   recommendationsSection: {
+//     padding: 20,
+//     backgroundColor: '#fff',
+//     marginBottom: 10,
+//   },
+//   productCard: {
+//     width: 150,
+//     backgroundColor: '#f8f9fa',
+//     padding: 15,
+//     borderRadius: 10,
+//     marginRight: 15,
+//     alignItems: 'center',
+//     elevation: 2,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 4,
+//   },
+//   productImage: {
+//     width: 80,
+//     height: 80,
+//     backgroundColor: '#fff',
+//     borderRadius: 8,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     marginBottom: 10,
+//   },
+//   productName: {
+//     fontSize: 14,
+//     fontWeight: '500',
+//     color: '#333',
+//     textAlign: 'center',
+//     marginBottom: 5,
+//   },
+//   productPrice: {
+//     fontSize: 16,
+//     fontWeight: '600',
+//     color: '#00685C',
+//   },
+// });
 
 export default UserDashboard; 

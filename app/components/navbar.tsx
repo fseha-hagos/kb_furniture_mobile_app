@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
 
 const { width } = Dimensions.get('window');
@@ -98,6 +99,8 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
   const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const primaryColor = useThemeColor({}, 'primary');
+  const secondaryColor = useThemeColor({}, 'secondary');
   const searchInputRef = useRef<TextInput>(null);
   const searchContainerAnim = useRef(new Animated.Value(0)).current;
   const searchIconAnim = useRef(new Animated.Value(0)).current;
@@ -166,7 +169,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
   return (
     <View>
       <LinearGradient
-        colors={[ Colors.dark.background, Colors.dark.background]}
+        colors={[ primaryColor, primaryColor]}
         style={styles.navBar}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -256,7 +259,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
               <Ionicons 
                 name="search" 
                 size={20} 
-                color={isSearchFocused ? "#00685C" : "#9CA3AF"} 
+                color={isSearchFocused ? primaryColor : "#9CA3AF"} 
               />
             </Animated.View>
             

@@ -1,3 +1,4 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { reviewsType } from '@/types/type';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -29,6 +30,18 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
   const [productReviews, setProductReviews] = useState<reviewsType[]>([]);
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const primaryColor = useThemeColor({}, 'primary');
+  const secondaryColor = useThemeColor({}, 'secondary');
+  const cardColor = useThemeColor({}, 'card');
+  const textColor = useThemeColor({}, 'text');
+  const accentColor = useThemeColor({}, 'tint');
+  const subtextColor = useThemeColor({}, 'icon'); // Use icon color for subtext
+  const tabIconDefaultColor = useThemeColor({}, 'tabIconDefault');
+  const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
+  const border = useThemeColor({}, 'border');
+
 
   useEffect(() => {
     loadReviews();
@@ -101,7 +114,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#00685C" />
+        <ActivityIndicator size="large" color={primaryColor} />
       </View>
     );
   }
@@ -111,7 +124,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
       <View style={styles.header}>
         <Text style={styles.title}>Reviews & Ratings</Text>
         <TouchableOpacity
-          style={styles.addReviewButton}
+          style={[styles.addReviewButton, {backgroundColor: secondaryColor}]}
           onPress={() => setModalVisible(true)}>
           <Text style={styles.addReviewText}>Write a Review</Text>
         </TouchableOpacity>
@@ -248,7 +261,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, styles.submitButton]}
+                style={[styles.modalButton, styles.submitButton, {backgroundColor: primaryColor}]}
                 onPress={handleSubmitReview}>
                 <Text style={[styles.buttonText, styles.submitButtonText]}>
                   Submit
@@ -283,7 +296,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   addReviewButton: {
-    backgroundColor: '#00685C',
+    
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -437,7 +450,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   submitButton: {
-    backgroundColor: '#00685C',
+    
   },
   buttonText: {
     textAlign: 'center',

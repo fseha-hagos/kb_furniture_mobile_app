@@ -1,4 +1,5 @@
 import { db } from '@/firebaseConfig';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { productsType } from '@/types/type';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -45,6 +46,17 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
   const [selectedProductReviews, setSelectedProductReviews] = useState<Review[]>([]);
   const { recentlyViewed } = useProduct();
   const router = useRouter();
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const primaryColor = useThemeColor({}, 'primary');
+  const cardColor = useThemeColor({}, 'card');
+  const textColor = useThemeColor({}, 'text');
+  const accentColor = useThemeColor({}, 'tint');
+  const subtextColor = useThemeColor({}, 'icon'); // Use icon color for subtext
+  const tabIconDefaultColor = useThemeColor({}, 'tabIconDefault');
+  const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
+  const border = useThemeColor({}, 'border');
+
 
   const fetchReviews = async (productId: string) => {
     try {
@@ -142,7 +154,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
         {features.map((feature, index) => (
           <View key={index} style={styles.tableRow}>
             <View style={styles.cell}>
-              <FontAwesome name={feature.icon} size={16} color="#00685C" style={styles.featureIcon} />
+              <FontAwesome name={feature.icon} size={16} color={primaryColor} style={styles.featureIcon} />
               <Text style={styles.featureName}>{feature.name}</Text>
             </View>
             <View style={styles.cell}>
@@ -160,7 +172,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={styles.compareButton}
+        style={[{backgroundColor: primaryColor}, styles.compareButton]}
         onPress={() => setModalVisible(true)}>
         <FontAwesome name="balance-scale" size={20} color="white" />
         <Text style={styles.compareButtonText}>Compare Products</Text>
@@ -268,13 +280,13 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                   <View style={styles.actionButtons}>
                     <TouchableOpacity
                       key="current-product"
-                      style={[styles.actionButton, styles.viewButton]}
+                      style={[styles.actionButton, styles.viewButton, {backgroundColor: primaryColor}]}
                       onPress={() => handleViewProduct(currentProduct)}>
                       <Text style={styles.buttonText}>View Current</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       key="compare-product"
-                      style={[styles.actionButton, styles.viewButton]}
+                      style={[styles.actionButton, styles.viewButton, {backgroundColor: primaryColor}]}
                       onPress={() => handleViewProduct(selectedProduct)}>
                       <Text style={styles.buttonText}>View Compare</Text>
                     </TouchableOpacity>
@@ -297,7 +309,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00685C',
+   
     padding: 16,
     borderRadius: 12,
     marginHorizontal: 5,
@@ -486,7 +498,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: '#00685C',
+   
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
