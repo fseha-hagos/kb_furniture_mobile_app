@@ -2,9 +2,9 @@
   "expo": {
     "name": "kb-furniture",
     "slug": "kb-furniture",
-    "version": "1.0.4",
+    "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo/icon.png",
+    "icon": "./assets/logo/kb-logo-last.png",
     "scheme": "kbfurniture",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,8 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo/kb_icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/logo/kb-furniture-high-resolution-logo-transparent.png",
+        "backgroundColor": "#00685C"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.fseha.kbfurniture"
@@ -29,10 +29,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/logo/kb_icon.png",
-          "imageWidth": 200,
+          "image": "./assets/logo/kb-furniture-high-resolution-logo-transparent.png",
+          "imageWidth": 250,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#00685C"
         }
       ]
     ],
@@ -44,6 +44,12 @@
       "eas": {
         "projectId": "9bafe5ec-bd55-47c6-a676-ed85043a8a77"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9bafe5ec-bd55-47c6-a676-ed85043a8a77"
     }
   }
 }
