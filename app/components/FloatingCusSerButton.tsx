@@ -1,16 +1,19 @@
 import { Ionicons } from '@expo/vector-icons'; // Make sure to install: expo install @expo/vector-icons
 import React from 'react';
 import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useThemeColor } from '../../hooks/useThemeColor';
 
 interface FloatingCustomerServiceButtonProps {
   onPress?: (event: GestureResponderEvent) => void;
 }
 
 const FloatingCustomerServiceButton: React.FC<FloatingCustomerServiceButtonProps> = ({ onPress }) => {
+  const backgroundColor = useThemeColor({}, 'tint');
+  const textColor = useThemeColor({}, 'text');
   return (
-    <TouchableOpacity style={styles.floatingButton} onPress={onPress}>
-      <Ionicons name="chatbubbles-outline" size={24} color="#fff" />
-      <Text style={styles.buttonText}>Chat</Text>
+    <TouchableOpacity style={[styles.floatingButton, { backgroundColor }]} onPress={onPress}>
+      <Ionicons name="chatbubbles-outline" size={24} color={textColor} />
+      <Text style={[styles.buttonText, { color: textColor }]}>Chat</Text>
     </TouchableOpacity>
   );
 };
@@ -22,7 +25,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 70,
     right: 20,
-    backgroundColor: '#007AFF',
+    // backgroundColor: '#007AFF', // replaced with theme color
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 50,
@@ -35,7 +38,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   buttonText: {
-    color: '#fff',
+    // color: '#fff', // replaced with theme color
     marginLeft: 8,
     fontWeight: '600',
   },

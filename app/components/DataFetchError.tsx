@@ -1,35 +1,41 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useThemeColor } from '../../hooks/useThemeColor';
 
 interface DataFetchErrorProps {
-  message?: string;
-  onRetry: () => void;
-  loading?: boolean;
   icon?: string;
+  title?: string;
+  message?: string;
+  onRetry?: () => void;
+  showRetry?: boolean;
 }
 
 const DataFetchError: React.FC<DataFetchErrorProps> = ({
-  message = 'No data found.',
+  icon = 'alert-circle-outline',
+  title = 'Something went wrong',
+  message = 'We couldn\'t load the data. Please try again.',
   onRetry,
-  loading = false,
-  icon = 'cloud-offline-outline',
+  showRetry = true
 }) => {
+  const primaryColor = useThemeColor({}, 'primary');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
+
   return (
-    <View style={styles.container}>
-      <Ionicons name={icon as any} size={64} color="#00685C" />
-      <Text style={styles.title}>Oops!</Text>
-      <Text style={styles.message}>{message}</Text>
-      <TouchableOpacity style={styles.retryButton} onPress={onRetry} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <>
-            <Ionicons name="refresh" size={20} color="#fff" />
-            <Text style={styles.retryText}>Retry</Text>
-          </>
-        )}
-      </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor }]}>
+      <Ionicons name={icon as any} size={64} color={primaryColor} />
+      <Text style={[styles.title, { color: textColor }]}>{title}</Text>
+      <Text style={[styles.message, { color: textColor }]}>{message}</Text>
+      
+      {showRetry && onRetry && (
+        <TouchableOpacity 
+          style={[styles.retryButton, { backgroundColor: primaryColor }]} 
+          onPress={onRetry}
+        >
+          <Text style={styles.retryText}>Try Again</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

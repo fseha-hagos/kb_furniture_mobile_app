@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
 
 interface ProductSpec {
@@ -40,6 +41,11 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '');
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
+  
+  const primaryColor = useThemeColor({}, 'primary');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
+  const cardColor = useThemeColor({}, 'card');
 
   const isLiked = likedProducts?.some(item => item.productId === product.productId);
 
@@ -192,15 +198,15 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
               <View style={styles.keyFeatures}>
                 <Text style={styles.keyFeaturesTitle}>Key Features:</Text>
                 <View style={styles.featureItem}>
-                  <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                  <Ionicons name="checkmark-circle" size={16} color={primaryColor} />
                   <Text style={styles.featureText}>Premium quality materials</Text>
                 </View>
                 <View style={styles.featureItem}>
-                  <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                  <Ionicons name="checkmark-circle" size={16} color={primaryColor} />
                   <Text style={styles.featureText}>Easy assembly</Text>
                 </View>
                 <View style={styles.featureItem}>
-                  <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                  <Ionicons name="checkmark-circle" size={16} color={primaryColor} />
                   <Text style={styles.featureText}>1-year warranty</Text>
                 </View>
               </View>
@@ -241,7 +247,7 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
                 </Text>
               </View>
               <TouchableOpacity style={styles.writeReviewButton}>
-                <Ionicons name="create-outline" size={20} color="#00685C" />
+                <Ionicons name="create-outline" size={20} color={primaryColor} />
                 <Text style={styles.writeReviewText}>Write a Review</Text>
               </TouchableOpacity>
             </View>

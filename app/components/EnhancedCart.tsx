@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
 
 interface SuggestedProduct {
@@ -22,6 +23,10 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
   const { carts, totalPrice, deleteFromCart } = useAuth();
   const [promoCode, setPromoCode] = useState('');
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+  const primaryColor = useThemeColor({}, 'primary');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
+  const cardColor = useThemeColor({}, 'card');
 
   const shippingCost = (totalPrice || 0) > 500 ? 0 : 25;
   const tax = (totalPrice || 0) * 0.08; // 8% tax
@@ -107,14 +112,14 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
                       style={styles.quantityButton}
                       onPress={() => handleQuantityChange(item, (item.quantity || 1) - 1)}
                     >
-                      <Ionicons name="remove" size={16} color="#00685C" />
+                      <Ionicons name="remove" size={16} color={primaryColor} />
                     </TouchableOpacity>
                     <Text style={styles.quantityText}>{item.quantity || 1}</Text>
                     <TouchableOpacity 
                       style={styles.quantityButton}
                       onPress={() => handleQuantityChange(item, (item.quantity || 1) + 1)}
                     >
-                      <Ionicons name="add" size={16} color="#00685C" />
+                      <Ionicons name="add" size={16} color={primaryColor} />
                     </TouchableOpacity>
                   </View>
                   
@@ -215,7 +220,7 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
       {carts && carts.length > 0 && (
         <View style={styles.checkoutContainer}>
           <TouchableOpacity 
-            style={styles.checkoutButton}
+            style={[styles.checkoutButton, { backgroundColor: primaryColor }]} 
             onPress={proceedToCheckout}
           >
             <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
@@ -223,6 +228,15 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
           </TouchableOpacity>
         </View>
       )}
+
+      <TouchableOpacity 
+        style={[styles.continueShoppingButton, { borderColor: primaryColor }]} 
+        onPress={() => router.push('/(auth)/(tabs)/home')}
+      >
+        <Text style={[styles.continueShoppingText, { color: primaryColor }]}>
+          Continue Shopping
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -470,6 +484,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  continueShoppingButton: {
+    backgroundColor: '#fff',
+    paddingVertical: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#00685C',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  continueShoppingText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
 
