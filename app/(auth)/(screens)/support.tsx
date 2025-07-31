@@ -74,6 +74,7 @@ const SupportPage = () => {
     return matchesCategory;
   });
 
+  // TODO: Implement contact methods functionality
   const handleContact = (method: string) => {
     switch (method) {
       case 'phone':
@@ -86,7 +87,7 @@ const SupportPage = () => {
         Alert.alert('Live Chat', 'Live chat feature coming soon!');
         break;
       case 'whatsapp':
-        Linking.openURL('https://wa.me/15550123');
+        Alert.alert('WhatsApp', 'WhatsApp integration coming soon!');
         break;
     }
   };

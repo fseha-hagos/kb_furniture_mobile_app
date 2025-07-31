@@ -4,11 +4,183 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useThemeColor } from '../../../hooks/useThemeColor';
 
 // create a component
 const TermsAndConditions = () => {
     const router = useRouter();
     const [activeSection, setActiveSection] = useState('terms');
+    
+    const primaryColor = useThemeColor({}, 'primary');
+    const textColor = useThemeColor({}, 'text');
+    const backgroundColor = useThemeColor({}, 'background');
+    const cardColor = useThemeColor({}, 'card');
+
+    // Create styles with theme colors
+    const getStyles = () => StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: backgroundColor,
+        },
+        navbarContainer: {
+            paddingTop: 50,
+            paddingBottom: 20,
+        },
+        navbarGradient: {
+            paddingHorizontal: 20,
+            paddingVertical: 15,
+        },
+        navbarContent: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        backButton: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        title: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: '#fff',
+        },
+        content: {
+            flex: 1,
+            padding: 20,
+        },
+        tabContainer: {
+            flexDirection: 'row',
+            marginBottom: 20,
+            backgroundColor: cardColor,
+            borderRadius: 12,
+            padding: 4,
+        },
+        tab: {
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: 'transparent',
+        },
+        activeTab: {
+            backgroundColor: primaryColor,
+            borderColor: primaryColor,
+        },
+        tabText: {
+            marginLeft: 6,
+            fontSize: 12,
+            fontWeight: '500',
+            color: primaryColor,
+        },
+        activeTabText: {
+            color: '#fff',
+        },
+        sectionContent: {
+            backgroundColor: cardColor,
+            borderRadius: 12,
+            padding: 20,
+            marginBottom: 15,
+        },
+        sectionTitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: textColor,
+            marginBottom: 10,
+        },
+        sectionText: {
+            fontSize: 14,
+            lineHeight: 22,
+            color: textColor,
+            marginBottom: 15,
+        },
+        listItem: {
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            marginBottom: 8,
+        },
+        bullet: {
+            fontSize: 14,
+            color: primaryColor,
+            marginRight: 8,
+            marginTop: 2,
+        },
+        listText: {
+            flex: 1,
+            fontSize: 14,
+            lineHeight: 22,
+            color: textColor,
+        },
+        navbarBackButton: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        backButtonGradient: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        navbarTitleContainer: {
+            flex: 1,
+            alignItems: 'center',
+        },
+        titleTextContainer: {
+            alignItems: 'center',
+        },
+        navbarTitle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: '#fff',
+        },
+        contentContainer: {
+            flex: 1,
+        },
+        lastUpdated: {
+            fontSize: 12,
+            color: textColor,
+            opacity: 0.7,
+            textAlign: 'center',
+            marginBottom: 20,
+        },
+        contentTitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: textColor,
+            marginBottom: 10,
+        },
+        contentText: {
+            fontSize: 14,
+            lineHeight: 22,
+            color: textColor,
+            marginBottom: 15,
+        },
+        mainContainer: {
+            flex: 1,
+            backgroundColor: backgroundColor,
+        },
+        tabsContainer: {
+            flexDirection: 'row',
+            marginBottom: 20,
+            backgroundColor: cardColor,
+            borderRadius: 12,
+            padding: 4,
+        },
+    });
+
+    const styles = getStyles();
 
     const sections = [
         { id: 'terms', title: 'Terms of Service', icon: 'document-text-outline' },
@@ -22,7 +194,7 @@ const TermsAndConditions = () => {
     const TermsNavbar = () => (
         <View style={styles.navbarContainer}>
             <LinearGradient
-                colors={['#00685C', '#00897B', '#26A69A']}
+                colors={[primaryColor, '#00897B', '#26A69A']}
                 style={styles.navbarGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -270,7 +442,7 @@ const TermsAndConditions = () => {
                                 <Ionicons 
                                     name={section.icon as any} 
                                     size={20} 
-                                    color={activeSection === section.id ? '#fff' : '#00685C'} 
+                                    color={activeSection === section.id ? '#fff' : primaryColor} 
                                 />
                                 <Text style={[
                                     styles.tabText,
@@ -291,159 +463,4 @@ const TermsAndConditions = () => {
 };
 
 export default TermsAndConditions;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-        paddingBottom: 60,
-    },
-    // Beautiful Navbar Styles
-    navbarContainer: {
-        elevation: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-    },
-    navbarGradient: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        paddingTop: 6, // For status bar
-        minHeight: 80,
-    },
-    navbarBackButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        overflow: 'hidden',
-    },
-    backButtonGradient: {
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 22,
-    },
-    navbarTitleContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginHorizontal: 16,
-    },
-    titleIconContainer: {
-        marginRight: 12,
-    },
-    titleIconGradient: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    titleTextContainer: {
-        alignItems: 'center',
-    },
-    navbarTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
-        textShadowColor: 'rgba(0, 0, 0, 0.2)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 2,
-    },
-    navbarSubtitle: {
-        fontSize: 12,
-        color: 'rgba(255, 255, 255, 0.8)',
-        fontWeight: '400',
-    },
-    navbarActions: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    navbarActionButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        overflow: 'hidden',
-    },
-    actionButtonGradient: {
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 20,
-    },
-    mainContainer: {
-        flex: 1,
-    },
-    tabsContainer: {
-        backgroundColor: '#f8f9fa',
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e9ecef',
-    },
-    tab: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        marginHorizontal: 4,
-        borderRadius: 20,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#e9ecef',
-    },
-    activeTab: {
-        backgroundColor: '#00685C',
-        borderColor: '#00685C',
-    },
-    tabText: {
-        marginLeft: 6,
-        fontSize: 12,
-        fontWeight: '500',
-        color: '#00685C',
-    },
-    activeTabText: {
-        color: '#fff',
-    },
-    contentContainer: {
-        flex: 1,
-        padding: 20,
-    },
-    sectionTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
-    },
-    lastUpdated: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 24,
-        fontStyle: 'italic',
-    },
-    contentTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
-        marginTop: 20,
-        marginBottom: 8,
-    },
-    contentText: {
-        fontSize: 16,
-        color: '#555',
-        lineHeight: 24,
-        marginBottom: 16,
-    },
-});
 

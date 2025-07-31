@@ -2,6 +2,7 @@
 
 import Navbar from '@/app/components/navbar';
 import ProductCards from '@/app/components/productCards';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -90,6 +91,8 @@ const Favorites = () => {
   const [scaleAnim] = useState(new Animated.Value(0.8));
   const router = useRouter();
 
+  const primaryColor = useThemeColor({}, 'primary');
+
   useEffect(() => {
     // Animate the component on mount
     Animated.parallel([
@@ -126,51 +129,39 @@ const Favorites = () => {
       ]}
     >
       <LinearGradient
-        colors={['#f8f9fa', '#e9ecef', '#dee2e6']}
+        colors={['#f8f9fa', '#e9ecef']}
         style={styles.gradientBackground}
       >
-        {/* Decorative elements */}
         <View style={styles.decorativeCircle1} />
         <View style={styles.decorativeCircle2} />
         <View style={styles.decorativeCircle3} />
-        
         {/* Main content */}
-        <ScrollView >
-          <View style={styles.emptyContent}>
-
-        
+        <View style={styles.emptyContent}>
           <View style={styles.iconContainer}>
             <LinearGradient
               colors={['#FF6B6B', '#FF8E8E']}
               style={styles.iconGradient}
             >
-              <Ionicons name="heart" size={60} color="white" />
+              <Ionicons name="heart" size={50} color="white" />
             </LinearGradient>
           </View>
           
-          <Text style={styles.emptyTitle}>Your Favorites Are Empty</Text>
+          <Text style={styles.emptyTitle}>No Favorites Yet</Text>
           <Text style={styles.emptySubtitle}>
-            Start building your dream furniture collection by liking products you love
+            Start liking products to build your collection
           </Text>
           
           <View style={styles.featuresContainer}>
             <View style={styles.featureItem}>
               <View style={styles.featureIcon}>
-                <Ionicons name="heart-outline" size={20} color="#FF6B6B" />
+                <Ionicons name="heart-outline" size={18} color="#FF6B6B" />
               </View>
               <Text style={styles.featureText}>Like products you love</Text>
             </View>
             
             <View style={styles.featureItem}>
               <View style={styles.featureIcon}>
-                <Ionicons name="bookmark-outline" size={20} color="#4ECDC4" />
-              </View>
-              <Text style={styles.featureText}>Save them for later</Text>
-            </View>
-            
-            <View style={styles.featureItem}>
-              <View style={styles.featureIcon}>
-                <Ionicons name="cart-outline" size={20} color="#45B7D1" />
+                <Ionicons name="cart-outline" size={16} color="#45B7D1" />
               </View>
               <Text style={styles.featureText}>Easy access to favorites</Text>
             </View>
@@ -181,16 +172,14 @@ const Favorites = () => {
             onPress={() => router.push('/(auth)/(tabs)/home')}
           >
             <LinearGradient
-              colors={['#00685C', '#00897B']}
+              colors={[primaryColor, primaryColor]}
               style={styles.exploreButtonGradient}
             >
-              <Ionicons name="search" size={20} color="white" style={{ marginRight: 8 }} />
+              <Ionicons name="search" size={18} color="white" style={{ marginRight: 6 }} />
               <Text style={styles.exploreButtonText}>Explore Products</Text>
             </LinearGradient>
           </TouchableOpacity>
-       
-          </View>
-           </ScrollView>
+        </View>
       </LinearGradient>
     </Animated.View>
   );
@@ -354,100 +343,100 @@ const styles = StyleSheet.create({
   emptyContent: {
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 40,
-    paddingVertical: 30,
-    // maxWidth: 320,
+    justifyContent: 'center',
+    paddingHorizontal: 30,
+    paddingVertical: 20,
+    maxWidth: 300,
   },
   iconContainer: {
-    marginBottom: 24,
-
+    marginBottom: 16,
   },
   iconGradient: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#FF6B6B',
     shadowOffset: {
       width: 0,
-      height: 8,
+      height: 4,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   emptyTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#2C3E50',
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   emptySubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#7F8C8D',
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
+    lineHeight: 20,
+    marginBottom: 24,
   },
   featuresContainer: {
     width: '100%',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    marginBottom: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     backgroundColor: 'white',
-    borderRadius: 12,
+    borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
   },
   featureIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#F8F9FA',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 10,
   },
   featureText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#2C3E50',
     fontWeight: '500',
   },
   exploreButton: {
     width: '100%',
-    borderRadius: 16,
+    borderRadius: 12,
     overflow: 'hidden',
     shadowColor: '#00685C',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   exploreButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
   },
   exploreButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
   },
