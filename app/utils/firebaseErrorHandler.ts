@@ -227,4 +227,7 @@ export const resetFirebaseErrorRetryCount = () => {
 
 export const getFirebaseErrorRetryCount = () => {
   return firebaseErrorHandler.getRetryCount();
-}; 
+};
+
+// Default export for the main error handler
+export default firebaseErrorHandler; 
