@@ -219,4 +219,16 @@ export const isCacheEmpty = async (): Promise<boolean> => {
     console.error('Error checking if cache is empty:', error);
     return true;
   }
-}; 
+};
+
+// Default export for the main cache utilities
+const cacheUtils = {
+  getCacheStats,
+  clearSpecificCache,
+  clearAllCache,
+  clearSecureStorage,
+  isCacheEmpty,
+  CACHE_KEYS,
+};
+
+export default cacheUtils; 
