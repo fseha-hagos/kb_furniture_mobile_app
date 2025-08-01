@@ -29,4 +29,6 @@ export const useBackHandler = ({ onBackPress, enabled = true }: UseBackHandlerOp
       }
     };
   }, [onBackPress, enabled]);
-}; 
+};
+
+export default useBackHandler; 
