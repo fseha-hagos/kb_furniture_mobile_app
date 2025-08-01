@@ -198,7 +198,7 @@ const NetworkAwareApp: React.FC<{ children: React.ReactNode }> = ({ children }) 
   if (isConnected === false && !hasEverConnected) {
     return (
       <View style={{ flex: 1 }}>
-        <NetworkError onRetry={() => {}} message="No internet connection. Please check your network." showReloadOption={false} />
+        <NetworkError onRetry={() => {}} message="No internet connection. Please check your network." />
       </View>
     );
   }
