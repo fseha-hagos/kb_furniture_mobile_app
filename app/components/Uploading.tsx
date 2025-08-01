@@ -82,3 +82,5 @@ export function Uploading({ image, video, progress }: props) {
     </View>
   );
 }
+
+export default Uploading;

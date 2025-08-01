@@ -93,3 +93,5 @@ export function UploadingAndroid({ image, video, progress }: props) {
     </View>
   );
 }
+
+export default UploadingAndroid;
