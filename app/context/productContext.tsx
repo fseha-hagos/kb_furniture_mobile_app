@@ -192,4 +192,6 @@ export const useProduct = () => {
     throw new Error('useProduct must be used within a ProductProvider');
   }
   return context;
-}; 
+};
+
+export default ProductProvider; 
