@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useScreenshotPrevention } from '../../hooks/useScreenshotPrevention';
 import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
 
@@ -49,6 +50,9 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
 
   const isLiked = likedProducts?.some(item => item.productId === product.productId);
 
+  // Enable screenshot prevention for the product detail component
+  useScreenshotPrevention(true);
+
   const handleAddToCart = () => {
     if (product.stock <= 0) {
       Alert.alert('Out of Stock', 'This item is currently out of stock.');
@@ -72,7 +76,7 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
         <Ionicons name="image-outline" size={30} color="#ccc" />
       </View>
       <Text style={styles.relatedProductName}>{relatedProduct.name}</Text>
-      <Text style={styles.relatedProductPrice}>${relatedProduct.price}</Text>
+      <Text style={styles.relatedProductPrice}>Birr {relatedProduct.price}</Text>
     </TouchableOpacity>
   );
 
@@ -125,7 +129,7 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
         </View>
 
         <View style={styles.priceRow}>
-          <Text style={styles.productPrice}>${product.price}</Text>
+          <Text style={styles.productPrice}>Birr {product.price}</Text>
           {product.stock <= 0 && (
             <View style={styles.outOfStockBadge}>
               <Text style={styles.outOfStockText}>Out of Stock</Text>

@@ -24,7 +24,7 @@ interface ProductStackParamList {
 // Dynamic advertising messages
 const advertisingMessages = [
   "🔥 Special Offer: 20% off all furniture!",
-  "🎉 Free shipping on orders above $500",
+  "🎉 Free shipping on orders above Birr 500",
   "💫 New arrivals every week",
   "🌟 Premium quality furniture at best prices",
   "✨ Limited time deals - Shop now!",

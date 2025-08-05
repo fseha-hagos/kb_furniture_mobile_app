@@ -49,11 +49,11 @@ const EnhancedSearch: React.FC<EnhancedSearchProps> = ({
 
   const priceRanges: FilterOption[] = [
     { id: 'all', label: 'All Prices', value: '' },
-    { id: 'under100', label: 'Under $100', value: '0-100' },
-    { id: '100-300', label: '$100 - $300', value: '100-300' },
-    { id: '300-500', label: '$300 - $500', value: '300-500' },
-    { id: '500-1000', label: '$500 - $1000', value: '500-1000' },
-    { id: 'over1000', label: 'Over $1000', value: '1000+' },
+    { id: 'under100', label: 'Under Birr 100', value: '0-100' },
+    { id: '100-300', label: 'Birr 100 - Birr 300', value: '100-300' },
+    { id: '300-500', label: 'Birr 300 - Birr 500', value: '300-500' },
+    { id: '500-1000', label: 'Birr 500 - Birr 1000', value: '500-1000' },
+    { id: 'over1000', label: 'Over Birr 1000', value: '1000+' },
   ];
 
   const colors: FilterOption[] = [
