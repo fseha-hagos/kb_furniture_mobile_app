@@ -1,3 +1,4 @@
+import ContactAdmin from '@/app/components/ContactAdmin';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -7,6 +8,7 @@ import {
     Dimensions,
     FlatList,
     Linking,
+    Modal,
     Platform,
     RefreshControl,
     StyleSheet,
@@ -14,7 +16,6 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import AwesomeAlert from 'react-native-awesome-alerts';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 import CartCard from '../../components/cartCard';
 import { useAuth } from '../../context/cartContext';
@@ -25,7 +26,8 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#F7F7F7',
+        // backgroundColor: '#F5F5F5',
     },
     // Beautiful Navbar Styles
     navbarContainer: {
@@ -151,7 +153,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     gradientButton: {
-        padding: 18,
+        padding: 6,
         alignItems: 'center',
         borderRadius: 16,
     },
@@ -353,18 +355,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
     },
+    contactButtonContainer: {
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+    },
+    contactAdminButton: {
+        marginTop: 10,
+    },
+    contactButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 8,
+    },
+
 });
 
 const Cart = () => {
     const router = useRouter();
-    const { carts, totalPrice, deleteFromCart } = useAuth();
+    const { carts, totalPrice, deleteFromCart, updateQuantity } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
+    const [showContactAdmin, setShowContactAdmin] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const scaleAnim = useRef(new Animated.Value(0.9)).current;
     const slideAnim = useRef(new Animated.Value(50)).current;
 
     const primaryColor = useThemeColor({}, 'primary');
+    const secondaryColor = useThemeColor({}, 'secondary');
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({}, 'background');
     const cardColor = useThemeColor({}, 'card');
@@ -529,7 +547,7 @@ const Cart = () => {
                         onPress={() => router.push('/(auth)/(tabs)/home')}
                     >
                         <LinearGradient
-                            colors={[primaryColor, '#00897B']}
+                            colors={[primaryColor, primaryColor]}
                             style={styles.gradientButton}
                         >
                             <Text style={styles.shopNowText}>Start Shopping</Text>
@@ -554,157 +572,106 @@ const Cart = () => {
                     }
                 ]}
             >
-                {/* <View style={styles.headerContainer}>
-                    <View style={styles.headerLeft}>
-                        <Text style={styles.headerTitle}>Shopping Cart</Text>
-                        <Text style={styles.headerSubtitle}>{carts.length} items in your cart</Text>
-                    </View>
-                    <View style={styles.cartIcon}>
-                        <MaterialCommunityIcons name="cart-outline" size={24} color="#FFFFFF" />
-                        <View style={styles.cartCount}>
-                            <Text style={styles.cartCountText}>{carts.length}</Text>
-                        </View>
-                    </View>
-                </View> */}
-                {/* <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Cart Items</Text>
-                    <Text style={styles.sectionSubtitle}>{carts.length} items in your cart</Text>
-                </View> */}
-
-                <FlatList 
-                    data={carts}
-                    renderItem={({ item, index }) => (
-                        <Animated.View
-                            style={[
-                                styles.cartItemContainer,
-                                {
-                                    opacity: fadeAnim,
-                                    transform: [
-                                        { scale: scaleAnim },
-                                        { translateX: fadeAnim.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [-20, 0]
-                                        })}
-                                    ]
-                                }
-                            ]}
-                        >
-                            <CartCard
-                                item={item}
-                                deleteFromCart={deleteFromCart}
-                            />
-                        </Animated.View>
-                    )}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.scrollContent}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }
-                    ListFooterComponent={
-                        <>
-                        
-                            {/* <Animated.View 
-                                style={[
-                                    styles.priceContainer,
-                                    {
-                                        opacity: fadeAnim,
-                                        transform: [{ scale: scaleAnim }]
-                                    }
-                                ]}
-                            >
-                                <View style={styles.priceAndTotal}>
-                                    <Text style={styles.priceLabel}>Subtotal</Text>
-                                    <Text style={styles.priceValue}>Birr {totalPrice}</Text>
-                                </View>
-                                <View style={styles.priceAndTotal}>
-                                    <Text style={styles.shippingText}>Shipping</Text>
-                                    <Text style={[styles.shippingText, styles.freeShipping]}>Free</Text>
-                                </View>
-                                <View style={styles.divider} />
-                                <View style={styles.priceAndTotal}>
-                                    <Text style={styles.totalLabel}>Total Amount</Text>
-                                    <Text style={styles.totalValue}>Birr {totalPrice}</Text>
-                                </View>
-                            </Animated.View> */}
-                        </>
-                    }
-                />
-                {/* <View style={styles.buttonContainer}>
-                    <TouchableOpacity 
-                        style={styles.button}
-                        onPress={() => setShowAlert(true)}
+            <FlatList 
+                data={carts}
+                renderItem={({ item, index }) => (
+                    <Animated.View
+                        style={[
+                            styles.cartItemContainer,
+                            {
+                                opacity: fadeAnim,
+                                transform: [
+                                    { scale: scaleAnim },
+                                    { translateX: fadeAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [-20, 0]
+                                    })}
+                                ]
+                            }
+                        ]}
                     >
-                        <LinearGradient
-                            colors={['#00685C', '#00897B']}
-                            style={styles.gradientButton}
-                        >
-                            <Text style={styles.buttonText}>Get Coupon</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={styles.button}
-                        onPress={() => { Linking.openURL('tel:+251948491265'); }}
-                    >
-                        <LinearGradient
-                            colors={['#00685C', '#00897B']}
-                            style={styles.gradientButton}
-                        >
-                            <Text style={styles.buttonText}>Call Us</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </View> */}
+                        <CartCard
+                            item={item}
+                            deleteFromCart={deleteFromCart}
+                            updateQuantity={updateQuantity}
+                        />
+                    </Animated.View>
+                )}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+                
+            />
             </Animated.View>
        
-                            <Animated.View 
-                                style={[
-                                    styles.priceContainer,
-                                    {
-                                        opacity: fadeAnim,
-                                        transform: [{ scale: scaleAnim }]
-                                    }
-                                ]}
-                            >
-                                <View style={styles.priceAndTotal}>
-                                    <Text style={styles.priceLabel}>Subtotal</Text>
-                                    <Text style={styles.priceValue}>Birr {totalPrice}</Text>
-                                </View>
-                                <View style={styles.priceAndTotal}>
-                                    <Text style={styles.shippingText}>Shipping</Text>
-                                    <Text style={[styles.shippingText, styles.freeShipping]}>Free</Text>
-                                </View>
-                                <View style={styles.divider} />
-                                <View style={styles.priceAndTotal}>
-                                    <Text style={styles.totalLabel}>Total Amount</Text>
-                                    <Text style={styles.totalValue}>Birr {totalPrice}</Text>
-                                </View>
-                            </Animated.View>
+            <Animated.View 
+                style={[
+                    styles.priceContainer,
+                    {
+                        opacity: fadeAnim,
+                        transform: [{ scale: scaleAnim }]
+                    }
+                ]}
+            >
+                <View style={styles.priceAndTotal}>
+                    <Text style={styles.priceLabel}>Subtotal</Text>
+                    <Text style={styles.priceValue}>Birr {totalPrice}</Text>
+                </View>
+                <View style={styles.priceAndTotal}>
+                    <Text style={styles.shippingText}>Shipping</Text>
+                    <Text style={[styles.shippingText, styles.freeShipping]}>Free</Text>
+                </View>
+                <View style={styles.divider} />
+                <View style={styles.priceAndTotal}>
+                    <Text style={styles.totalLabel}>Total Amount</Text>
+                    <Text style={styles.totalValue}>Birr {totalPrice}</Text>
+                </View>
+            </Animated.View>
+
+            {/* Contact Admin Button */}
+            <Animated.View 
+                style={[
+                    styles.contactButtonContainer,
+                    {
+                        opacity: fadeAnim,
+                        transform: [{ scale: scaleAnim }]
+                    }
+                ]}
+            >
+                <TouchableOpacity 
+                    style={styles.contactAdminButton}
+                    onPress={() => setShowContactAdmin(true)}
+                >
+                    <LinearGradient
+                        colors={[primaryColor, primaryColor]}
+                        style={styles.gradientButton}
+                    >
+                        <Ionicons name="chatbubble-ellipses" size={20} color="white" />
+                        <Text style={styles.contactButtonText}>Contact Admin</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </Animated.View>
                       
 
-            <AwesomeAlert
-                show={showAlert}
-                showProgress={false}
-                title="CN: 20000"
-                message="20000 is your coupon number. Meet us with this coupon on Telegram or pay with our payment system methods!"
-                closeOnTouchOutside={true}
-                closeOnHardwareBackPress={false}
-                showCancelButton={true}
-                showConfirmButton={true}
-                cancelText="Telegram"
-                confirmText="Payment"
-                cancelButtonColor={primaryColor}
-                confirmButtonColor={primaryColor}
-                onDismiss={() => {
-                    setShowAlert(false);
-                }}
-                onCancelPressed={() => {
-                    handleOnTelegram();
-                }}
-                onConfirmPressed={() => {
-                    setShowAlert(false);
-                }}
-                titleStyle={{ color: "black", fontSize: 20, fontWeight: '600' }}
-                messageStyle={{ color: "#666666", fontSize: 16 }}
-            />
+            {/* Contact Admin Modal */}
+            
+            <Modal
+                visible={showContactAdmin}
+                animationType="slide"
+                presentationStyle="fullScreen"
+                
+                
+                onRequestClose={() => setShowContactAdmin(false)}
+            >    
+            
+
+               <ContactAdmin onClose={() => setShowContactAdmin(false)} />
+               
+            
+            </Modal>
+
         </View>
     );
 };

@@ -55,7 +55,7 @@ const Cupens = () => {
             id: '3',
             code: 'FREESHIP',
             title: 'Free Shipping',
-            description: 'Free shipping on orders over $300',
+            description: 'Free shipping on orders over Birr 300',
             discount: 'FREE SHIPPING',
             minPurchase: 300,
             validUntil: '2024-08-15',
@@ -134,7 +134,7 @@ const Cupens = () => {
                     </View>
                     <View style={styles.detailItem}>
                         <Ionicons name="card-outline" size={16} color="#666" />
-                        <Text style={styles.detailText}>Min. purchase ${coupon.minPurchase}</Text>
+                        <Text style={styles.detailText}>Min. purchase Birr {coupon.minPurchase}</Text>
                     </View>
                 </View>
                 

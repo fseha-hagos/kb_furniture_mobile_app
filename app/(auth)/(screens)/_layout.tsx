@@ -1,3 +1,4 @@
+import { useGlobalScreenshotPrevention } from '@/hooks/useGlobalScreenshotPrevention';
 import { Stack } from 'expo-router';
 import React, { useEffect } from 'react';
 // const Stack = createNativeStackNavigator();
@@ -7,6 +8,8 @@ const Layout = () => {
    // SplashScreen.hide();
   }, []);
 
+  // Enable global screenshot prevention for all screen pages
+  useGlobalScreenshotPrevention();
   
   return (
       <Stack>  
