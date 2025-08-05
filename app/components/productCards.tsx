@@ -125,7 +125,7 @@ const ProductCards = ({ item }: props) => {
               
                
                <View style={styles.priceContainer}>
-                 <Text style={styles.price}>${item.price}</Text>
+                 <Text style={styles.price}>Birr {item.price}</Text>
                  <View style={styles.ratingContainer}>
                    <Ionicons name="star" size={12} color="#FFD700" />
                    <Text style={styles.rating}>4.5</Text>

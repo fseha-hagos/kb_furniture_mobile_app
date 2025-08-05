@@ -6,14 +6,14 @@ import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useState } from 'react';
 import {
-  Dimensions,
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useProduct } from '../context/productContext';
 
@@ -108,8 +108,8 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
     const features: Feature[] = [
       { 
         name: 'Price', 
-        current: `$${currentProduct.price?.toString() || 'N/A'}`, 
-        compare: `$${selectedProduct.price?.toString() || 'N/A'}`,
+        current: `Birr ${currentProduct.price?.toString() || 'N/A'}`, 
+        compare: `Birr ${selectedProduct.price?.toString() || 'N/A'}`,
         icon: 'dollar'
       },
       { 
@@ -230,7 +230,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                                 <Text style={styles.productName} numberOfLines={1}>
                                   {product.title}
                                 </Text>
-                                <Text style={styles.productPrice}>${product.price}</Text>
+                                <Text style={styles.productPrice}>Birr {product.price}</Text>
                                 <View style={styles.stockInfo}>
                                   <Text style={styles.stockText}>Stock: {product.stock}</Text>
                                 </View>
@@ -253,7 +253,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                       />
                       <View style={styles.productInfo}>
                         <Text style={styles.productName}>{currentProduct.title}</Text>
-                        <Text style={styles.productPrice}>${currentProduct.price}</Text>
+                        <Text style={styles.productPrice}>Birr {currentProduct.price}</Text>
                         <View style={styles.stockInfo}>
                           <Text style={styles.stockText}>Stock: {currentProduct.stock}</Text>
                         </View>
@@ -267,7 +267,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                       />
                       <View style={styles.productInfo}>
                         <Text style={styles.productName}>{selectedProduct.title}</Text>
-                        <Text style={styles.productPrice}>${selectedProduct.price}</Text>
+                        <Text style={styles.productPrice}>Birr {selectedProduct.price}</Text>
                         <View style={styles.stockInfo}>
                           <Text style={styles.stockText}>Stock: {selectedProduct.stock}</Text>
                         </View>

@@ -303,7 +303,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         </View>
       </View>
       <Text style={styles.orderDate}>{order.date}</Text>
-      <Text style={styles.orderTotal}>${order.total}</Text>
+      <Text style={styles.orderTotal}>Birr {order.total}</Text>
     </TouchableOpacity>
   );
 
@@ -313,7 +313,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         <Ionicons name="image-outline" size={40} color="#ccc" />
       </View>
       <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.productPrice}>${product.price}</Text>
+      <Text style={styles.productPrice}>Birr {product.price}</Text>
     </TouchableOpacity>
   );
 
@@ -346,7 +346,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             />
             <StatCard 
               icon="wallet-outline" 
-              value={`$${stats.totalSpent}`} 
+              value={`Birr ${stats.totalSpent}`} 
               label="Total Sales" 
               color="#2196F3" 
             />

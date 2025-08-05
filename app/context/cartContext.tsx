@@ -11,9 +11,11 @@ interface AuthProps {
     carts?: cartType[],
     onAddToCart?: (item: productsType, selectedColor: string) => Promise<void | any>;
     deleteFromCart?: (item: productsType) => Promise<void | any>;
+    updateQuantity?: (item: productsType, quantity: number) => Promise<void | any>;
     handleLiked?:  (item: productsType) => Promise<void | any>;
     refreshCart?: () => Promise<void | any>;
     likedProducts?: productsType[];
+    clearCart?: () => Promise<void | any>;
 }
 
 //const TOKEN_KEY = 'my-jwt';
@@ -79,6 +81,30 @@ export const AuthProvider = ({children}: any)=>{
         setCarts(newItems)
         totalSum(newItems);
     }
+
+    const updateQuantity = async (item: productsType, quantity: number) => {
+        if (quantity <= 0) {
+            await deleteFromCart(item);
+            return;
+        }
+        
+        const updatedCarts = carts.map((cart) => 
+            cart.product.productId === item.productId 
+                ? { ...cart, quantity: quantity }
+                : cart
+        );
+        
+        await AsyncStorage.setItem("carts", JSON.stringify(updatedCarts));
+        setCarts(updatedCarts);
+        totalSum(updatedCarts);
+    }
+
+    const clearCart = async () => {
+        await AsyncStorage.setItem("carts", JSON.stringify([]));
+        setCarts([]);
+        setTotalPrice(0);
+    }
+
     const refreshCart = async () => {
         loadCartItems();
         loadLikedItems();
@@ -110,9 +136,11 @@ export const AuthProvider = ({children}: any)=>{
         carts,
         onAddToCart: addToCart,
         deleteFromCart,
+        updateQuantity,
         likedProducts,
         handleLiked,
         refreshCart,
+        clearCart,
     };
 
     return (
