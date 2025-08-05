@@ -1,9 +1,10 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useSignIn, useSignUp } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import * as AuthSession from 'expo-auth-session';
-import { Link, Stack, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, Keyboard, KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 const Register = () => {
@@ -16,6 +17,9 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  
+
+  const primaryColor = useThemeColor({}, 'primary');
  
   const { signIn } = useSignIn();
 
@@ -88,7 +92,7 @@ const Register = () => {
               <Text style={styles.subTitle}>Sign up and don't miss anything that can make your home stunning.</Text>
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
               <View style={styles.inputWrapper}>
-                <Ionicons name="mail-outline" size={20} color="#00685C" style={styles.inputIcon} />
+                <Ionicons name="mail-outline" size={20} color={primaryColor} style={styles.inputIcon} />
                 <TextInput
                   autoCapitalize="none"
                   placeholder="...@gmail.com"
@@ -101,7 +105,7 @@ const Register = () => {
                 />
               </View>
               <View style={styles.inputWrapper}>
-                <Ionicons name="lock-closed-outline" size={20} color="#00685C" style={styles.inputIcon} />
+                <Ionicons name="lock-closed-outline" size={20} color={primaryColor} style={styles.inputIcon} />
                 <TextInput
                   placeholder="Password"
                   value={password}
@@ -112,10 +116,10 @@ const Register = () => {
                   onPressIn={Keyboard.dismiss}
                 />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                  <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#00685C" />
+                  <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={primaryColor} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={onSignUpPress} style={styles.button} disabled={loading}>
+              <TouchableOpacity onPress={onSignUpPress} style={[{backgroundColor: primaryColor}, styles.button]} disabled={loading}>
                 <Text style={{ fontSize: 17, color: 'white' }}>Sign up</Text>
               </TouchableOpacity>
               <View style={styles.dividerRow}>
@@ -136,11 +140,11 @@ const Register = () => {
               <View style={styles.signinContainer}>
                 <View style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
                   <Text>Already have an account?</Text>
-                  <Link href="/login" asChild>
-                    <Pressable>
+                  {/* <Link href="/login" asChild> */}
+                    <TouchableOpacity onPress={() => router.replace('/login')}>
                       <Text style={styles.signin}> Sign in</Text>
-                    </Pressable>
-                  </Link>
+                    </TouchableOpacity>
+                  {/* </Link> */}
                 </View>
                 {/* <TouchableOpacity style={styles.backHomeBtn} onPress={() => navigation.navigate('home' as never)}>
                   <Ionicons name="arrow-back" size={18} color="#00685C" />
@@ -260,7 +264,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 8,
-    backgroundColor: '#00685C',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 13,

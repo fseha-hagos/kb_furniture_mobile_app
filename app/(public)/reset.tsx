@@ -1,3 +1,4 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useSignIn } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
@@ -12,6 +13,8 @@ const PwReset = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { signIn, setActive } = useSignIn();
+
+  const primaryColor = useThemeColor({}, 'primary');
 
   // Request a password reset code by email
   const onRequestReset = async () => {
@@ -67,7 +70,7 @@ const PwReset = () => {
                   placeholderTextColor="#aaa"
                 />
               </View>
-              <TouchableOpacity onPress={onRequestReset} style={styles.button}>
+              <TouchableOpacity onPress={onRequestReset} style={[{backgroundColor: primaryColor}, styles.button]}>
                 <Text style={{ fontSize: 17, color: 'white' }}>Send Reset Code</Text>
               </TouchableOpacity>
             </>
@@ -100,7 +103,7 @@ const PwReset = () => {
                   <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#00685C" />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={onReset} style={styles.button}>
+              <TouchableOpacity onPress={onReset} style={[{backgroundColor: primaryColor}, styles.button]}>
                 <Text style={{ fontSize: 17, color: 'white' }}>Set New Password</Text>
               </TouchableOpacity>
             </>
@@ -174,7 +177,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 8,
-    backgroundColor: '#00685C',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 13,

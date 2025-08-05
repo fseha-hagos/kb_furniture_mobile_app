@@ -1,12 +1,13 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useSignIn } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import * as AuthSession from 'expo-auth-session';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-toast-message';
+
 
 const Login = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -15,7 +16,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const navigation = useNavigation();
+  const router = useRouter();
+
+  const primaryColor = useThemeColor({}, 'primary');
 
   const onSignInPress = async () => {
     if (!isLoaded) {
@@ -69,7 +72,7 @@ const Login = () => {
           <Text style={styles.subTitle}>Sign in and don't miss anything that can make your home stunning.</Text>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={20} color="#00685C" style={styles.inputIcon} />
+            <Ionicons name="mail-outline" size={20} color={primaryColor} style={styles.inputIcon} />
             <TextInput
               autoCapitalize="none"
               placeholder="...@gmail.com"
@@ -81,7 +84,7 @@ const Login = () => {
             />
           </View>
           <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={20} color="#00685C" style={styles.inputIcon} />
+            <Ionicons name="lock-closed-outline" size={20} color={primaryColor} style={styles.inputIcon} />
             <TextInput
               placeholder="Password"
               value={password}
@@ -91,10 +94,10 @@ const Login = () => {
               placeholderTextColor="#aaa"
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color="#00685C" />
+              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={primaryColor} />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={onSignInPress} style={styles.button} disabled={loading}>
+          <TouchableOpacity onPress={onSignInPress} style={[{backgroundColor: primaryColor}, styles.button]} disabled={loading}>
             <Text style={{ fontSize: 17, color: 'white' }}>Login</Text>
           </TouchableOpacity>
           <View style={styles.dividerRow}>
@@ -120,16 +123,12 @@ const Login = () => {
             </Link>
             <View style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
               <Text>Don't have an account?</Text>
-              <Link href="/register" asChild>
-                <Pressable>
+              {/* <Link href="/register" asChild> */}
+              <TouchableOpacity onPress={() => router.replace('/register')}>
                   <Text style={styles.signin}> Sign up</Text>
-                </Pressable>
-              </Link>
+                </TouchableOpacity>
+              {/* </Link> */}
             </View>
-            {/* <TouchableOpacity style={styles.backHomeBtn} onPress={() => navigation.navigate('home' as never)}>
-              <Ionicons name="arrow-back" size={18} color="#00685C" />
-              <Text style={styles.backHomeText}>Back to Home</Text>
-            </TouchableOpacity> */}
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -215,7 +214,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 8,
-    backgroundColor: '#00685C',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 13,
