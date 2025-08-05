@@ -239,7 +239,7 @@ interface SearchFilter {
 **Filter Options:**
 
 - **Categories**: Sofas, Chairs, Tables, Beds, Storage, Lighting
-- **Price Ranges**: Under $100, $100-$300, $300-$500, etc.
+- **Price Ranges**: Under Birr 100, Birr 100-Birr 300, Birr 300-Birr 500, etc.
 - **Colors**: Black, White, Brown, Gray, Blue, Green
 - **Materials**: Wood, Leather, Fabric, Metal, Plastic
 - **Sort Options**: Relevance, Price, Newest, Rating
@@ -792,7 +792,7 @@ describe("Cart Integration", () => {
 
     fireEvent.press(getByText("Add to Cart"));
 
-    expect(getByText("$299.99")).toBeInTheDocument();
+    expect(getByText("Birr 299.99")).toBeInTheDocument();
   });
 });
 ```
