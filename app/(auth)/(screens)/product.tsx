@@ -1,3 +1,4 @@
+import { useScreenshotPrevention } from '@/hooks/useScreenshotPrevention';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { productsType } from '@/types/type';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
@@ -115,6 +116,9 @@ import { useProduct } from '../../context/productContext';
     const [activeColorIndex, setActiveColorIndex] = React.useState(0);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    
+    // Enable screenshot prevention for the product page
+    const { preventScreenshot, allowScreenshot } = useScreenshotPrevention(true);
 
     const backgroundColor = useThemeColor({}, 'background');
   const primaryColor = useThemeColor({}, 'primary');
@@ -129,6 +133,7 @@ import { useProduct } from '../../context/productContext';
 
     useEffect(() => {
       let isMounted = true;
+      
       const loadData = async () => {
         try {
           await addToRecentlyViewed(productData);
@@ -140,8 +145,12 @@ import { useProduct } from '../../context/productContext';
           }
         }
       };
+
       loadData();
-      return () => { isMounted = false; };
+
+      return () => { 
+        isMounted = false; 
+      };
     },[]);
 
     const handleAddToCart = async (productData:productsType) => {
@@ -174,7 +183,7 @@ import { useProduct } from '../../context/productContext';
     const handleShare = async () => {
       try {
         await Share.share({
-          message: `Check out this amazing ${productData.title} for only $${productData.price}!`,
+          message: `Check out this amazing ${productData.title} for only Birr ${productData.price}!`,
           url: productData.images[0],
         });
       } catch (error) {
@@ -194,6 +203,16 @@ import { useProduct } from '../../context/productContext';
       const contentOffset = event.nativeEvent.contentOffset.x;
       const index = Math.round(contentOffset / width);
       setCurrentImageIndex(index);
+    };
+
+    const handleFullScreenOpen = async () => {
+      setIsFullScreen(true);
+      await preventScreenshot();
+    };
+
+    const handleFullScreenClose = async () => {
+      setIsFullScreen(false);
+      await allowScreenshot();
     };
 
     if (isLoading) {
@@ -263,7 +282,7 @@ if(!productData) return;
               </View>
               <TouchableOpacity 
                 style={styles.fullScreenButton}
-                onPress={() => setIsFullScreen(true)}>
+                onPress={handleFullScreenOpen}>
                 <FontAwesome name="expand" size={24} color={primaryColor} />
               </TouchableOpacity>
             </View>
@@ -273,11 +292,11 @@ if(!productData) return;
               visible={isFullScreen}
               transparent={true}
               animationType="fade"
-              onRequestClose={() => setIsFullScreen(false)}>
+              onRequestClose={handleFullScreenClose}>
               <View style={styles.fullScreenContainer}>
                 <TouchableOpacity 
                   style={styles.closeButton}
-                  onPress={() => setIsFullScreen(false)}>
+                  onPress={handleFullScreenClose}>
                   <FontAwesome name="close" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
                 <ScrollView
@@ -316,7 +335,7 @@ if(!productData) return;
               <View style={styles.headerSection}>
                 <View style={styles.titleSection}>
                   <Text style={styles.productName}>{productData.title}</Text>
-                  <Text style={styles.productPrice}>${productData.price}</Text>
+                  <Text style={styles.productPrice}>Birr {productData.price}</Text>
                 </View>
                 {/* <View style={styles.ratingContainer}>
                   {Array.from({ length: productData.rating }).map((_, index) => (

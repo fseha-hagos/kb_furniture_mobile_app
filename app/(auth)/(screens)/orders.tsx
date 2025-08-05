@@ -160,7 +160,7 @@ const OrdersPage = () => {
               <Text style={styles.itemColor}>Color: {item.color}</Text>
               <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
             </View>
-            <Text style={styles.itemPrice}>${item.price}</Text>
+            <Text style={styles.itemPrice}>Birr {item.price}</Text>
           </View>
         ))}
       </View>
@@ -168,7 +168,7 @@ const OrdersPage = () => {
       <View style={styles.orderFooter}>
         <View style={styles.orderTotal}>
           <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalAmount}>${order.total}</Text>
+          <Text style={styles.totalAmount}>Birr {order.total}</Text>
         </View>
         
         <View style={styles.orderActions}>

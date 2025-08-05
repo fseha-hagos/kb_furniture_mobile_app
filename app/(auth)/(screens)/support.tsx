@@ -36,7 +36,7 @@ const SupportPage = () => {
     },
     {
       question: 'How long does shipping take?',
-      answer: 'Standard shipping takes 3-5 business days. Express shipping takes 1-2 business days. Free shipping on orders over $500.',
+      answer: 'Standard shipping takes 3-5 business days. Express shipping takes 1-2 business days. Free shipping on orders over Birr 500.',
       category: 'shipping'
     },
     {
