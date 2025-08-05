@@ -322,7 +322,7 @@ const Search = () => {
         <DataFetchError
           message={isOffline ? "No internet connection. Please check your connection and try again." : error || "No data found. Please try again."}
           onRetry={handleRetry}
-          loading={isProductsLoading}
+          // loading={isProductsLoading}
           icon={isOffline ? "wifi-off-outline" : "cloud-offline-outline"}
         />
       </View>

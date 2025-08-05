@@ -1,9 +1,15 @@
-import { useNavigation } from '@react-navigation/native';
+// import { useGlobalScreenshotPrevention } from '@/hooks/useGlobalScreenshotPrevention';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { Stack } from 'expo-router';
 import React from 'react';
 
+
 const PublicLayout = () => {
-  const navigation = useNavigation();
+  const primaryColor = useThemeColor({}, 'primary');
+  
+  // Enable global screenshot prevention for all public pages
+  // useGlobalScreenshotPrevention();
+  
   return (
     <Stack
 
@@ -11,7 +17,7 @@ const PublicLayout = () => {
         headerShown: true,
         headerTintColor: "#fffff0",
           headerStyle: {
-            backgroundColor: '#00685C'
+            backgroundColor: primaryColor
           },
       
        
@@ -21,11 +27,7 @@ const PublicLayout = () => {
         options={{
           headerShown: false
         }}></Stack.Screen>
-        <Stack.Screen
-        name="keyboardavoidtest"
-        options={{
-          headerShown: false
-        }}></Stack.Screen>
+       
       <Stack.Screen
         name="login"
         options={{
