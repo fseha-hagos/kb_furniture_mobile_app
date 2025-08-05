@@ -599,7 +599,7 @@ useEffect(() => {
             overflow: 'hidden',
           }}>
             <MarqueeText 
-              text="🔥 Special Offer: Get 20% off on all furniture this week! 🎉 Free shipping on orders above $500 💫"
+              text="🔥 Special Offer: Get 20% off on all furniture this week! 🎉 Free shipping on orders above Birr 500 💫"
               speed={30}
               backgroundColor={primaryColor}  
               textColor="white"

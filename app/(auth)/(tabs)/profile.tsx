@@ -63,7 +63,7 @@ const Profile = () => {
 
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container, {  }]}>
       <Navbar title="Profile" showBack={false} showSearch={false} />
       
       {isSignedIn ? (
@@ -75,7 +75,7 @@ const Profile = () => {
               style={styles.profileImg}
             />
             <Text style={[styles.profileName, { color: textColor }]}>{user?.firstName || 'User'} {user?.lastName || ''}</Text>
-            <Text style={[styles.profilePhone, { color: accentColor }]} onPress={call}>+251948491265</Text>
+            <Text style={[styles.profilePhone, { color: accentColor }]} onPress={call}>+251-985596125</Text>
             <View style={styles.socialRow}>
               <TouchableOpacity style={[styles.socialIcon, { backgroundColor: backgroundColor }]} onPress={facebook}>
                 <Image source={require('@/assets/logo/fb.png')} style={styles.iconImg} />
