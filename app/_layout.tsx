@@ -1,7 +1,7 @@
-import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { ClerkProvider } from '@clerk/clerk-expo';
+import { Stack } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
@@ -66,35 +66,16 @@ const toastConfig = {
 };
 
 const InitialLayout = () => {
- const { isLoaded, isSignedIn } = useAuth();
- 
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    const inTabsGroup = segments[0] === '(auth)';
-
-    console.log('User changed: ', isSignedIn);
-
-    if (isSignedIn && !inTabsGroup) {
-      router.replace('/home');
-    } else if (!isSignedIn) {
-      router.replace('/home');
-      // router.replace('/login');
-    }
-  }, [isSignedIn]);
-
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(public)" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="+not-found" />
       <Stack.Screen
         name="apiError"
-        options={{ headerShown: false, presentation: "modal" }}
+        options={{ presentation: "modal" }}
       />
-      <Stack.Screen name="(public)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
     </Stack>
   );
 };
@@ -174,27 +155,41 @@ const NetworkAwareApp: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const { isConnected } = useNetwork();
   const [hasEverConnected, setHasEverConnected] = React.useState(false);
   const [showToast, setShowToast] = React.useState(false);
+  const [isInitializing, setIsInitializing] = React.useState(true);
+
+  React.useEffect(() => {
+    // Give the app time to initialize before checking network
+    const timer = setTimeout(() => {
+      setIsInitializing(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   React.useEffect(() => {
     if (isConnected) {
       setHasEverConnected(true);
       setShowToast(false);
       Toast.hide();
-    } else if (isConnected === false) {
-      if (hasEverConnected) {
-        setShowToast(true);
-        Toast.show({
-          type: 'error',
-          text1: 'Network Unavailable',
-          text2: 'You are offline. Some features may not work.',
-          position: 'top',
-          autoHide: false,
-        });
-      }
+    } else if (isConnected === false && hasEverConnected) {
+      // Only show toast if we've been connected before and now we're disconnected
+      setShowToast(true);
+      Toast.show({
+        type: 'error',
+        text1: 'Network Unavailable',
+        text2: 'You are offline. Some features may not work.',
+        position: 'top',
+        autoHide: false,
+      });
     }
-  }, [isConnected]);
+  }, [isConnected, hasEverConnected]);
 
-  // Only show full screen error if the app has never been online
+  // Show normal content while initializing
+  if (isInitializing) {
+    return <>{children}</>;
+  }
+
+  // Only show full screen error if we're definitely offline and have never been online
   if (isConnected === false && !hasEverConnected) {
     return (
       <View style={{ flex: 1 }}>
@@ -202,11 +197,11 @@ const NetworkAwareApp: React.FC<{ children: React.ReactNode }> = ({ children }) 
       </View>
     );
   }
+
   return <>{children}</>;
 };
 
 const RootLayout = () => {
-  const router = useRouter();
   return (
     <ThemeProvider>
       <GlobalErrorBoundary>
