@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+// import { useGlobalScreenshotPrevention } from '@/hooks/useGlobalScreenshotPrevention';
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Tabs, useRouter } from "expo-router";
@@ -86,6 +87,10 @@ const TabIcon = ({ focused, color, iconName, label }: {
 
 export default function Layout() {
   const router = useRouter();
+  
+  // Enable global screenshot prevention for all tab pages
+  // useGlobalScreenshotPrevention();
+  
   return (
     <Tabs
       initialRouteName="home"

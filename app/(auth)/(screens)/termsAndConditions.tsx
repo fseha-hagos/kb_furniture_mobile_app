@@ -147,6 +147,9 @@ const TermsAndConditions = () => {
         },
         contentContainer: {
             flex: 1,
+            paddingHorizontal: 20,
+            paddingTop: 10,
+            paddingBottom: 30,
         },
         lastUpdated: {
             fontSize: 12,
@@ -170,6 +173,7 @@ const TermsAndConditions = () => {
         mainContainer: {
             flex: 1,
             backgroundColor: backgroundColor,
+            paddingHorizontal: 20,
         },
         tabsContainer: {
             flexDirection: 'row',
@@ -177,6 +181,7 @@ const TermsAndConditions = () => {
             backgroundColor: cardColor,
             borderRadius: 12,
             padding: 4,
+            marginTop: 10,
         },
     });
 
@@ -194,32 +199,35 @@ const TermsAndConditions = () => {
     const TermsNavbar = () => (
         <View style={styles.navbarContainer}>
             <LinearGradient
-                colors={[primaryColor, '#00897B', '#26A69A']}
+                colors={[primaryColor, primaryColor]}
                 style={styles.navbarGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
             >
-                {/* Back Button */}
-                <TouchableOpacity 
-                    style={styles.navbarBackButton}
-                    onPress={() => router.back()}
-                >
-                    <LinearGradient
-                        colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)']}
-                        style={styles.backButtonGradient}
+                <View style={styles.navbarContent}>
+                    {/* Back Button */}
+                    <TouchableOpacity 
+                        style={styles.navbarBackButton}
+                        onPress={() => router.back()}
                     >
-                        <Ionicons name="arrow-back" size={24} color="white" />
-                    </LinearGradient>
-                </TouchableOpacity>
+                        <LinearGradient
+                            colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.1)']}
+                            style={styles.backButtonGradient}
+                        >
+                            <Ionicons name="arrow-back" size={24} color="white" />
+                        </LinearGradient>
+                    </TouchableOpacity>
 
-                {/* Title Section */}
-                <View style={styles.navbarTitleContainer}>
-                    <View style={styles.titleTextContainer}>
-                        <Text style={styles.navbarTitle}>Terms & Conditions</Text>
+                    {/* Title Section */}
+                    <View style={styles.navbarTitleContainer}>
+                        <View style={styles.titleTextContainer}>
+                            <Text style={styles.navbarTitle}>Terms & Conditions</Text>
+                        </View>
                     </View>
-                </View>
 
-               
+                    {/* Spacer for balance */}
+                    <View style={{ width: 40 }} />
+                </View>
             </LinearGradient>
         </View>
     );
@@ -348,7 +356,7 @@ const TermsAndConditions = () => {
                         
                         <Text style={styles.contentTitle}>1. Shipping Methods</Text>
                         <Text style={styles.contentText}>
-                            We offer standard shipping (3-5 business days) and express shipping (1-2 business days). Free shipping is available on orders over $500.
+                            We offer standard shipping (3-5 business days) and express shipping (1-2 business days). Free shipping is available on orders over Birr 500.
                         </Text>
 
                         <Text style={styles.contentTitle}>2. Delivery Areas</Text>
