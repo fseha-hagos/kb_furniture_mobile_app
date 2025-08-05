@@ -79,7 +79,7 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
         <Ionicons name="image-outline" size={30} color="#ccc" />
       </View>
       <Text style={styles.suggestedProductName}>{product.name}</Text>
-      <Text style={styles.suggestedProductPrice}>${product.price}</Text>
+      <Text style={styles.suggestedProductPrice}>Birr {product.price}</Text>
       <TouchableOpacity style={styles.addToCartButton}>
         <Ionicons name="add" size={16} color="#fff" />
       </TouchableOpacity>
@@ -103,7 +103,7 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
                 <View style={styles.itemDetails}>
                   <Text style={styles.itemName}>{item.product.title}</Text>
                   <Text style={styles.itemColor}>Color: {item.selectedColor || 'Default'}</Text>
-                  <Text style={styles.itemPrice}>${item.product.price}</Text>
+                  <Text style={styles.itemPrice}>Birr {item.product.price}</Text>
                 </View>
                 
                 <View style={styles.itemActions}>
@@ -174,31 +174,31 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
           
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>${(totalPrice || 0).toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>Birr {(totalPrice || 0).toFixed(2)}</Text>
           </View>
           
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Shipping</Text>
             <Text style={styles.summaryValue}>
-              {shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`}
+              {shippingCost === 0 ? 'Free' : `Birr ${shippingCost.toFixed(2)}`}
             </Text>
           </View>
           
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Tax</Text>
-            <Text style={styles.summaryValue}>${tax.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>Birr {tax.toFixed(2)}</Text>
           </View>
           
           <View style={styles.summaryDivider} />
           
           <View style={styles.summaryRow}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>${finalTotal.toFixed(2)}</Text>
+            <Text style={styles.totalValue}>Birr {finalTotal.toFixed(2)}</Text>
           </View>
           
           {shippingCost > 0 && (
                           <Text style={styles.freeShippingText}>
-                Add ${(500 - (totalPrice || 0)).toFixed(2)} more for free shipping
+                Add Birr {(500 - (totalPrice || 0)).toFixed(2)} more for free shipping
               </Text>
           )}
         </View>
@@ -224,7 +224,7 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
             onPress={proceedToCheckout}
           >
             <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-            <Text style={styles.checkoutTotal}>${finalTotal.toFixed(2)}</Text>
+            <Text style={styles.checkoutTotal}>Birr {finalTotal.toFixed(2)}</Text>
           </TouchableOpacity>
         </View>
       )}

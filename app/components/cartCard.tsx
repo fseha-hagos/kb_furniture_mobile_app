@@ -13,9 +13,10 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 interface prop {
     item: cartType,
     deleteFromCart: any;
+    updateQuantity?: (item: any, quantity: number) => void;
 }
 
-const CartCard = ({item, deleteFromCart}: prop) => {
+const CartCard = ({item, deleteFromCart, updateQuantity}: prop) => {
     // const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
     const router = useRouter();
 
@@ -38,10 +39,23 @@ const CartCard = ({item, deleteFromCart}: prop) => {
                 <Text style={styles.title}>{item.product.title}</Text>
                 <Text style={styles.price}>Birr {item.product.price}</Text>
             <View style={styles.circleSizeContainer}>
-            <View style={[styles.circle, {backgroundColor: item.selectedColor === null ? '"#7094C1"' : item.selectedColor}]} /> 
+                <View style={[styles.circle, {backgroundColor: item.selectedColor === null ? '"#7094C1"' : item.selectedColor}]} /> 
                 
-                
-                <Text style={styles.quantityContainer}> +{item.quantity} </Text>
+                <View style={styles.quantityControls}>
+                    <TouchableOpacity 
+                        style={styles.quantityButton}
+                        onPress={() => updateQuantity && updateQuantity(item.product, (item.quantity || 1) - 1)}
+                    >
+                        <Ionicons name="remove" size={16} color="#666" />
+                    </TouchableOpacity>
+                    <Text style={styles.quantityText}>{item.quantity || 1}</Text>
+                    <TouchableOpacity 
+                        style={styles.quantityButton}
+                        onPress={() => updateQuantity && updateQuantity(item.product, (item.quantity || 1) + 1)}
+                    >
+                        <Ionicons name="add" size={16} color="#666" />
+                    </TouchableOpacity>
+                </View>
             </View>
             </View>
             <View style={{alignItems: 'center', gap: 15}}>
@@ -107,6 +121,27 @@ const styles = StyleSheet.create({
         marginHorizontal: 7,
         fontWeight: "500",
         fontSize: 17
+    },
+    quantityControls: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 10,
+    },
+    quantityButton: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: '#f0f0f0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 5,
+    },
+    quantityText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#333',
+        minWidth: 30,
+        textAlign: 'center',
     }
 });
 
