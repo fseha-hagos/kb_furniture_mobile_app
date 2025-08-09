@@ -37,6 +37,8 @@ const Login = () => {
         text1: "You have logged in successfuly",
         text2: "logged in"
     })
+      // Navigate to home page after successful sign-in
+      router.replace('/(auth)/(tabs)/home');
     } catch (err: any) 
     { Toast.show({
       type: 'error',

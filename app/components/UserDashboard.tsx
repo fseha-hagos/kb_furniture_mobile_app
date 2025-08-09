@@ -29,6 +29,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
 }) => {
   const router = useRouter();
   const { carts } = useAuth();
+  const { likedProducts } = useAuth();
 
   const backgroundColor = useThemeColor({}, 'background');
   const cardColor = useThemeColor({}, 'card');
@@ -93,14 +94,17 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     },
     statCard: {
       width: '48%',
-      backgroundColor: backgroundColor,
+      height: 120,
+      backgroundColor: "white",
       padding: 15,
       borderRadius: 10,
       marginBottom: 10,
       borderLeftWidth: 4,
       borderLeftColor: primaryColor,
       borderWidth: 1,
-      borderColor: borderColor,
+      borderRightColor: borderColor,
+      borderBottomColor: borderColor,
+      borderTopColor: borderColor,
       elevation: 2,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
@@ -428,7 +432,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     // },
     {
       icon: 'heart-outline' as any,
-      value: stats.favoritesCount,
+      value: likedProducts?.length || 0,
       label: 'Favorites',
       color: '#E91E63',
       onPress: () => router.push('/favorites'),
@@ -461,7 +465,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       value: undefined,
       label: 'Support',
       color: '#2196F3',
-      onPress: () => router.push('/(auth)/(screens)/termsAndConditions'),
+      onPress: () => router.push('/(auth)/(screens)/support'),
     },
   ];
 
