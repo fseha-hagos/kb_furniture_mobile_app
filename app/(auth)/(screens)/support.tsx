@@ -1,3 +1,4 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -14,6 +15,10 @@ const SupportPage = () => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('all');
   // Removed: const [searchQuery, setSearchQuery] = useState('');
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const primaryColor = useThemeColor({}, 'primary');
+
 
   const categories = [
     { id: 'all', name: 'All', icon: 'help-circle-outline' },
@@ -134,7 +139,7 @@ const SupportPage = () => {
   const SupportNavbar = () => (
     <View style={styles.navbarContainer}>
       <LinearGradient
-        colors={['#00685C', '#00897B', '#26A69A']}
+        colors={[primaryColor, primaryColor]}
         style={styles.navbarGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -154,14 +159,7 @@ const SupportPage = () => {
 
         {/* Title Section */}
         <View style={styles.navbarTitleContainer}>
-          <View style={styles.titleIconContainer}>
-            <LinearGradient
-              colors={['#FFFFFF', '#F8F9FA']}
-              style={styles.titleIconGradient}
-            >
-              <Ionicons name="help-circle" size={20} color="#00685C" />
-            </LinearGradient>
-          </View>
+         
           <View style={styles.titleTextContainer}>
             <Text style={styles.navbarTitle}>Support Center</Text>
             <Text style={styles.navbarSubtitle}>We're here to help</Text>
@@ -172,7 +170,7 @@ const SupportPage = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       {/* Beautiful Custom Navbar */}
       <SupportNavbar />
       
@@ -217,19 +215,19 @@ const SupportPage = () => {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionsGrid}>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
-              <Ionicons name="document-text-outline" size={24} color="#00685C" />
+              <Ionicons name="document-text-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>Return Policy</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
-              <Ionicons name="shield-checkmark-outline" size={24} color="#00685C" />
+              <Ionicons name="shield-checkmark-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>Warranty Info</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
-              <Ionicons name="car-outline" size={24} color="#00685C" />
+              <Ionicons name="car-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>Shipping Info</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
-              <Ionicons name="card-outline" size={24} color="#00685C" />
+              <Ionicons name="card-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>Payment Methods</Text>
             </TouchableOpacity>
           </View>
@@ -244,7 +242,7 @@ const SupportPage = () => {
                 key={category.id}
                 style={[
                   styles.categoryChip,
-                  selectedCategory === category.id && styles.categoryChipActive
+                  selectedCategory === category.id && {backgroundColor: primaryColor, borderColor: primaryColor}
                 ]}
                 onPress={() => setSelectedCategory(category.id)}
               >
@@ -297,7 +295,7 @@ const SupportPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F7F7',
+   
   },
   // Beautiful Navbar Styles
   navbarContainer: {
@@ -502,10 +500,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
     borderWidth: 1,
     borderColor: '#e9ecef',
-  },
-  categoryChipActive: {
-    backgroundColor: '#00685C',
-    borderColor: '#00685C',
   },
   categoryText: {
     marginLeft: 6,

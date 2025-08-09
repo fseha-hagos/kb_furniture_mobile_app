@@ -23,7 +23,6 @@ const TermsAndConditions = () => {
             backgroundColor: backgroundColor,
         },
         navbarContainer: {
-            paddingTop: 50,
             paddingBottom: 20,
         },
         navbarGradient: {
@@ -221,7 +220,7 @@ const TermsAndConditions = () => {
                     {/* Title Section */}
                     <View style={styles.navbarTitleContainer}>
                         <View style={styles.titleTextContainer}>
-                            <Text style={styles.navbarTitle}>Terms & Conditions</Text>
+                            <Text style={styles.navbarTitle}>Legal & Policies</Text>
                         </View>
                     </View>
 

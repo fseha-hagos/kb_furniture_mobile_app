@@ -1,13 +1,19 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const AboutPage = () => {
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const primaryColor = useThemeColor({}, 'primary');
+  const secondaryColor = useThemeColor({}, 'secondary');
+
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#00685C', '#00897B', '#26A69A']}
+        colors={[primaryColor, primaryColor, ]}
         style={styles.header}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -17,34 +23,34 @@ const AboutPage = () => {
         <Text style={styles.headerSubtitle}>Discover, Shop, and Enjoy Quality Furniture</Text>
       </LinearGradient>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Our Mission</Text>
-        <Text style={styles.paragraph}>
+        <Text style={[styles.sectionTitle, { color: primaryColor }]}>Our Mission</Text>
+        <Text style={styles.paragraph }>
           KB Furniture is dedicated to making furniture shopping easy, enjoyable, and accessible for everyone. We offer a wide range of high-quality products, from modern sofas to classic dining sets, all at competitive prices.
         </Text>
-        <Text style={styles.sectionTitle}>Key Features</Text>
+        <Text style={[styles.sectionTitle, { color: primaryColor }]}>Key Features</Text>
         <View style={styles.featureList}>
           <View style={styles.featureItem}>
-            <Ionicons name="search-outline" size={22} color="#00897B" style={styles.featureIcon} />
+            <Ionicons name="search-outline" size={22} color={secondaryColor} style={styles.featureIcon} />
             <Text style={styles.featureText}>Browse and search a curated catalog of furniture</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="cart-outline" size={22} color="#00897B" style={styles.featureIcon} />
+            <Ionicons name="cart-outline" size={22} color={secondaryColor} style={styles.featureIcon} />
             <Text style={styles.featureText}>Easy and secure online ordering</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="heart-outline" size={22} color="#00897B" style={styles.featureIcon} />
+            <Ionicons name="heart-outline" size={22} color={secondaryColor} style={styles.featureIcon} />
             <Text style={styles.featureText}>Save your favorites and create wishlists</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="star-outline" size={22} color="#00897B" style={styles.featureIcon} />
+            <Ionicons name="star-outline" size={22} color={secondaryColor} style={styles.featureIcon} />
             <Text style={styles.featureText}>Read and write product reviews</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="chatbubbles-outline" size={22} color="#00897B" style={styles.featureIcon} />
+            <Ionicons name="chatbubbles-outline" size={22} color={secondaryColor} style={styles.featureIcon} />
             <Text style={styles.featureText}>24/7 customer support and live chat</Text>
           </View>
         </View>
-        <Text style={styles.sectionTitle}>Why Choose Us?</Text>
+        <Text style={[styles.sectionTitle, { color: primaryColor }]}>Why Choose Us?</Text>
         <Text style={styles.paragraph}>
           We believe in quality, transparency, and customer satisfaction. Our team works tirelessly to bring you the best furniture deals and a seamless shopping experience. Thank you for choosing KB Furniture!
         </Text>

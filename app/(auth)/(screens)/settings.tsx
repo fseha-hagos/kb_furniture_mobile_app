@@ -241,16 +241,16 @@ const SettingsPage = () => {
             />
             <SettingItem
               icon="document-text-outline"
-              title="Terms & Conditions"
-              subtitle="Read our terms of service"
+              title="Legal & Policies"
+              subtitle="Read our legal terms and policies"
               onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
             />
-            <SettingItem
+            {/* <SettingItem
               icon="shield-outline"
               title="Privacy Policy"
               subtitle="How we handle your data"
               onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
-            />
+            /> */}
             <SettingItem
               icon="information-circle-outline"
               title="About"
