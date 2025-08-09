@@ -23,64 +23,7 @@ import { useAuth } from '../../context/cartContext';
 
 const { width, height } = Dimensions.get('window');
 
-export const sampleProduct = [
 
-    { id: 1,   
-      name: 'Sebastian chairs',
-      price: 286,
-      image: require('@/assets/images/chair1.png'),
-      color: '#F7F7F7',
-      isNew: true,
-      isLiked: true,
-      rating: 4,
-      colors: ['#CDCDCD', '#DCDCDC', 'red'],
-      description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-  
-    },
-    {
-      id: 2,
-      name: 'Sebastian chairs',
-      price: 349.99,
-      image: require('@/assets/images/chair2.png'),
-      color: '#FEF5EE',
-      isNew: false,
-      isLiked: false,
-      rating: 4,
-      colors: ['black', 'pink', 'red'],
-      description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-  
-    },
-    {
-      id: 3,
-      name: 'Sebastian chairs',
-      price: 400,
-      image: require('@/assets/images/sofa/3.jpg'),
-      color: '#F7F7F7',
-      isNew: false,
-      isLiked: false,
-      rating: 4,
-      colors: ['black', 'pink', 'red'],
-      description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-  
-    },
-    {
-      id: 4,
-      name: 'Sebastian chairs',
-      price: 349.99,
-      image: require('@/assets/images/chair1.png'),
-      color: '#FEF5EE',
-      isNew: false,
-      isLiked: false,
-      rating: 4,
-      colors: ['black', 'pink', 'red'],
-      description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-  
-    },
-  ];
 
 // create a component
 const Favorites = () => {

@@ -43,6 +43,11 @@ const PublicLayout = () => {
         options={{
           headerTitle: 'Reset Password',
         }}></Stack.Screen>
+      <Stack.Screen
+        name="onBoarding"
+        options={{
+          headerShown: false,
+        }}></Stack.Screen>
     </Stack>
   );
 };

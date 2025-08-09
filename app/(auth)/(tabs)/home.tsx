@@ -1,6 +1,7 @@
 import FloatingCustomerServiceButton from '@/app/components/FloatingCusSerButton';
 import { CATEGORY_DATA, PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
+import { useScreenshotPrevention } from '@/hooks/useScreenshotPrevention';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { categoriesType, productsType, slidesType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
@@ -129,6 +130,8 @@ const Layout = () => {
   const [latestItemLists, setLatestItemLists] = useState<productsType[]>([]);
   const [allProducts, setAllProducts] = useState<productsType[]>([]);
 
+  const { preventScreenshot, allowScreenshot } = useScreenshotPrevention(true);
+
   const [lastItem, setLastItem] = useState<DocumentData[]>();
   const [refreshing, setRefreshing] = useState(false);
   const [startingDoc, setStartingDoc] = useState<DocumentData | null>(null);
@@ -255,7 +258,7 @@ useEffect(() => {
         querySnapShot.forEach((doc) => {
           setCategoryList(categoryList => [...categoryList, doc.data()]);
         });
-        console.log("category lists : ", categoryList)
+        // console.log("category lists : ", categoryList)
       });
     } catch (error) {
       handleFirestoreError(error);
@@ -286,7 +289,7 @@ useEffect(() => {
           setLatestItemLists(prev => [...prev, productData]);
           setAllProducts(prev => [...prev, productData]);
         });
-        console.log("product lists : ", allProducts)
+        // console.log("product lists : ", allProducts)
         setPreviousStart(querySnapshot.docs[(querySnapshot.docs.length - 1)-querySnapshot.docs.length]);
         setStartingDoc(querySnapshot.docs[querySnapshot.docs.length - 1]);
         setHasMoreData(querySnapshot.docs.length === pageSize);
