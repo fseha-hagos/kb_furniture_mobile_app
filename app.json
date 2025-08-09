@@ -17,7 +17,7 @@
         "backgroundColor": "#00685C"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.fseha.kbfurniture"
+      "package": "com.kb.kbfurniture"
     },
     "web": {
       "bundler": "metro",
@@ -25,16 +25,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/logo/kb-furniture-high-resolution-logo-transparent.png",
-          "imageWidth": 250,
-          "resizeMode": "contain",
-          "backgroundColor": "#00685C"
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true
@@ -42,14 +33,14 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "9bafe5ec-bd55-47c6-a676-ed85043a8a77"
+        "projectId": "1974c1df-4fa7-450b-ab3b-6111fc8d563a"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/9bafe5ec-bd55-47c6-a676-ed85043a8a77"
+      "url": "https://u.expo.dev/1974c1df-4fa7-450b-ab3b-6111fc8d563a"
     }
   }
 }

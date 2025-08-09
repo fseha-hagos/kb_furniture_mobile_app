@@ -4,6 +4,7 @@
 node_modules/
 example/
 testcomponents/
+android/
 
 # Expo
 .expo/

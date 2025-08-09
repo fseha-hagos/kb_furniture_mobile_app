@@ -18,7 +18,7 @@ const StartPage = () => {
       if (isSignedIn) {
         router.replace('/(auth)/(tabs)/home');
       } else {
-        router.replace('/profile');
+        router.replace('/onBoarding');
       }
     }, 1500); // Show loading screen for 1.5 seconds
 

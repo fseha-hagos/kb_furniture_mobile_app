@@ -98,19 +98,7 @@ const tokenCache = {
   },
 };
 
-    /*
-     <ImageBackground style={styles.background} source={require("./src/assets/coffee_assets/americano/portrait/americano_pic_1_portrait.png")}>
-     
-       <View style={styles.loginBtn}><Text style={styles.loginTxt}>Login</Text></View>
-       <View style={styles.loginBtn}><Text style={styles.loginTxt}>Sign In</Text></View>
-     
-   </ImageBackground>
-   
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
-    <InitialLayout />
-  </ClerkProvider>
 
-    */
 
 // Global Error Boundary Component
 class GlobalErrorBoundary extends React.Component<
