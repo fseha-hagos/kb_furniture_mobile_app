@@ -3,7 +3,6 @@ import { db, storage } from '@/firebaseConfig';
 import * as ImagePicker from "expo-image-picker";
 import { addDoc, collection, getDocs } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { Formik } from "formik";
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 
@@ -12,7 +11,6 @@ import { RequireAdmin } from '@/app/components/RequireAdmin';
 import { categoriesType, PRODUCT_COLORS, productsType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Switch } from 'react-native';
 import * as Yup from 'yup';
 import { useUserRole } from '../../hooks/useUserRole';
 
@@ -37,47 +35,83 @@ interface Variant {
   stock: number;
 }
 
-interface FormValues {
-  title: string;
-  price: string;
-  category: string[];
+interface FormValuesType {
+  name: {
+    "en": string,
+    "am": string
+  },
+  description: {
+    "en": string,
+    "am": string
+  },
+  price: number,
+  categoryId: string,
+  subCategoryId: string,
+  images: string[],
   colors: string[];
-  description: string;
-  images: string[];
-  isNew: boolean;
-  rating: number;
-  variants: Variant[];
+  variants: {
+      name: string;
+      price: number;
+      stock: number;
+    }[],
 }
 
-const initialValues: FormValues = {
-  title: '',
-  price: '',
-  category: [],
-  colors: [],
-  description: '',
+const initialValues: FormValuesType = {
+  name: { en: "", am: "" },
+  description: { en: "", am: "" },
+  price: 0,
+  categoryId: "",
+  subCategoryId: "",
   images: [],
-  isNew: true,
-  rating: 0,
-  variants: []
+  colors: [],
+  variants: [],
 };
 
+
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required('Title is required'),
-  price: Yup.string().required('Price is required'),
-  category: Yup.array().min(1, 'Select at least one category'),
+  name: Yup.object().shape({
+    en: Yup.string().required('English name is required'),
+    am: Yup.string().required('Amharic name is required'),
+  }),
+  description: Yup.object().shape({
+    en: Yup.string().required('English Description is required'),
+    am: Yup.string().required('Amharic Description is required'),
+  }),
+  price: Yup.number().typeError('Price must be a number').required('Price is required'),
+  categoryId: Yup.string().required('Select category'),
   colors: Yup.array().min(1, 'Select at least one color'),
-  description: Yup.string().required('Description is required'),
   variants: Yup.array().of(
     Yup.object().shape({
       name: Yup.string().required('Variant name is required'),
-      price: Yup.string().required('Variant price is required'),
+      price: Yup.number().typeError('Price must be a number').required('Variant price is required'),
       stock: Yup.number().required('Stock is required').min(0, 'Stock cannot be negative')
     })
   )
 });
 
+// const validationSchema = Yup.object().shape({
+//   nameEn: Yup.string().required('english name is required'),
+//   nameAm: Yup.string().required('amharic name is required'),
+//   descriptionEn: Yup.string().required('English Description is required'),
+//   descriptionAm: Yup.string().required('Amharic Description is required'),
+//   price: Yup.string().required('Price is required'),
+//   categoryId: Yup.string().required('Select category'),
+//   colors: Yup.array().min(1, 'Select at least one color'),
+  
+//   variants: Yup.array().of(
+//     Yup.object().shape({
+//       name: Yup.string().required('Variant name is required'),
+//       price: Yup.string().required('Variant price is required'),
+//       stock: Yup.number().required('Stock is required').min(0, 'Stock cannot be negative')
+//     })
+//   )
+// });
+
 // create a component
 const AddPostContent = () => {
+
+  const tempLanguage = "en";
+
   const [selectedImageFiles, setSelectedImageFiles] = useState<ImageFileProps[]>([]);
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [categoryList, setCategoryList] = useState<categoriesType[]>([]);
@@ -85,10 +119,26 @@ const AddPostContent = () => {
   const [progress, setProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const formikRef = React.useRef<any>(null);
-  const [name, setName] = useState('');
+  // const [name, setName] = useState('');
   // const navigation = useNavigation();
   const router = useRouter();
   const { role } = useUserRole();
+
+  const [product, setProduct] = useState<productsType>({
+    productId: "",
+    name: { en: "", am: "" },
+    description: { en: "", am: "" },
+    price: 0,
+    stock: 0,
+    categoryId: "",
+    subCategoryId: "",
+    images: [],
+    colors: [],
+    variants: [],
+    createdAt: "",
+    updatedAt: ""
+  });
+
 
   useEffect(() => {
     getCategoryList();
@@ -196,7 +246,68 @@ const AddPostContent = () => {
     }
   };
 
-  const handleSubmit = async (values: FormValues) => {
+
+  ///////////////////////////////////////////////////
+  // these functionalities are newly added
+  const updateProductNameEn = (newName: string) => {
+    setProduct(prev => ({
+      ...prev,
+      name: { ...prev.name, en: newName }
+    }));
+  };
+
+  const updateProductNameAm = (newName: string) => {
+    setProduct(prev => ({
+      ...prev,
+      name: { ...prev.name, am: newName }
+    }));
+  };
+
+  const updateProductPrice = (newPrice: string) => {
+    setProduct(prev => ({
+      ...prev,
+      price: parseFloat(newPrice)
+    }));
+  };
+
+  const updateProductCategory = (newCategoryId: string) => {
+    setProduct(prev => ({
+      ...prev,
+      categoryId: newCategoryId
+    }));
+  };
+  const updateProductColor = (newColors: string[]) => {
+    setProduct(prev => ({
+      ...prev,
+      colors: newColors
+    }));
+  };
+
+  const updateProductDescriptionEn = (newDescription: string) => {
+    setProduct(prev => ({
+      ...prev,
+      description: { ...prev.description, en: newDescription }
+    }));
+  };
+
+  const updateProductDescriptionAm = (newDescription: string) => {
+    setProduct(prev => ({
+      ...prev,
+      description: { ...prev.description, am: newDescription }
+    }));
+  };
+
+  const addVariant = (variant: { name: string; price: number; stock: number }) => {
+    setProduct(prev => ({
+      ...prev,
+      variants: [...prev.variants, variant]
+    }));
+  };
+/////////////////////////////////////////////////
+
+  const handleSubmit = async (product: productsType) => {
+    console.log("this is selected product list:")
+    // console.log("product :", product)
     try {
       // Check if there are selected images
       if (selectedImageFiles.length === 0) {
@@ -205,8 +316,8 @@ const AddPostContent = () => {
       }
 
       // Check if category is selected
-      if (!values.category || values.category.length === 0) {
-        ToastAndroid.show("Please select at least one category", ToastAndroid.SHORT);
+      if (!product.categoryId || product.categoryId.length === 0) {
+        ToastAndroid.show("Please select category", ToastAndroid.SHORT);
         return;
       }
 
@@ -215,15 +326,10 @@ const AddPostContent = () => {
       const imageUrls = await uploadImages(selectedImageFiles, productId);
       
       const productData: productsType = {
-        productId: productId,
-        title: values.title.toLowerCase().trim(),
-        description: values.description,
-        price: parseFloat(values.price),
-        stock: 3,
-        categoryId: values.category[0] || '',
-        images: imageUrls,
-        colors: values.colors,
-        variants: values.variants,
+        ...product,
+        productId,
+        images:imageUrls,
+        stock: 3, // or values.stock if it's dynamic
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -264,13 +370,13 @@ const AddPostContent = () => {
    
       <ScrollView style={styles.scrollView}>
         
-        <Formik 
+        {/* <Formik 
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
           ref={formikRef}
         >
-          {({ handleChange, handleSubmit, values, errors, touched, setFieldValue }) => (
+          {({ handleChange, handleSubmit, values, errors, touched, setFieldValue }) => ( */}
             <View style={styles.formContainer}>
               {loading && (
                 <View style={styles.loadingOverlay}>
@@ -318,35 +424,50 @@ const AddPostContent = () => {
                 </View>
               )}
               
-              {/* Title Input */}
+              {/* English Name Input */}
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Product Title *</Text>
+                <Text style={styles.label}>Product Name (English) *</Text>
                 <TextInput
                   style={[styles.input, loading && styles.inputDisabled]}
-                  onChangeText={handleChange('title')}
-                  value={values.title}
-                  placeholder="Enter product title"
+                  onChangeText={(text) => updateProductNameEn(text)} // ✅ dot notation
+                  value={product.name["en"]}
+                  placeholder="Enter product name (English)"
                   editable={!loading}
                 />
-                {touched.title && errors.title && (
-                  <Text style={styles.errorText}>{errors.title}</Text>
-                )}
+                {/* {touched.name?.en && errors.name?.en && (
+                  <Text style={styles.errorText}>{errors.name.en}</Text>
+                )} */}
               </View>
 
-              {/* Price Input */}
+              {/* Amharic Name Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Product Name (Amharic) *</Text>
+                <TextInput
+                  style={[styles.input, loading && styles.inputDisabled]}
+                  onChangeText={(text) => updateProductNameAm(text)} // ✅ dot notation
+                  value={product.name["am"]}
+                  placeholder="Enter product name (Amharic)"
+                  editable={!loading}
+                />
+                {/* {touched.name?.am && errors.name?.am && (
+                  <Text style={styles.errorText}>{errors.name.am}</Text>
+                )} */}
+              </View>
+
+             {/* Price Input */}
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Price</Text>
                 <TextInput
                   style={[styles.input, loading && styles.inputDisabled]}
-                  onChangeText={handleChange('price')}
-                  value={values.price}
+                  onChangeText={(text) => updateProductPrice(text)}
+                  // value={values.price === '' ? '' : String(values.price)}
                   placeholder="Enter price"
                   keyboardType="numeric"
                   editable={!loading}
                 />
-                {touched.price && errors.price && (
+                {/* {touched.price && errors.price && (
                   <Text style={styles.errorText}>{errors.price}</Text>
-                )}
+                )} */}
               </View>
 
               {/* Category Selection */}
@@ -358,30 +479,25 @@ const AddPostContent = () => {
                       key={index}
                       style={[
                         styles.categoryButton,
-                        values.category.includes(category.categoryId) && styles.selectedCategory
+                        product.categoryId === category.categoryId && styles.selectedCategory
                       ]}
-                      onPress={() => {
-                        if (!loading) {
-                          const newCategories = values.category.includes(category.categoryId)
-                            ? values.category.filter(c => c !== category.categoryId)
-                            : [...values.category, category.categoryId];
-                          setFieldValue('category', newCategories);
-                        }
-                      }}
+                      onPress={() => updateProductCategory(category.categoryId)}
                       disabled={loading}
                     >
-                      <Text style={[
-                        styles.categoryText,
-                        values.category.includes(category.name) && { color: 'white' }
-                      ]}>
-                        {category.name}
+                      <Text
+                        style={[
+                          styles.categoryText,
+                          product.categoryId === category.categoryId && { color: 'white' }
+                        ]}
+                      >
+                        {category.name.en} {/* or category.name if it's just a string */}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
-                {touched.category && errors.category && (
-                  <Text style={styles.errorText}>{errors.category}</Text>
-                )}
+                {/* {touched.categoryId && errors.categoryId && (
+                  <Text style={styles.errorText}>{errors.categoryId}</Text>
+                )} */}
               </View>
 
               {/* Image Upload */}
@@ -424,40 +540,58 @@ const AddPostContent = () => {
                       style={[
                         styles.colorButton,
                         { backgroundColor: color },
-                        values.colors.includes(color) && styles.selectedColor
+                        product.colors.includes(color) && styles.selectedColor
                       ]}
                       onPress={() => {
                         if (!loading) {
-                          const newColors = values.colors.includes(color)
-                            ? values.colors.filter(c => c !== color)
-                            : [...values.colors, color];
-                          setFieldValue('colors', newColors);
+                          const newColors = product.colors.includes(color)
+                            ? product.colors.filter(c => c !== color)
+                            : [...product.colors, color];
+                            updateProductColor(newColors);
                         }
                       }}
                       disabled={loading}
                     />
                   ))}
                 </View>
-                {touched.colors && errors.colors && (
+                {/* {touched.colors && errors.colors && (
                   <Text style={styles.errorText}>{errors.colors}</Text>
-                )}
+                )} */}
               </View>
 
-              {/* Description Input */}
+              {/* English Description Input */}
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Description</Text>
+                <Text style={styles.label}>Description(English)</Text>
                 <TextInput
                   style={[styles.input, styles.textArea, loading && styles.inputDisabled]}
-                  onChangeText={handleChange('description')}
-                  value={values.description}
-                  placeholder="Enter product description"
+                  onChangeText={(text) => updateProductDescriptionEn(text)} 
+                  value={product.description.en}
+                  placeholder="product description (english)"
                   multiline
                   numberOfLines={4}
                   editable={!loading}
                 />
-                {touched.description && errors.description && (
-                  <Text style={styles.errorText}>{errors.description}</Text>
-                )}
+                {/* {touched.description && errors.description && (
+                  <Text style={styles.errorText}>{errors.description.en}</Text>
+                )} */}
+              </View>
+
+
+              {/* Amharic Description Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Description(Amharic)</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea, loading && styles.inputDisabled]}
+                  onChangeText={(text) => updateProductDescriptionAm(text)} 
+                  value={product.description.am}
+                  placeholder="product description (amharic)"
+                  multiline
+                  numberOfLines={4}
+                  editable={!loading}
+                />
+                {/* {touched.description && errors.description && (
+                  <Text style={styles.errorText}>{errors.description.am}</Text>
+                )} */}
               </View>
 
              
@@ -469,15 +603,15 @@ const AddPostContent = () => {
                   <TouchableOpacity
                     style={styles.addVariantButton}
                     onPress={() => {
-                      const newVariants = [...values.variants, { name: '', price: '', stock: 0 }];
-                      setFieldValue('variants', newVariants);
+                      const newVariants =  { name: '', price: 0, stock: 0 };
+                      addVariant(newVariants);
                     }}
                   >
                     <Ionicons name="add-circle" size={24} color="#00685C" />
                   </TouchableOpacity>
                 </View>
 
-                {values.variants.map((variant, index) => (
+                {product.variants.map((variant, index) => (
                   <View key={index} style={styles.variantContainer}>
                     <View style={styles.variantRow}>
                       <View style={styles.variantInputContainer}>
@@ -486,28 +620,29 @@ const AddPostContent = () => {
                           style={styles.variantInput}
                           value={variant.name}
                           onChangeText={(text) => {
-                            const newVariants = [...values.variants];
+                            const newVariants = [...product.variants];
                             newVariants[index].name = text;
-                            setFieldValue('variants', newVariants);
+                            // setFieldValue('variants', newVariants);
                           }}
                           placeholder="Variant name"
                         />
                       </View>
 
+
                       <View style={styles.variantInputContainer}>
-                        <Text style={styles.variantLabel}>Price</Text>
-                        <TextInput
-                          style={styles.variantInput}
-                          value={variant.price}
-                          onChangeText={(text) => {
-                            const newVariants = [...values.variants];
-                            newVariants[index].price = text;
-                            setFieldValue('variants', newVariants);
-                          }}
-                          placeholder="Price"
-                          keyboardType="numeric"
-                        />
-                      </View>
+                      <Text style={styles.variantLabel}>Price</Text>
+                      <TextInput
+                        style={styles.variantInput}
+                        value={variant.price ? String(variant.price) : ''} // number → string
+                        onChangeText={(text) => {
+                          const newVariants = [...product.variants];
+                          newVariants[index].price =  parseFloat(text); // string → number
+                          // setFieldValue('variants', newVariants);
+                        }}
+                        placeholder="Price"
+                        keyboardType="numeric"
+                      />
+                    </View>
 
                       <View style={styles.variantInputContainer}>
                         <Text style={styles.variantLabel}>Stock</Text>
@@ -515,9 +650,9 @@ const AddPostContent = () => {
                           style={styles.variantInput}
                           value={variant.stock.toString()}
                           onChangeText={(text) => {
-                            const newVariants = [...values.variants];
+                            const newVariants = [...product.variants];
                             newVariants[index].stock = parseInt(text) || 0;
-                            setFieldValue('variants', newVariants);
+                            // setFieldValue('variants', newVariants);
                           }}
                           placeholder="Stock"
                           keyboardType="numeric"
@@ -527,8 +662,8 @@ const AddPostContent = () => {
                       <TouchableOpacity
                         style={styles.removeVariantButton}
                         onPress={() => {
-                          const newVariants = values.variants.filter((_, i) => i !== index);
-                          setFieldValue('variants', newVariants);
+                          const newVariants = product.variants.filter((_, i) => i !== index);
+                          // setFieldValue('variants', newVariants);
                         }}
                       >
                         <Ionicons name="trash-outline" size={24} color="red" />
@@ -537,17 +672,17 @@ const AddPostContent = () => {
                   </View>
                 ))}
 
-                {touched.variants && errors.variants && (
+                {/* {touched.variants && errors.variants && (
                   <Text style={styles.errorText}>
                     {Array.isArray(errors.variants) 
                       ? 'Please fill in all variant fields correctly'
                       : String(errors.variants)}
                   </Text>
-                )}
+                )} */}
               </View>
 
               {/* New Product Toggle */}
-              <View style={styles.inputContainer}>
+              {/* <View style={styles.inputContainer}>
                 <View style={styles.toggleContainer}>
                   <Text style={styles.label}>New Product</Text>
                   <Switch
@@ -557,12 +692,12 @@ const AddPostContent = () => {
                     }}
                   />
                 </View>
-              </View>
+              </View> */}
 
               {role === 'admin' && (
                 <TouchableOpacity
                   style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-                  onPress={() => handleSubmit()}
+                  onPress={() => handleSubmit(product)}
                   disabled={loading}
                 >
                   {loading ? (
@@ -576,8 +711,8 @@ const AddPostContent = () => {
                 </TouchableOpacity>
               )}
             </View>
-          )}
-        </Formik>
+          {/* )}
+        </Formik> */}
       </ScrollView>
     </View>
   );

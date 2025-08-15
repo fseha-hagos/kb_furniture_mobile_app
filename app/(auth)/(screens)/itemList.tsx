@@ -152,7 +152,7 @@ const ItemList = ({ route }: any) => {
                 <DataFetchError
                     message={isOffline ? "No internet connection. Please check your connection and try again." : error || "No data found. Please try again."}
                     onRetry={getLatestItems}
-                    loading={refreshing}
+                    // loading={refreshing}
                     icon={isOffline ? "wifi-off-outline" : "cloud-offline-outline"}
                 />
             </View>

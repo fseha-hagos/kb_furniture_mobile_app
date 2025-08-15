@@ -9,15 +9,15 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import NetworkError from '../../components/NetworkError';
 import { useUserRole } from '../../hooks/useUserRole';
 
 const AddCategoryContent = () => {
-  const [categoryId, setCategoryId] = useState('');
-  const [name, setName] = useState('');
-  const [image, setImage] = useState('');
-  const [parentId, setParentId] = useState('');
+  // const [categoryId, setCategoryId] = useState('');
+  // const [name, setName] = useState('');
+  // const [image, setImage] = useState('');
+  // const [parentId, setParentId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -28,6 +28,15 @@ const AddCategoryContent = () => {
   const router = useRouter();
   const { role } = useUserRole();
 
+  const [category, setCategory] = useState<categoriesType>({
+    categoryId: "",
+    name: { en: "", am: "" },
+    subcategories: [],
+    image: "",
+    createdAt: "",
+    updatedAt: "",
+  });
+
   // Generate unique category ID
   const generateCategoryId = () => {
     const timestamp = Date.now();
@@ -37,8 +46,7 @@ const AddCategoryContent = () => {
 
   useEffect(() => {
     // Generate category ID on component mount
-    setCategoryId(generateCategoryId());
-    // Fetch existing categories for parent selection
+    setCategory(prev => ({ ...prev, categoryId: generateCategoryId()}));
     fetchCategories();
   }, []);
 
@@ -69,7 +77,8 @@ const AddCategoryContent = () => {
       });
 
       if (!result.canceled && result.assets[0]) {
-        setImage(result.assets[0].uri);
+        setCategory(prev => ({ ...prev, image: result.assets[0].uri}));
+        // setImage(result.assets[0].uri);
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -113,13 +122,38 @@ const AddCategoryContent = () => {
   };
 
 
+// these functionalities are newly added for specific modification
+const updateEnglishName = (newName: string) => {
+  setCategory(prev => ({
+    ...prev,
+    name: { ...prev.name, en: newName }
+  }));
+};
+
+const updateAmharicName = (newName: string) => {
+  setCategory(prev => ({
+    ...prev,
+    name: { ...prev.name, am: newName }
+  }));
+};
+
+const addSubcategory = (id: string, en: string, am: string) => {
+  setCategory(prev => ({
+    ...prev,
+    subcategories: [
+      ...prev.subcategories,
+      { id, name: { en, am } }
+    ]
+  }));
+};
+
   const handleSubmit = async () => {
-    if (!name.trim()) {
+    if (!category.name["am"].trim() && !category.name["en"].trim()) {
       Alert.alert('Error', 'Please enter a category name');
       return;
     }
 
-    if (!image) {
+    if (!category.image) {
       Alert.alert('Error', 'Please select an image for the category');
       return;
     }
@@ -129,12 +163,13 @@ const AddCategoryContent = () => {
     setSuccess(false);
     
     try {
-      const imageUrl = await uploadImage(image, categoryId);
+      const imageUrl = await uploadImage(category.image, category.categoryId);
       const categoryData = {
-        categoryId: categoryId,
-        name: name.trim(),
+        ...category, // keep any other fields from state
+        name: {
+          ...category.name,
+        },
         image: imageUrl,
-        parentId: parentId || '',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
@@ -143,12 +178,15 @@ const AddCategoryContent = () => {
       
       setSuccess(true);
       // Reset form
-      setCategoryId(generateCategoryId());
-      setName('');
-      setImage('');
-      setParentId('');
-      setSelectedParentName('');
-      
+      setCategory({
+        categoryId: "",
+        name: { en: "", am: "" },
+        subcategories: [],
+        image: "",
+        createdAt: "",
+        updatedAt: "",
+      });
+    
       // Refresh category list
       await fetchCategories();
     } catch (e: any) {
@@ -163,11 +201,11 @@ const AddCategoryContent = () => {
     setSuccess(false);
   };
 
-  const selectParentCategory = (category: categoriesType) => {
-    setParentId(category.categoryId);
-    setSelectedParentName(category.name);
-    setShowParentModal(false);
-  };
+  // const selectParentCategory = (category: categoriesType) => {
+  //   setParentId(category.categoryId);
+  //   setSelectedParentName(category.name);
+  //   setShowParentModal(false);
+  // };
 
   if (error) {
     return <NetworkError onRetry={handleRetry} message={error} />;
@@ -206,20 +244,31 @@ const AddCategoryContent = () => {
         <Text style={styles.label}>Category ID</Text>
         <TextInput
           style={[styles.input, styles.readOnlyInput]}
-          value={categoryId}
+          value={category.categoryId}
           editable={false}
           placeholder="Auto-generated"
         />
       </View>
 
-      {/* Category Name */}
+      {/* Category Name English */}
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Category Name *</Text>
+        <Text style={styles.label}>Category English Name *</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter category name"
-          value={name}
-          onChangeText={setName}
+          placeholder="Enter English category name"
+          value={category.name["en"]}
+          onChangeText={(text) => updateEnglishName(text)}
+        />
+      </View>
+
+      {/* Category Name Amharic*/}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Category Amharic Name *</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Amharic category name"
+          value={category.name["am"]}
+          onChangeText={(text) => updateAmharicName(text)}
         />
       </View>
 
@@ -227,8 +276,8 @@ const AddCategoryContent = () => {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Category Image *</Text>
         <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-          {image ? (
-            <Image source={{ uri: image }} style={styles.selectedImage} />
+          {category.image ? (
+            <Image source={{ uri: category.image }} style={styles.selectedImage} />
           ) : (
             <View style={styles.imagePlaceholder}>
               <Ionicons name="camera" size={40} color="#00685C" />
@@ -239,7 +288,7 @@ const AddCategoryContent = () => {
       </View>
 
       {/* Parent Category Selection */}
-      <View style={styles.inputContainer}>
+      {/* <View style={styles.inputContainer}>
         <Text style={styles.label}>Parent Category (Optional)</Text>
         <TouchableOpacity 
           style={styles.parentSelector} 
@@ -250,7 +299,7 @@ const AddCategoryContent = () => {
           </Text>
           <Ionicons name="chevron-down" size={20} color="#00685C" />
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Submit Button */}
       {role === 'admin' && (
@@ -266,7 +315,7 @@ const AddCategoryContent = () => {
       
 
       {/* Parent Category Modal */}
-      <Modal
+      {/* <Modal
         visible={showParentModal}
         animationType="slide"
         transparent={true}
@@ -299,7 +348,7 @@ const AddCategoryContent = () => {
             />
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </ScrollView>
     </View>
   );
