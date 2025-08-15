@@ -22,6 +22,7 @@ const Layout = () => {
         <Stack.Screen name="termsAndConditions" options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="support" options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen name="about" options={{ headerShown: false }}></Stack.Screen>
+        <Stack.Screen name="editableProfileScreen" options={{ headerShown: false }}></Stack.Screen>
        
       </Stack>
     
