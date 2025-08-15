@@ -3,13 +3,13 @@ import { cartType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-    Alert,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useAuth } from '../context/cartContext';
 
@@ -18,6 +18,9 @@ interface ContactAdminProps {
 }
 
 const ContactAdmin: React.FC<ContactAdminProps> = ({ onClose }) => {
+
+  const tempLanguage = "en";
+
   const { carts, totalPrice } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,7 +41,7 @@ const ContactAdmin: React.FC<ContactAdminProps> = ({ onClose }) => {
     return carts.map((item: cartType) => {
       const quantity = item.quantity || 1;
       const color = item.selectedColor ? ` (${item.selectedColor})` : '';
-      return `• ${item.product.title}${color} - Qty: ${quantity} - Birr ${item.product.price * quantity}`;
+      return `• ${item.product.name[tempLanguage]}${color} - Qty: ${quantity} - Birr ${item.product.price * quantity}`;
     }).join('\n');
   };
 

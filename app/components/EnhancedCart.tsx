@@ -19,6 +19,9 @@ interface EnhancedCartProps {
 }
 
 const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
+
+  const tempLanguage = "en"
+
   const router = useRouter();
   const { carts, totalPrice, deleteFromCart } = useAuth();
   const [promoCode, setPromoCode] = useState('');
@@ -101,7 +104,7 @@ const EnhancedCart: React.FC<EnhancedCartProps> = ({ suggestedProducts }) => {
                 </View>
                 
                 <View style={styles.itemDetails}>
-                  <Text style={styles.itemName}>{item.product.title}</Text>
+                  <Text style={styles.itemName}>{item.product.name[tempLanguage]}</Text>
                   <Text style={styles.itemColor}>Color: {item.selectedColor || 'Default'}</Text>
                   <Text style={styles.itemPrice}>Birr {item.product.price}</Text>
                 </View>

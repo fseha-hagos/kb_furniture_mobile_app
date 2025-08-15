@@ -1,8 +1,10 @@
 //import liraries
 import { categoriesType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
@@ -15,6 +17,12 @@ interface prop {
 // create a component
 const CategoryCardView = ({ item, selectedCategory, onSelect}: prop) => {
     const isSelected = selectedCategory?.categoryId === item.categoryId;
+
+    // const tempLanguage = "en";
+    const { i18n, t } = useTranslation();
+    const currentLang: LanguageCode = i18n.language as LanguageCode;
+   
+
 
     const handlePress = () => {
         onSelect(item);
@@ -48,13 +56,7 @@ const CategoryCardView = ({ item, selectedCategory, onSelect}: prop) => {
                                     onLoad={() => console.log('Category image loaded')}
                                  
                                     />
-                                {/* <Image
-                                    source={{uri: item.image}} 
-                                    style={styles.catCoverImage}
-                                    // resizeMode="cover"
-                                    // onError={(error) => console.log('Category image error:', error)}
-                                    // onLoad={() => console.log('Category image loaded')}
-                                /> */}
+                               
                             </View>
                     ) : (
                         <View style={[
@@ -80,7 +82,7 @@ const CategoryCardView = ({ item, selectedCategory, onSelect}: prop) => {
                         numberOfLines={2}
                         ellipsizeMode="tail"
                     >
-                        {item?.name}
+                        {item.categoryId !== 'all' ? item?.name[currentLang]: i18n.t('allProducts')}
                     </Text>
                 </View>
 

@@ -17,7 +17,8 @@ interface prop {
 }
 
 const CartCard = ({item, deleteFromCart, updateQuantity}: prop) => {
-    // const navigation = useNavigation<NavigationProp<ProductStackParamList>>();
+    const tempLanguage = "en";
+
     const router = useRouter();
 
     const handleCheckout = () => {
@@ -36,7 +37,7 @@ const CartCard = ({item, deleteFromCart, updateQuantity}: prop) => {
         <View style={styles.container}>
             <Image source={{uri: item.product.images[0]}} style={styles.coverImage}/>
             <View style={styles.cartContent}>
-                <Text style={styles.title}>{item.product.title}</Text>
+                <Text style={styles.title}>{item.product.name[tempLanguage]}</Text>
                 <Text style={styles.price}>Birr {item.product.price}</Text>
             <View style={styles.circleSizeContainer}>
                 <View style={[styles.circle, {backgroundColor: item.selectedColor === null ? '"#7094C1"' : item.selectedColor}]} /> 
