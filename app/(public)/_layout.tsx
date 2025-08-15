@@ -48,6 +48,11 @@ const PublicLayout = () => {
         options={{
           headerShown: false,
         }}></Stack.Screen>
+      <Stack.Screen
+        name="languageOnboardingScreen"
+        options={{
+          headerShown: false,
+        }}></Stack.Screen>
     </Stack>
   );
 };

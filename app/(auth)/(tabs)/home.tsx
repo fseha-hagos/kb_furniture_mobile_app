@@ -4,10 +4,12 @@ import { db } from '@/firebaseConfig';
 import { useScreenshotPrevention } from '@/hooks/useScreenshotPrevention';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { categoriesType, productsType, slidesType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import CategoryCardView from '../../components/catagoryView';
 import DataFetchError from '../../components/DataFetchError';
@@ -123,10 +125,13 @@ const HomeSkeleton = () => {
 
 const Layout = () => {
   const pageSize = 6;
+  // const tempLanguage = "en";
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
   
   const [selectedCategory, setSelectedCategory] = React.useState<categoriesType | null>(null);
   const [sliderList, setSliderList] = useState<slidesType[]>([]);
-  const [categoryList, setCategoryList] = useState<DocumentData[]>([]);
+  const [categoryList, setCategoryList] = useState<categoriesType[]>([]);
   const [latestItemLists, setLatestItemLists] = useState<productsType[]>([]);
   const [allProducts, setAllProducts] = useState<productsType[]>([]);
 
@@ -256,7 +261,7 @@ useEffect(() => {
       await fetchWithRetry(async () => {
         const querySnapShot = await getDocs(collection(db, `${CATEGORY_DATA}`));
         querySnapShot.forEach((doc) => {
-          setCategoryList(categoryList => [...categoryList, doc.data()]);
+          setCategoryList(categoryList => [...categoryList, doc.data() as categoriesType]);
         });
         // console.log("category lists : ", categoryList)
       });
@@ -428,8 +433,8 @@ useEffect(() => {
       const productsRef = collection(db, PRODUCTS_DATA);
       const searchQueryRef = query(
         productsRef,
-        where('title', '>=', searchQuery),
-        where('title', '<=', searchQuery + '\uf8ff'),
+        where('name.en', '>=', searchQuery),
+        where('name.en', '<=', searchQuery + '\uf8ff'), 
         limit(20)
       );
 
@@ -471,7 +476,7 @@ useEffect(() => {
 
   const handleOnCategoryChanged = (item: categoriesType) => {
       setSelectedCategory(item); 
-      if(item.name === "All") {
+      if(item.categoryId === "all") {
         setLatestItemLists(allProducts);
       } else {
         const filteredItems = allProducts.filter(product => 
@@ -492,14 +497,14 @@ useEffect(() => {
         <Ionicons name="search-outline" size={60} color="#938F8F" />
         <Text style={styles.emptyTitle}>No Items Found</Text>
         <Text style={styles.emptySubtitle}>
-          {selectedCategory?.name === "All" 
+          {selectedCategory?.categoryId === "All" 
             ? "There are no products available at the moment."
-            : `No items found in ${selectedCategory?.name} category.`}
+            : `No items found in ${selectedCategory?.name[currentLang]} category.`}
         </Text>
         <TouchableOpacity 
           style={styles.retryButton}
           onPress={() => {
-            if (selectedCategory?.name === "All") {
+            if (selectedCategory?.categoryId === "All") {
               getLatestItems();
             } else {
               handleOnCategoryChanged(selectedCategory!);
@@ -578,7 +583,7 @@ useEffect(() => {
               :
               <FlatList 
                 data={[
-                  { categoryId: 'all', name: 'All', image: 'https://example.com/all-icon.png' },
+                  { categoryId: 'all', name: {en: 'All products', am:'All products'}, image: 'https://example.com/all-icon.png' },
                   ...categoryList
                 ]} 
                 renderItem={({item,index}) =>(
@@ -602,7 +607,7 @@ useEffect(() => {
             overflow: 'hidden',
           }}>
             <MarqueeText 
-              text="🔥 Special Offer: Get 20% off on all furniture this week! 🎉 Free shipping on orders above Birr 500 💫"
+              text={t('specialOffer')}
               speed={30}
               backgroundColor={primaryColor}  
               textColor="white"
@@ -621,7 +626,7 @@ useEffect(() => {
                 <>
                   <ItemsCarousel sliderList={sliderList}/>
                   <View style={{marginTop: 20, marginHorizontal: 18,}}>
-                    <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: 15,}}>Latest Items</Text>
+                    <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: 15,}}>{t('latestItems')}</Text>
                   </View>
                 </>
               }

@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
@@ -158,10 +158,10 @@ const onBoarding = () => {
                 {/* Image Section */}
                 <View style={styles.imageSection}>
                     <View style={styles.imageContainer}>
-                        <ImageBackground 
-                            source={currentStepData.image} 
+                        <View 
+                            // source={currentStepData.image} 
                             style={styles.backgroundImage}
-                            imageStyle={styles.backgroundImageStyle}
+                            // imageStyle={styles.backgroundImageStyle}
                         >
                             <LinearGradient
                                 colors={['transparent', 'rgba(0,0,0,0.7)']}
@@ -185,7 +185,7 @@ const onBoarding = () => {
                                     </Animated.View>
                                 ))}
                             </View>
-                        </ImageBackground>
+                        </View>
                     </View>
                 </View>
 

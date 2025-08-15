@@ -3,6 +3,7 @@
 import Navbar from '@/app/components/navbar';
 import ProductCards from '@/app/components/productCards';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { productsType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -127,26 +128,33 @@ const Favorites = () => {
     </Animated.View>
   );
 
-  const renderProduct = ({ item, index }: { item: any; index: number }) => (
-    <Animated.View
-      style={[
-        styles.productContainer,
-        {
-          opacity: fadeAnim,
-          transform: [
-            { 
-              translateY: fadeAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [50, 0]
-              })
-            }
-          ]
-        }
-      ]}
-    >
-      <ProductCards item={item} />
-    </Animated.View>
-  );
+  const renderProduct = ({ item, index }: { item: productsType; index: number }) => {
+    // Add a safety check here to ensure 'item' is not undefined or null
+    if (!item) {
+        return null;
+    }
+
+    return (
+        <Animated.View
+            style={[
+                styles.productContainer,
+                {
+                    opacity: fadeAnim,
+                    transform: [
+                        {
+                            translateY: fadeAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [50, 0]
+                            })
+                        }
+                    ]
+                }
+            ]}
+        >
+            <ProductCards item={item as productsType} />
+        </Animated.View>
+    );
+};
 
   return (
     <View style={styles.container}>
