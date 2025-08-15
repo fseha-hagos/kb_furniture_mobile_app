@@ -1,8 +1,10 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface FAQItem {
@@ -12,6 +14,12 @@ interface FAQItem {
 }
 
 const SupportPage = () => {
+
+   // const tempLanguage = "en";
+   const { i18n, t } = useTranslation();
+   const currentLang: LanguageCode = i18n.language as LanguageCode;
+  
+
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('all');
   // Removed: const [searchQuery, setSearchQuery] = useState('');
@@ -21,12 +29,14 @@ const SupportPage = () => {
 
 
   const categories = [
-    { id: 'all', name: 'All', icon: 'help-circle-outline' },
-    { id: 'orders', name: 'Orders', icon: 'bag-outline' },
-    { id: 'shipping', name: 'Shipping', icon: 'car-outline' },
-    { id: 'returns', name: 'Returns', icon: 'refresh-outline' },
-    { id: 'payment', name: 'Payment', icon: 'card-outline' },
+    { id: 'all', name: {en:'All',am:'ሁሉ'}, icon: 'help-circle-outline' },
+    { id: 'orders', name: {en:'Orders',am:'ትዕዛዞች'}, icon: 'bag-outline' },
+    { id: 'shipping', name: {en:'Shipping',am:'መላኪያ'}, icon: 'car-outline' },
+    { id: 'returns', name: {en:'Returns',am:'መመለስ'}, icon: 'refresh-outline' },
+    { id: 'payment', name: {en:'Payment',am:'ክፍያ'}, icon: 'card-outline' },
   ];
+
+
 
   const faqs: FAQItem[] = [
     {
@@ -71,7 +81,59 @@ const SupportPage = () => {
     }
   ];
 
+  const faqsAm: FAQItem[] = [
+      {
+        "question": "እንዴት ትዕዛዜዬን መከታተል እችላለሁ?",
+        "answer": "በመግለጫዎ ውስጥ ወደ “ትዕዛዞች” ጠቅ በማድረግ ትዕዛዞን መከታተል ይችላሉ። ለእያንዳንዱ ትዕዛዝ የመከታተያ መረጃ ይገኛል።",
+        "category": "orders"
+      },
+      {
+        "question": "የመመለስ ፖሊሲዎ ምንድን ነው?",
+        "answer": "እኛ በአብዛኛው እቃዎች ላይ 30 ቀናት የመመለስ ፖሊሲ እንሰጣለን። እቃዎች በመነሻ ሁኔታ እና ሁሉም መሸማቾች በትክክል ማስቀመጥ አለበት።",
+        "category": "returns"
+      },
+      {
+        "question": "መላኪያ ስንት ጊዜ ይወስዳል?",
+        "answer": "የመደበኛ መላኪያ 3-5 የሥራ ቀናት ይወስዳል። ፈጣን መላኪያ 1-2 የሥራ ቀናት ይወስዳል። በ500 ብር በላይ ትዕዛዞች ላይ ነፃ መላኪያ አለ።",
+        "category": "shipping"
+      },
+      {
+        "question": "ምን ዓይነት የክፍያ መንገዶችን ተቀባላችሁ?",
+        "answer": "ሁሉም ዋና ክሬዲት ካርዶች፣ PayPal እና Apple Pay እንቀበላለን። ሁሉም ክፍያዎች በደህና ተስማሚ ይሰራሉ።",
+        "category": "payment"
+      },
+      {
+        "question": "ትዕዛዜዬን ማሰረዝ እችላለሁ?",
+        "answer": "ትዕዛዞች በማስተዋወቅ በሁለት ሰዓት ውስጥ ሊሰረዱ ይችላሉ። ለእርዳታ የድጋፍ ቡድናችንን ያነጋግሩ።",
+        "category": "orders"
+      },
+      {
+        "question": "እንደአለም አቀፍ መላኪያ እንደምታደርጉ አለ?",
+        "answer": "በአሁኑ ጊዜ በአሜሪካ ውስጥ ብቻ እንላክለታለን። የመላኪያ አማራጮችን ለማስፋፋት እንሰራለን።",
+        "category": "shipping"
+      },
+      {
+        "question": "እንዴት የደንበኛ አገልግሎት ማነጋገር እችላለሁ?",
+        "answer": "በስልክ +1-555-0123 ወይም በኢሜል support@kbfurniture.com ወይም ቀጥታ ውይይት ይደርሱልን።",
+        "category": "all"
+      },
+      {
+        "question": "እቃዎቻችን በዋራንቲ ይጠበቃሉ?",
+        "answer": "ሁሉም እቃዎቻችን 1 ዓመት የአምራቾች ዋራንቲ አላቸው። የተሻለ ዋራንቲ ለመግዛት ይገኛል።",
+        "category": "all"
+      }
+    ]
+  
+
   const filteredFAQs = faqs.filter(faq => {
+    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
+    // Removed: const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //                      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    // return matchesCategory && matchesSearch;
+    return matchesCategory;
+  });
+  
+  const filteredFAQsAM = faqsAm.filter(faq => {
     const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
     // Removed: const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
     //                      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
@@ -83,7 +145,7 @@ const SupportPage = () => {
   const handleContact = (method: string) => {
     switch (method) {
       case 'phone':
-        Linking.openURL('tel:+15550123');
+        Linking.openURL('tel:+25148491265');
         break;
       case 'email':
         Linking.openURL('mailto:support@kbfurniture.com');
@@ -161,8 +223,8 @@ const SupportPage = () => {
         <View style={styles.navbarTitleContainer}>
          
           <View style={styles.titleTextContainer}>
-            <Text style={styles.navbarTitle}>Support Center</Text>
-            <Text style={styles.navbarSubtitle}>We're here to help</Text>
+            <Text style={styles.navbarTitle}>{t('supportCenter')}</Text>
+            <Text style={styles.navbarSubtitle}>{t('hereToHelp')}</Text>
           </View>
         </View>
       </LinearGradient>
@@ -179,32 +241,32 @@ const SupportPage = () => {
 
         {/* Contact Options */}
         <View style={styles.contactSection}>
-          <Text style={styles.sectionTitle}>Get in Touch</Text>
+          <Text style={styles.sectionTitle}>{t('getInTouch')}</Text>
           <ContactCard
             icon="call-outline"
-            title="Call Us"
-            subtitle="+1 (555) 0123"
+            title={t('callUs')}
+            subtitle="+251-48491265"
             onPress={() => handleContact('phone')}
             color="#4CAF50"
           />
           <ContactCard
             icon="mail-outline"
-            title="Email Support"
+            title={t('emailSupport')}
             subtitle="support@kbfurniture.com"
             onPress={() => handleContact('email')}
             color="#2196F3"
           />
           <ContactCard
             icon="chatbubble-outline"
-            title="Live Chat"
-            subtitle="Available 24/7"
+            title={t('liveChat')}
+            subtitle={t('available247')}
             onPress={() => handleContact('chat')}
             color="#FF9800"
           />
           <ContactCard
             icon="logo-whatsapp"
-            title="WhatsApp"
-            subtitle="Quick responses"
+            title={t('whatsapp')}
+            subtitle={t('quickResponses')}
             onPress={() => handleContact('whatsapp')}
             color="#25D366"
           />
@@ -212,30 +274,30 @@ const SupportPage = () => {
 
         {/* Quick Actions */}
         <View style={styles.quickActionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>{t('quickActions')}</Text>
           <View style={styles.actionsGrid}>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
               <Ionicons name="document-text-outline" size={24} color={primaryColor} />
-              <Text style={styles.actionText}>Return Policy</Text>
+              <Text style={styles.actionText}>{t('returnPolicy')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
               <Ionicons name="shield-checkmark-outline" size={24} color={primaryColor} />
-              <Text style={styles.actionText}>Warranty Info</Text>
+              <Text style={styles.actionText}>{t('warrantyInfo')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
               <Ionicons name="car-outline" size={24} color={primaryColor} />
-              <Text style={styles.actionText}>Shipping Info</Text>
+              <Text style={styles.actionText}>{t('shippingInfo')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}>
               <Ionicons name="card-outline" size={24} color={primaryColor} />
-              <Text style={styles.actionText}>Payment Methods</Text>
+              <Text style={styles.actionText}>{t('paymentMethods')}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* FAQ Categories */}
         <View style={styles.categoriesSection}>
-          <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+          <Text style={styles.sectionTitle}>{t('frequentlyAskedQuestions')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
             {categories.map((category) => (
               <TouchableOpacity
@@ -255,7 +317,7 @@ const SupportPage = () => {
                   styles.categoryText,
                   selectedCategory === category.id && styles.categoryTextActive
                 ]}>
-                  {category.name}
+                  {category.name[currentLang]}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -263,27 +325,36 @@ const SupportPage = () => {
         </View>
 
         {/* FAQ List */}
+       
         <View style={styles.faqSection}>
-          {filteredFAQs.length > 0 ? (
-            filteredFAQs.map((faq, index) => (
-              <FAQItem key={index} faq={faq} />
-            ))
+          {filteredFAQs.length > 0 && filteredFAQsAM.length > 0 ? (
+            (currentLang == "en") ? (
+              filteredFAQs.map((faq, index) => (
+                <FAQItem key={index} faq={faq} />
+              ))
+            ):
+            (
+              filteredFAQsAM.map((faq, index) => (
+                <FAQItem key={index} faq={faq} />
+              ))
+            )
+            
           ) : (
             <View style={styles.noResults}>
               <Ionicons name="search-outline" size={40} color="#ccc" />
-              <Text style={styles.noResultsText}>No results found</Text>
-              <Text style={styles.noResultsSubtext}>Try adjusting your search or category filter</Text>
+              <Text style={styles.noResultsText}>{t('noResultsFound')}</Text>
+              <Text style={styles.noResultsSubtext}>{t('tryAdjustingSearchOrCategory')}</Text>
             </View>
           )}
         </View>
 
         {/* Additional Support */}
         <View style={styles.additionalSupportSection}>
-          <Text style={styles.sectionTitle}>Still Need Help?</Text>
+          <Text style={styles.sectionTitle}>{t('stillNeedHelp')}</Text>
           <View style={styles.additionalSupportCard}>
             <Ionicons name="information-circle-outline" size={24} color="#00685C" />
             <Text style={styles.additionalSupportText}>
-              Can't find what you're looking for? Our support team is available 24/7 to assist you with any questions or concerns.
+            {t('cantFindWhatLookingFor')}
             </Text>
           </View>
         </View>

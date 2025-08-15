@@ -1,8 +1,12 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { LanguageCode, loadLanguage, setLanguage } from '@/utils/i18n';
 import { useAuth, useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import * as Updates from "expo-updates";
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useThemePreference } from '../../context/themeContext';
 import { useUserRole } from '../../hooks/useUserRole';
@@ -29,6 +33,28 @@ const SettingsPage = () => {
   const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
   const border = useThemeColor({}, 'border');
 
+  const { t } = useTranslation();
+  const [selectedLang, setSelectedLang] = useState<LanguageCode>('en');
+
+  useEffect(() => {
+    loadLanguage().then(lang => setSelectedLang(lang));
+  }, []);
+
+  const handleLangChange = async (lang: LanguageCode) => {
+    setSelectedLang(lang);
+    await setLanguage(lang);
+  };
+
+    const handleClearCache = async () => {
+      try {
+        await AsyncStorage.clear();
+        await Updates.reloadAsync();
+        Alert.alert("Cache Cleared", "All local data has been removed.");
+      } catch (error) {
+        console.error("Clear cache error:", error);
+        Alert.alert("Error", "Failed to clear cache.");
+      }
+    };
 
   const handleSignOut = () => {
     Alert.alert(
@@ -87,6 +113,31 @@ const SettingsPage = () => {
       ) : null}
     </TouchableOpacity>
   );
+  
+  const SettingLanguageItem = () => (
+    <View style={styles.settingItem}>
+      <View style={styles.settingIcon}>
+        <Ionicons name={"globe-outline"} size={24} color={primaryColor} />
+      </View>
+      <View style={styles.settingContent}>
+        <Text style={styles.settingTitle}>{t('chooseLanguage')}</Text>
+        <View style={styles.langOptions}>
+                    <TouchableOpacity 
+                      style={[styles.button, selectedLang === 'en' && styles.active]} 
+                      onPress={() => handleLangChange('en')}
+                    >
+                      <Text>English</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[styles.button, selectedLang === 'am' && styles.active]} 
+                      onPress={() => handleLangChange('am')}
+                    >
+                      <Text>አማርኛ</Text>
+                    </TouchableOpacity>
+                  </View>
+      </View>
+    </View>
+  );
 
   const SectionHeader = ({ title }: { title: string }) => (
     <View style={styles.sectionHeader}>
@@ -101,60 +152,64 @@ const SettingsPage = () => {
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Admin Settings</Text>
+              <Text style={styles.sectionTitle}>{t('adminSettings')}</Text>
             </View>
             <View style={styles.sectionContent}>
               <SettingItem
                 icon="person-outline"
-                title="Profile Information"
-                subtitle={user?.emailAddresses?.[0]?.emailAddress || 'No email set'}
-                onPress={() => router.push('/(auth)/(tabs)/profile')}
+                title={t('profileInformation')}
+                subtitle={user?.emailAddresses?.[0]?.emailAddress || t('noEmailSet')}
+                onPress={() => router.push('/(auth)/(screens)/editableProfileScreen')}
               />
               <SettingItem
                 icon="lock-closed-outline"
-                title="Change Password"
-                subtitle="Update your account password"
+                title={t('changePassword')}
+                subtitle={t('updatePassword')}
                 onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
               />
               <SettingItem
                 icon="notifications-outline"
-                title="Notification Preferences"
-                subtitle="Manage admin notifications"
+                title={t('notificationPreferences')}
+                subtitle={t('manageAdminNotifications')}
                 onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
               />
               <SettingItem
                 icon="information-circle-outline"
-                title="App Info"
-                subtitle="Version and legal information"
+                title={t('appInfo')}
+                subtitle={t('versionAndLegalInfo')}
                 onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
               />
               <SettingItem
                 icon="list-outline"
-                title="View Orders"
+                title={t('viewOrders')}
                 subtitle="See all customer orders"
                 onPress={() => router.push('/(auth)/(screens)/orders')}
               />
               <SettingItem
                 icon="pricetags-outline"
-                title="Manage Coupons"
+                title={t('manageCoupons')}
                 subtitle="Create and manage discount coupons"
                 onPress={() => router.push('/(auth)/(screens)/cupens')}
               />
+             
+              <SettingLanguageItem />
+              
             </View>
           </View>
           {/* Account Actions Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Account Actions</Text>
+              <Text style={styles.sectionTitle}>{t('accountActions')}</Text>
             </View>
+            
             <View style={styles.sectionContent}>
               <TouchableOpacity style={styles.dangerItem} onPress={handleSignOut}>
                 <View style={styles.settingIcon}>
                   <Ionicons name="log-out-outline" size={24} color="#F44336" />
                 </View>
                 <View style={styles.settingContent}>
-                  <Text style={styles.dangerText}>Sign Out</Text>
-                  <Text style={styles.settingSubtitle}>Sign out of your account</Text>
+                  <Text style={styles.dangerText}>{t('signOut')}</Text>
+                  <Text style={styles.settingSubtitle}>{t('signOutSubtitle')}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color="#ccc" />
               </TouchableOpacity>
@@ -162,8 +217,8 @@ const SettingsPage = () => {
           </View>
           {/* App Info */}
           <View style={styles.appInfoSection}>
-            <Text style={styles.appVersion}>KB Furniture v1.0.0</Text>
-            <Text style={styles.appCopyright}>© 2024 KB Furniture. All rights reserved.</Text>
+            <Text style={styles.appVersion}>{t('appVersion')}</Text>
+            <Text style={styles.appCopyright}>{t('appCopyright')}</Text>
           </View>
         </ScrollView>
       </View>
@@ -173,15 +228,17 @@ const SettingsPage = () => {
   return (
     <View style={styles.container}> 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <SettingLanguageItem />
+
         {/* Account Section */}
         <View style={styles.section}>
-          <SectionHeader title="Account" />
+          <SectionHeader title={t('account')} />
           <View style={styles.sectionContent}>
             <SettingItem
               icon="person-outline"
-              title="Profile Information"
-              subtitle={user?.emailAddresses?.[0]?.emailAddress || 'No email set'}
-              onPress={() => router.push('/(auth)/(tabs)/profile')}
+              title={t('profileInformation')}
+              subtitle={user?.emailAddresses?.[0]?.emailAddress || t('noEmailSet')}
+              onPress={() => router.push('/(auth)/(screens)/editableProfileScreen')}
             />
           </View>
         </View>
@@ -231,30 +288,24 @@ const SettingsPage = () => {
 
         {/* Support Section */}
         <View style={styles.section}>
-          <SectionHeader title="Support" />
+          <SectionHeader title={t('support')}/>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="help-circle-outline"
-              title="Help & Support"
-              subtitle="Get help with your orders"
+              title={t('helpSupport')}
+              subtitle={t('getHelpOrders')}
               onPress={() => router.push('/(auth)/(screens)/support')}
             />
             <SettingItem
               icon="document-text-outline"
-              title="Legal & Policies"
-              subtitle="Read our legal terms and policies"
+              title={t('legalPolicies')}
+              subtitle={t('readLegalTerms')}
               onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
             />
-            {/* <SettingItem
-              icon="shield-outline"
-              title="Privacy Policy"
-              subtitle="How we handle your data"
-              onPress={() => router.push('/(auth)/(screens)/termsAndConditions')}
-            /> */}
             <SettingItem
               icon="information-circle-outline"
-              title="About"
-              subtitle="App version and information"
+              title={t('about')}
+              subtitle={t('appVersionInfo')}
               onPress={() => router.push('/(auth)/(screens)/about')}
             />
           </View>
@@ -266,24 +317,24 @@ const SettingsPage = () => {
           <View style={styles.sectionContent}>
             <SettingItem
               icon="trash-outline"
-              title="Clear Cache"
-              subtitle="Free up storage space"
-              onPress={() => Alert.alert('Cache Cleared', 'App cache has been cleared successfully.')}
+              title={t('clearCache')}
+              subtitle={t('freeUpStorage')}
+              onPress={() => handleClearCache()}
             />
           </View>
         </View>
 
         {/* Account Actions Section */}
         <View style={styles.section}>
-          <SectionHeader title="Account Actions" />
+          <SectionHeader title={t('accountActions')}/>
           <View style={styles.sectionContent}>
             <TouchableOpacity style={styles.dangerItem} onPress={handleSignOut}>
               <View style={styles.settingIcon}>
                 <Ionicons name="log-out-outline" size={24} color="#F44336" />
               </View>
               <View style={styles.settingContent}>
-                <Text style={styles.dangerText}>Sign Out</Text>
-                <Text style={styles.settingSubtitle}>Sign out of your account</Text>
+                <Text style={styles.dangerText}>{t('signOut')}</Text>
+                <Text style={styles.settingSubtitle}>{t('signOutSubtitle')}</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#ccc" />
             </TouchableOpacity>
@@ -292,8 +343,8 @@ const SettingsPage = () => {
 
         {/* App Info */}
         <View style={styles.appInfoSection}>
-          <Text style={styles.appVersion}>KB Furniture v1.0.0</Text>
-          <Text style={styles.appCopyright}>© 2024 KB Furniture. All rights reserved.</Text>
+          <Text style={styles.appVersion}>{t('appVersion')}</Text>
+          <Text style={styles.appCopyright}>{t('appCopyright')}</Text>
         </View>
       </ScrollView>
     </View>
@@ -387,6 +438,13 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
   },
+
+  
+  header: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
+  title: { fontSize: 16, marginTop: 20, marginBottom: 10, fontWeight: '600' },
+  langOptions: { flexDirection: 'row', gap: 10 },
+  button: { padding: 8, borderWidth: 1, borderRadius: 5 },
+  active: { backgroundColor: '#ccc' },
 });
 
 export default SettingsPage; 

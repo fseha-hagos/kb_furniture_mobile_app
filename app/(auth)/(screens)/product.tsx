@@ -1,9 +1,11 @@
 import { useScreenshotPrevention } from '@/hooks/useScreenshotPrevention';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { productsType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Dimensions,
@@ -104,6 +106,11 @@ import { useProduct } from '../../context/productContext';
   };
 
   const Product = () => {
+
+    // const tempLanguage = "en";
+    const { i18n, t } = useTranslation();
+    const currentLang: LanguageCode = i18n.language as LanguageCode;
+
     const router = useRouter();
     const {carts, onAddToCart, refreshCart, deleteFromCart} = useAuth();
     const { addToFavorites, removeFromFavorites, isFavorite, addToRecentlyViewed } = useProduct();
@@ -116,19 +123,19 @@ import { useProduct } from '../../context/productContext';
     const [activeColorIndex, setActiveColorIndex] = React.useState(0);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isFullScreen, setIsFullScreen] = useState(false);
-    
+      
     // Enable screenshot prevention for the product page
     const { preventScreenshot, allowScreenshot } = useScreenshotPrevention(true);
 
     const backgroundColor = useThemeColor({}, 'background');
-  const primaryColor = useThemeColor({}, 'primary');
-  const cardColor = useThemeColor({}, 'card');
-  const textColor = useThemeColor({}, 'text');
-  const accentColor = useThemeColor({}, 'tint');
-  const subtextColor = useThemeColor({}, 'icon'); // Use icon color for subtext
-  const tabIconDefaultColor = useThemeColor({}, 'tabIconDefault');
-  const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
-  const border = useThemeColor({}, 'border');
+    const primaryColor = useThemeColor({}, 'primary');
+    const cardColor = useThemeColor({}, 'card');
+    const textColor = useThemeColor({}, 'text');
+    const accentColor = useThemeColor({}, 'tint');
+    const subtextColor = useThemeColor({}, 'icon'); // Use icon color for subtext
+    const tabIconDefaultColor = useThemeColor({}, 'tabIconDefault');
+    const tabIconSelectedColor = useThemeColor({}, 'tabIconSelected');
+    const border = useThemeColor({}, 'border');
 
 
     useEffect(() => {
@@ -183,7 +190,7 @@ import { useProduct } from '../../context/productContext';
     const handleShare = async () => {
       try {
         await Share.share({
-          message: `Check out this amazing ${productData.title} for only Birr ${productData.price}!`,
+          message: `Check out this amazing ${productData.name[currentLang]} for only Birr ${productData.price}!`,
           url: productData.images[0],
         });
       } catch (error) {
@@ -334,7 +341,7 @@ if(!productData) return;
             <View style={styles.contentContainer}>
               <View style={styles.headerSection}>
                 <View style={styles.titleSection}>
-                  <Text style={styles.productName}>{productData.title}</Text>
+                  <Text style={styles.productName}>{productData.name[currentLang]}</Text>
                   <Text style={styles.productPrice}>Birr {productData.price}</Text>
                 </View>
                 {/* <View style={styles.ratingContainer}>
@@ -402,7 +409,7 @@ if(!productData) return;
               {/* Description */}
               <View style={styles.descriptionSection}>
                 <Text style={styles.sectionTitle}>Description</Text>
-                <Text style={styles.description}>{productData.description}</Text>
+                <Text style={styles.description}>{productData.description[currentLang]}</Text>
               </View>
 
               {/* Product Comparison */}

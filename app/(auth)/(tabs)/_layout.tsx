@@ -2,8 +2,9 @@ import { Colors } from "@/constants/Colors";
 // import { useGlobalScreenshotPrevention } from '@/hooks/useGlobalScreenshotPrevention';
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
-import { Tabs, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Animated, StyleSheet, View } from "react-native";
 
 const TabIcon = ({ focused, color, iconName, label }: { 
@@ -86,7 +87,8 @@ const TabIcon = ({ focused, color, iconName, label }: {
 };
 
 export default function Layout() {
-  const router = useRouter();
+
+  const { t } = useTranslation();
   
   // Enable global screenshot prevention for all tab pages
   // useGlobalScreenshotPrevention();
@@ -140,15 +142,15 @@ export default function Layout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
+          title: t('home'),
           headerShown: false,
-          tabBarLabel: "Home",
+          tabBarLabel: t('home'),
           tabBarIcon: ({ focused, color }) => (
             <TabIcon 
               focused={focused} 
               color={color} 
               iconName="home"
-              label="Home"
+              label={t('home')}
             />
           ),
         }}
@@ -156,15 +158,15 @@ export default function Layout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Explore",
+          title: t('explore'),
           headerShown: false,
-          tabBarLabel: "Explore",
+          tabBarLabel: t('explore'),
           tabBarIcon: ({ focused, color }) => (
             <TabIcon 
               focused={focused} 
               color={color} 
               iconName="search"
-              label="Explore"
+              label={t('explore')}
             />
           ),
         }}
@@ -172,15 +174,15 @@ export default function Layout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title: "Favorites",
+          title: t('favorites'),
           headerShown: false,
-          tabBarLabel: "Favorites",
+          tabBarLabel: t('favorites'),
           tabBarIcon: ({ focused, color }) => (
             <TabIcon 
               focused={focused} 
               color={color} 
               iconName="heart"
-              label="Favorites"
+              label={t('favorites')}
             />
           ),
         }}
@@ -188,15 +190,15 @@ export default function Layout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: t('profile'),
           headerShown: false,
-          tabBarLabel: "Profile",
+          tabBarLabel: t('profile'),
           tabBarIcon: ({ focused, color }) => (
             <TabIcon 
               focused={focused} 
               color={color} 
               iconName="person"
-              label="Profile"
+              label={t('profile')}
             />
           ),
         }}
