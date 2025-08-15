@@ -10,18 +10,45 @@ export interface usersType {
     isAdmin: boolean, 
 }
 
+// old product type
+// export interface productsType {
+//     productId: string,
+//     title: string,
+//     description: string,
+//     price: number,
+//     stock: number,
+//     categoryId: string,
+//     images: string[],
+//     colors: string[];
+//     variants: {
+//         name: string;
+//         price: string;
+//         stock: number;
+//       }[],
+//     createdAt: string,
+//     updatedAt: string,
+// }
+
+
 export interface productsType {
     productId: string,
-    title: string,
-    description: string,
+    name: {
+      "en": string,
+      "am": string
+    },
+    description: {
+      "en": string,
+      "am": string
+    },
     price: number,
     stock: number,
     categoryId: string,
+    subCategoryId: string,
     images: string[],
     colors: string[];
     variants: {
         name: string;
-        price: string;
+        price: number;
         stock: number;
       }[],
     createdAt: string,
@@ -34,11 +61,30 @@ export interface cartType {
     selectedColor?: string;
 }
 
+// old categories type
+
+// export interface categoriesType {
+//      categoryId: string,
+//      name: string,
+//      image: string,
+//      parentId: string,
+//      createdAt: string,
+//      updatedAt: string,
+// }
 export interface categoriesType {
      categoryId: string,
-     name: string,
+     name: {
+      en: string,
+      am: string,
+     },
+     subcategories: {
+      id: string,
+      name: {
+        en: string,
+        am: string,
+      },
+     }[],
      image: string,
-     parentId: string,
      createdAt: string,
      updatedAt: string,
 }
