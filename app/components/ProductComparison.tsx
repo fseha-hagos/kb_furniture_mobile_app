@@ -6,14 +6,14 @@ import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useState } from 'react';
 import {
-    Dimensions,
-    Image,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useProduct } from '../context/productContext';
 
@@ -40,6 +40,9 @@ interface Review {
 const { width } = Dimensions.get('window');
 
 const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct }) => {
+
+  const tempLanguage = "en";
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<productsType | null>(null);
   const [currentProductReviews, setCurrentProductReviews] = useState<Review[]>([]);
@@ -132,8 +135,8 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
       },
       { 
         name: 'Description', 
-        current: currentProduct.description || 'N/A', 
-        compare: selectedProduct.description || 'N/A',
+        current: currentProduct.description[tempLanguage] || 'N/A', 
+        compare: selectedProduct.description[tempLanguage] || 'N/A',
         icon: 'file-text'
       },
     ];
@@ -228,7 +231,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                               )}
                               <View style={styles.productInfo}>
                                 <Text style={styles.productName} numberOfLines={1}>
-                                  {product.title}
+                                  {product.name[tempLanguage]}
                                 </Text>
                                 <Text style={styles.productPrice}>Birr {product.price}</Text>
                                 <View style={styles.stockInfo}>
@@ -252,7 +255,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                         style={styles.productImage}
                       />
                       <View style={styles.productInfo}>
-                        <Text style={styles.productName}>{currentProduct.title}</Text>
+                        <Text style={styles.productName}>{currentProduct.name[tempLanguage]}</Text>
                         <Text style={styles.productPrice}>Birr {currentProduct.price}</Text>
                         <View style={styles.stockInfo}>
                           <Text style={styles.stockText}>Stock: {currentProduct.stock}</Text>
@@ -266,7 +269,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                         style={styles.productImage}
                       />
                       <View style={styles.productInfo}>
-                        <Text style={styles.productName}>{selectedProduct.title}</Text>
+                        <Text style={styles.productName}>{selectedProduct.name[tempLanguage]}</Text>
                         <Text style={styles.productPrice}>Birr {selectedProduct.price}</Text>
                         <View style={styles.stockInfo}>
                           <Text style={styles.stockText}>Stock: {selectedProduct.stock}</Text>

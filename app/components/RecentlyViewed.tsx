@@ -1,16 +1,19 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useProduct } from '../context/productContext';
 
 const RecentlyViewed = () => {
+
+  const tempLanguage = "en";
+
   const { recentlyViewed } = useProduct();
   const router = useRouter();
 
@@ -40,7 +43,7 @@ const RecentlyViewed = () => {
             />
             <View style={styles.productInfo}>
               <Text style={styles.productName} numberOfLines={1}>
-                {product.title}
+                {product.name[tempLanguage]}
               </Text>
               <Text style={styles.productPrice}>Birr {product.price}</Text>
             </View>

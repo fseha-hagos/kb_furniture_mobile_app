@@ -1,10 +1,12 @@
 //import liraries
 import { productsType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/cartContext';
 
@@ -14,6 +16,11 @@ interface props {
   }
  
 const ProductCards = ({ item }: props) => {
+
+     // const tempLanguage = "en";
+     const { i18n, t } = useTranslation();
+     const currentLang: LanguageCode = i18n.language as LanguageCode;
+    
    
     const router = useRouter();
     const [isLiked, setIsLiked] = useState(false);
@@ -115,11 +122,11 @@ const ProductCards = ({ item }: props) => {
              </View>
              
              <View style={styles.content}>
-               <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+               <Text style={styles.title} numberOfLines={2}>{item.name[currentLang]}</Text>
                
                {/* Product Description */}
                <Text style={styles.description} numberOfLines={1}>
-                 {item.description}
+                 {item.description[currentLang]}
                </Text>
                
               

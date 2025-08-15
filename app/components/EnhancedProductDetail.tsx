@@ -37,6 +37,10 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
   product, 
   relatedProducts 
 }) => {
+
+  const tempLanguage = "en"
+
+
   const router = useRouter();
   const { onAddToCart, handleLiked, likedProducts } = useAuth();
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '');
@@ -118,7 +122,7 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
       {/* Product Info */}
       <View style={styles.productInfoSection}>
         <View style={styles.productHeader}>
-          <Text style={styles.productName}>{product.title}</Text>
+          <Text style={styles.productName}>{product.name[tempLanguage]}</Text>
           <TouchableOpacity onPress={handleLike}>
             <Ionicons 
               name={isLiked ? "heart" : "heart-outline"} 
@@ -144,7 +148,7 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
           <Text style={styles.reviewCount}>({product.reviewCount || 0} reviews)</Text>
         </View>
 
-        <Text style={styles.productDescription}>{product.description}</Text>
+        <Text style={styles.productDescription}>{product.description[tempLanguage]}</Text>
       </View>
 
       {/* Color Selection */}
@@ -198,7 +202,7 @@ const EnhancedProductDetail: React.FC<EnhancedProductDetailProps> = ({
         <View style={styles.tabContent}>
           {activeTab === 'description' && (
             <View>
-              <Text style={styles.descriptionText}>{product.description}</Text>
+              <Text style={styles.descriptionText}>{product.description[tempLanguage]}</Text>
               <View style={styles.keyFeatures}>
                 <Text style={styles.keyFeaturesTitle}>Key Features:</Text>
                 <View style={styles.featureItem}>
