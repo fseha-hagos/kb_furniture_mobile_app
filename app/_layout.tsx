@@ -68,6 +68,7 @@ const toastConfig = {
 const InitialLayout = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
+      
       <Stack.Screen name="index" />
       <Stack.Screen name="(public)" />
       <Stack.Screen name="(auth)" />
