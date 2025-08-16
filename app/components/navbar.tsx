@@ -1,9 +1,11 @@
 import { Colors } from '@/constants/Colors';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
@@ -22,18 +24,23 @@ interface ProductStackParamList {
 }
 
 // Dynamic advertising messages
-const advertisingMessages = [
-  "🔥 Special Offer: 20% off all furniture!",
-  "🎉 Free shipping on orders above Birr 500",
-  "💫 New arrivals every week",
-  "🌟 Premium quality furniture at best prices",
-  "✨ Limited time deals - Shop now!",
-  "🎯 Best furniture collection 2024",
-  "💎 Luxury furniture for your home",
-  "🏆 Customer favorite - Top rated"
-];
+// const advertisingMessages = [
+//   "🔥 Special Offer: 20% off all furniture!",
+//   "🎉 Free shipping on orders above Birr 500",
+//   "💫 New arrivals every week",
+//   "🌟 Premium quality furniture at best prices",
+//   "✨ Limited time deals - Shop now!",
+//   "🎯 Best furniture collection 2024",
+//   "💎 Luxury furniture for your home",
+//   "🏆 Customer favorite - Top rated"
+// ];
+
 
 const DynamicAdText = () => {
+
+  const { t } = useTranslation();
+  const advertisingMessages = Object.values(t("ads", { returnObjects: true }));
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -93,6 +100,9 @@ const DynamicAdText = () => {
 };
 
 const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :myprops) => {
+
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
 
   const {carts} = useAuth();
   const router = useRouter();
@@ -265,7 +275,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
             
             <TextInput 
               ref={searchInputRef}
-              placeholder='Search for furniture...' 
+              placeholder={t('search_placeholder')} 
               placeholderTextColor="#9CA3AF"
               style={[
                 styles.searchInput,
@@ -289,7 +299,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
               </TouchableOpacity>
             )}
             
-            {searchText.length === 0 && (
+            {/* {searchText.length === 0 && (
               <TouchableOpacity 
                 style={styles.voiceButton}
                 onPress={() => {
@@ -299,7 +309,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
               >
                 <Ionicons name="mic-outline" size={18} color="#9CA3AF" />
               </TouchableOpacity>
-            )}
+            )} */}
           </LinearGradient>
         </Animated.View>
       )}
