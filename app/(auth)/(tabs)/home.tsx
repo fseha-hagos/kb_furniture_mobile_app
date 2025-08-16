@@ -1,4 +1,5 @@
-import FloatingCustomerServiceButton from '@/app/components/FloatingCusSerButton';
+
+import { FloatingCustomerServiceButton } from '@/app/components/FloatingCusSerButton';
 import { CATEGORY_DATA, PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
 import { useScreenshotPrevention } from '@/hooks/useScreenshotPrevention';
@@ -6,11 +7,12 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { categoriesType, productsType, slidesType } from '@/types/type';
 import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, Alert, DimensionValue, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import CategoryCardView from '../../components/catagoryView';
 import DataFetchError from '../../components/DataFetchError';
 import ItemsCarousel from '../../components/itemCero';
@@ -128,6 +130,8 @@ const Layout = () => {
   // const tempLanguage = "en";
   const { i18n, t } = useTranslation();
   const currentLang: LanguageCode = i18n.language as LanguageCode;
+
+  const router = useRouter();
   
   const [selectedCategory, setSelectedCategory] = React.useState<categoriesType | null>(null);
   const [sliderList, setSliderList] = useState<slidesType[]>([]);
@@ -543,10 +547,11 @@ useEffect(() => {
         showSearch={true} 
         onSearch={handleSearch}
       />
-      <FloatingCustomerServiceButton onPress={() => {
-        // Navigate to chat screen or open modal
-        // navigation.navigate('CustomerChat');
-      }} />
+     <FloatingCustomerServiceButton
+        onPressChat={() => Alert.alert("Coming soon")}
+        onPressCart={() => router.push('/cart')}
+     />
+
       {searchQuery ? (
         <>
           {renderSearchState()}

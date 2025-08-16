@@ -1,8 +1,10 @@
+import { LanguageCode } from '@/utils/i18n';
 import { useAuth, useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import SettingsPage from '../(screens)/settings';
 import { useThemeColor } from '../../../hooks/useThemeColor';
@@ -17,6 +19,10 @@ interface ProductStackParamList {
 }
 
 const Profile = () => {
+
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
+
   const { signOut } = useClerk();
   const { user } = useUser();
   const { isSignedIn } = useAuth();
@@ -98,13 +104,13 @@ const Profile = () => {
               style={[styles.toggleButton, showDashboard && { backgroundColor: accentColor }]}
               onPress={() => setShowDashboard(true)}
             >
-              <Text style={[styles.toggleText, { color: showDashboard ? '#fff' : subtextColor }]}>Dashboard</Text>
+              <Text style={[styles.toggleText, { color: showDashboard ? '#fff' : subtextColor }]}>{t('dashboard')}</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.toggleButton, !showDashboard && { backgroundColor: accentColor }]}
               onPress={() => setShowDashboard(false)}
             >
-              <Text style={[styles.toggleText, { color: !showDashboard ? '#fff' : subtextColor }]}>Settings</Text>
+              <Text style={[styles.toggleText, { color: !showDashboard ? '#fff' : subtextColor }]}>{t('settings')}</Text>
             </TouchableOpacity>
           </View>
 
