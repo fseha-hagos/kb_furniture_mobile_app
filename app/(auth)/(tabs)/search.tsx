@@ -1,3 +1,4 @@
+import FloatingCustomerServiceButton from '@/app/components/FloatingCusSerButton';
 import { PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
 import { productsType } from '@/types/type';
@@ -5,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Animated, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DataFetchError from '../../components/DataFetchError';
 import Navbar from '../../components/navbar';
 import ProductCards from '../../components/productCards';
@@ -337,6 +338,11 @@ const Search = () => {
         showBack={false} 
         onSearch={handleSearch}
       />
+
+     <FloatingCustomerServiceButton
+        onPressChat={() => Alert.alert("Coming soon")}
+        onPressCart={() => router.push('/cart')}
+     />
       
       {loading ? (
         <SearchSkeleton />

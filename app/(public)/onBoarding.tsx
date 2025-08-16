@@ -1,8 +1,10 @@
 //import liraries
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,35 +18,38 @@ const onBoarding = () => {
     const slideAnim = useRef(new Animated.Value(50)).current;
     const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
+    const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
+
     const steps = [
         {
-            title: "Transform Your Space",
-            subtitle: "Discover premium furniture that brings elegance and comfort to your home",
+            title: t('step1Title'),
+            subtitle: t('step1Subtitle'),
             image: require('@/assets/images/Designer(1).jpeg'),
             features: [
-                { icon: "star" as const, text: "Premium Quality" },
-                { icon: "shield-checkmark" as const, text: "Trusted Brand" },
-                { icon: "heart" as const, text: "Loved by Thousands" }
+                { icon: "star" as const, text: t('step1Feature1') },
+                { icon: "shield-checkmark" as const, text: t('step1Feature2') },
+                { icon: "heart" as const, text: t('step1Feature3') }
             ]
         },
         {
-            title: "Expert Service",
-            subtitle: "Get personalized recommendations and professional support from our furniture experts",
+            title: t('step2Title'),
+            subtitle: t('step2Subtitle'),
             image: require('@/assets/images/Designer(1).jpeg'),
             features: [
-                { icon: "people" as const, text: "Expert Consultation" },
-                { icon: "chatbubbles" as const, text: "24/7 Support" },
-                { icon: "checkmark-circle" as const, text: "Quality Guarantee" }
+                { icon: "people" as const, text: t('step2Feature1') },
+                { icon: "chatbubbles" as const, text: t('step2Feature2') },
+                { icon: "checkmark-circle" as const, text: t('step2Feature3') }
             ]
         },
         {
-            title: "Fast & Secure",
-            subtitle: "Enjoy quick delivery, secure payments, and hassle-free shopping experience",
+            title: t('step3Title'),
+            subtitle: t('step3Subtitle'),
             image: require('@/assets/images/Designer(1).jpeg'),
             features: [
-                { icon: "rocket" as const, text: "Fast Delivery" },
-                { icon: "card" as const, text: "Secure Payments" },
-                { icon: "refresh" as const, text: "Easy Returns" }
+                { icon: "rocket" as const, text: t('step3Feature1') },
+                { icon: "card" as const, text: t('step3Feature2') },
+                { icon: "refresh" as const, text: t('step3Feature3') }
             ]
         }
     ];
@@ -199,7 +204,7 @@ const onBoarding = () => {
                                 activeOpacity={0.8}
                             >
                                 <Ionicons name="arrow-back" size={20} color="#CCCCCC" />
-                                <Text style={styles.previousButtonText}>Previous</Text>
+                                <Text style={styles.previousButtonText}>{t('previous')}</Text>
                             </TouchableOpacity>
                         )}
                         
@@ -215,7 +220,7 @@ const onBoarding = () => {
                                 end={{ x: 1, y: 0 }}
                             >
                                 <Text style={styles.primaryButtonText}>
-                                    {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
+                                    {currentStep === steps.length - 1 ? t('getStarted') : t('next')}
                                 </Text>
                                 <Ionicons 
                                     name={currentStep === steps.length - 1 ? "checkmark" : "arrow-forward"} 
@@ -232,7 +237,7 @@ const onBoarding = () => {
                             onPress={handleContinue}
                             activeOpacity={0.8}
                         >
-                            <Text style={styles.secondaryButtonText}>Skip for now</Text>
+                            <Text style={styles.secondaryButtonText}>{t('skip')}</Text>
                         </TouchableOpacity>
                     )}
                 </View>
