@@ -1,6 +1,8 @@
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
@@ -27,6 +29,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   personalizedProducts,
   role
 }) => {
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
+
   const router = useRouter();
   const { carts } = useAuth();
   const { likedProducts } = useAuth();
@@ -336,57 +341,57 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     return (
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>Admin Dashboard</Text>
-          <Text style={styles.subtitle}>Business overview and order management</Text>
+          <Text style={styles.welcomeText}>{t('adminDashboard')}</Text>
+          <Text style={styles.subtitle}>{t('businessOverview')}</Text>
         </View>
         <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Business Stats</Text>
+          <Text style={styles.sectionTitle}>{t('businessStats')}</Text>
           <View style={styles.statsGrid}>
             <StatCard 
               icon="bag-outline" 
               value={stats.ordersCount} 
-              label="Total Orders" 
+              label={t('totalOrders')}
               color="#4CAF50" 
             />
             <StatCard 
               icon="wallet-outline" 
               value={`Birr ${stats.totalSpent}`} 
-              label="Total Sales" 
+              label={t('totalSales')}
               color="#2196F3" 
             />
             <StatCard 
               icon="people-outline" 
               value={stats.usersCount || 0} 
-              label="Total Users" 
+              label={t('totalUsers')}
               color="#8E24AA" 
             />
             <StatCard 
               icon="time-outline" 
               value={stats.pendingOrdersCount || 0} 
-              label="Pending Orders" 
+              label={t('pendingOrders')} 
               color="#FF9800" 
             />
           </View>
         </View>
         {/* Admin Quick Actions */}
         <View style={styles.quickActionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>{t('quickActions')} </Text>
           <View style={styles.actionsGrid}>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/addCategoryScreen')}>
               <Ionicons name="add-circle-outline" size={24} color="#00685C" />
-              <Text style={styles.actionText}>Add Category</Text>
+              <Text style={styles.actionText}>{t('addCategory')} </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/addPostScreen')}>
               <Ionicons name="add-circle-outline" size={24} color={primaryColor} />
-              <Text style={styles.actionText}>Add Product</Text>
+              <Text style={styles.actionText}>{t('addProduct')} </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/cupens')}>
               <Ionicons name="pricetags-outline" size={24} color={primaryColor} />
-              <Text style={styles.actionText}>Manage Coupons</Text>
+              <Text style={styles.actionText}>{t('manageCoupons')} </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/orders')}>
               <Ionicons name="list-outline" size={24} color={primaryColor} />
-              <Text style={styles.actionText}>View Orders</Text>
+              <Text style={styles.actionText}>{t('viewOrders')} </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -394,9 +399,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         {recentOrders.length > 0 && (
           <View style={styles.ordersSection}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Recent Orders</Text>
+              <Text style={styles.sectionTitle}>{t('recentOrders')}</Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/(screens)/orders')}>
-                <Text style={styles.viewAllText}>Manage Orders</Text>
+                <Text style={styles.viewAllText}>{t('manageOrders')}</Text>
               </TouchableOpacity>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -415,7 +420,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   interface DashboardAction {
     icon: any;
     value?: number | string;
-    label: string;
+    label: {en:string, am:string};
     color: string;
     onPress?: () => void;
   }
@@ -433,7 +438,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     {
       icon: 'heart-outline' as any,
       value: likedProducts?.length || 0,
-      label: 'Favorites',
+      label: {en: 'Favorites', am:'ተወዳጆች'},
       color: '#E91E63',
       onPress: () => router.push('/favorites'),
     },
@@ -456,14 +461,14 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     {
       icon: 'cart-outline' as any,
       value: carts?.length || 0,
-      label: 'Cart',
+      label: {en: 'Cart', am:'ጋሪ'},
       color: '#00685C',
       onPress: () => router.push('/cart'),
     },
     {
       icon: 'help-circle-outline' as any,
       value: undefined,
-      label: 'Support',
+      label: {en: 'Support', am:'ድጋፍ'},
       color: '#2196F3',
       onPress: () => router.push('/(auth)/(screens)/support'),
     },
@@ -473,17 +478,17 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Welcome Section */}
       <View style={styles.welcomeSection}>
-        <Text style={styles.welcomeText}>Welcome back!</Text>
-        <Text style={styles.subtitle}>Here's what's happening with your account</Text>
+        <Text style={styles.welcomeText}>{t('welcomeBack')}</Text>
+        <Text style={styles.subtitle}>{t('accountOverview')}</Text>
       </View>
 
       {/* Merged Activity & Actions Section */}
       <View style={styles.statsSection}>
-        <Text style={styles.sectionTitle}>Your Activity & Quick Actions</Text>
+        <Text style={styles.sectionTitle}>{t('activityAndActions')}</Text>
         <View style={styles.statsGrid}>
           {mergedActions.map((action, idx) => (
             <TouchableOpacity
-              key={action.label}
+              key={action.label["en"]}
               style={[styles.statCard, { shadowColor: action.color }]}
               onPress={action.onPress}
               disabled={!action.onPress}
@@ -493,7 +498,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               {action.value !== undefined && (
                 <Text style={styles.statNumber}>{action.value}</Text>
               )}
-              <Text style={styles.statLabel}>{action.label}</Text>
+              <Text style={styles.statLabel}>{action.label[currentLang]}</Text>
             </TouchableOpacity>
           ))}
         </View>

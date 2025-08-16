@@ -13,6 +13,8 @@
     "favorites": "Favorites",
     "profile": "Profile",
 
+    "search_placeholder": "Find your perfect furniture...",
+
     
     "supportCenter": "Support Center",
     "hereToHelp": "We're here to help",
@@ -63,5 +65,73 @@
     "freeUpStorage": "Free up storage space",
     "accountActions": "Account Actions",
     "appVersion": "KB Furniture v1.0.0",
-    "appCopyright": "© 2025 KB Furniture. All rights reserved."
+    "appCopyright": "© 2025 KB Furniture. All rights reserved.",
+
+
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+
+    "adminDashboard": "Admin Dashboard",
+    "businessOverview": "Business overview and order management",
+    "businessStats": "Business Stats",
+    "totalOrders": "Total Orders",
+    "totalSales": "Total Sales",
+    "totalUsers": "Total Users",
+    "pendingOrders": "Pending Orders",
+    "quickActions": "Quick Actions",
+    "addCategory": "Add Category",
+    "addProduct": "Add Product",
+    "manageCoupons": "Manage Coupons",
+    "viewOrders": "View Orders",
+    "recentOrders": "Recent Orders",
+    "manageOrders": "Manage Orders",
+    "welcomeBack": "Welcome back!",
+    "accountOverview": "Here's what's happening with your account",
+    "activityAndActions": "Your Activity & Quick Actions",
+    "favorites": "Favorites",
+    "cart": "Cart",
+    "support": "Support",
+    "delivered": "Delivered",
+    "shipped": "Shipped",
+    "processing": "Processing",
+    "cancelled": "Cancelled",
+    "viewAll": "View All",
+    "recommendedForYou": "Recommended for You",
+
+    "ads": {
+      "offer": "🔥 Special Offer: 20% off all furniture!",
+      "free_shipping": "🎉 Free shipping on orders above Birr 500",
+      "new_arrivals": "💫 New arrivals every week",
+      "premium_quality": "🌟 Premium quality furniture at best prices",
+      "limited_deals": "✨ Limited time deals - Shop now!",
+      "collection": "🎯 Best furniture collection 2024",
+      "luxury": "💎 Luxury furniture for your home",
+      "top_rated": "🏆 Customer favorite - Top rated"
+    },
+
+
+  "step1Title": "Transform Your Space",
+  "step1Subtitle": "Discover premium furniture that brings elegance and comfort to your home",
+  "step1Feature1": "Premium Quality",
+  "step1Feature2": "Trusted Brand",
+  "step1Feature3": "Loved by Thousands",
+
+  "step2Title": "Expert Service",
+  "step2Subtitle": "Get personalized recommendations and professional support from our furniture experts",
+  "step2Feature1": "Expert Consultation",
+  "step2Feature2": "24/7 Support",
+  "step2Feature3": "Quality Guarantee",
+
+  "step3Title": "Fast & Secure",
+  "step3Subtitle": "Enjoy quick delivery, secure payments, and hassle-free shopping experience",
+  "step3Feature1": "Fast Delivery",
+  "step3Feature2": "Secure Payments",
+  "step3Feature3": "Easy Returns",
+
+  "next": "Next",
+  "previous": "Previous",
+  "getStarted": "Get Started",
+  "skip": "Skip for now",
+  "stepIndicator": "Step {current} of {total}"
+
   }
