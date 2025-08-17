@@ -374,8 +374,8 @@ useEffect(() => {
     return (
       <View style={styles.noMoreDataContainer}>
         <Ionicons name="checkmark-circle" size={24} color="#00685C" />
-        <Text style={styles.noMoreDataText}>You've seen all available products</Text>
-        <Text style={styles.noMoreDataSubtext}>Check back later for new arrivals!</Text>
+        <Text style={styles.noMoreDataText}>{t('noMoreProducts')}</Text>
+        <Text style={styles.noMoreDataSubtext}>{t('checkLater')}</Text>
       </View>
     );
   };
@@ -548,7 +548,7 @@ useEffect(() => {
         onSearch={handleSearch}
       />
      <FloatingCustomerServiceButton
-        onPressChat={() => Alert.alert("Coming soon")}
+        onPressChat={() => Alert.alert('Live Chat', 'Live chat feature coming soon!')}
         onPressCart={() => router.push('/cart')}
      />
 

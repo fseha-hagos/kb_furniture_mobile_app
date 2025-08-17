@@ -2,10 +2,12 @@ import FloatingCustomerServiceButton from '@/app/components/FloatingCusSerButton
 import { PRODUCTS_DATA } from '@/constants/configurations';
 import { db } from '@/firebaseConfig';
 import { productsType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { DocumentData, collection, getDocs, limit, query, startAfter, where } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Animated, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DataFetchError from '../../components/DataFetchError';
 import Navbar from '../../components/navbar';
@@ -69,6 +71,11 @@ const SearchSkeleton = () => {
 
 const Search = () => {
   const pageSize = 6;
+
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
+
+
   const [refreshing, setRefreshing] = useState(true);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [startingDoc, setStartingDoc] = useState<DocumentData | null>(null);
@@ -227,8 +234,8 @@ const Search = () => {
     return (
       <View style={styles.noMoreDataContainer}>
         <Ionicons name="checkmark-circle" size={24} color="#00685C" />
-        <Text style={styles.noMoreDataText}>You've seen all available products</Text>
-        <Text style={styles.noMoreDataSubtext}>Check back later for new arrivals!</Text>
+        <Text style={styles.noMoreDataText}>{t('noMoreProducts')}</Text>
+        <Text style={styles.noMoreDataSubtext}>{t('checkLater')}</Text>
       </View>
     );
   };
@@ -340,7 +347,7 @@ const Search = () => {
       />
 
      <FloatingCustomerServiceButton
-        onPressChat={() => Alert.alert("Coming soon")}
+        onPressChat={() => Alert.alert('Live Chat', 'Live chat feature coming soon!')}
         onPressCart={() => router.push('/cart')}
      />
       
