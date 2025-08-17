@@ -7,6 +7,8 @@
     "allProducts" : "All products",
     "latestItems": "Latest Items",
     "specialOffer": "🔥 Special Offer: Get 20% off on all furniture this week! 🎉 Free shipping on orders above Birr 500 💫",
+    "noMoreProducts": "You've seen all available products",
+    "checkLater": "Check back later for new arrivals!",
 
     "home": "Home",
     "explore": "Explore",
@@ -132,6 +134,29 @@
   "previous": "Previous",
   "getStarted": "Get Started",
   "skip": "Skip for now",
-  "stepIndicator": "Step {current} of {total}"
+  "stepIndicator": "Step {current} of {total}",
+
+
+  "subtotal": "Subtotal",
+  "birr": "Birr",
+  "shipping": "Shipping",
+  "free": "Free",
+  "totalAmount": "Total Amount",
+  "contactAdmin": "Contact Admin",
+  "shoppingCart": "Shopping Cart",
+  "items": "items",
+  "cartEmptyTitle": "Your Cart is Empty",
+  "cartEmptySubtext": "Looks like you haven't added anything to your cart yet. Start shopping to add items to your cart.",
+  "startShopping": "Start Shopping",
+
+
+  "my_favorites": "My Favorites",
+  "live_chat": "Live Chat",
+  "live_chat_coming_soon": "Live chat feature coming soon!",
+  "no_favorites": "No Favorites Yet",
+  "start_liking_products": "Start liking products to build your collection",
+  "like_products": "Like products you love",
+  "easy_access": "Easy access to favorites",
+  "explore_products": "Explore Products"
 
   }
