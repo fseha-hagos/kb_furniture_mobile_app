@@ -1,15 +1,19 @@
 //import liraries
 
+import FloatingCustomerServiceButton from '@/app/components/FloatingCusSerButton';
 import Navbar from '@/app/components/navbar';
 import ProductCards from '@/app/components/productCards';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { productsType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { DocumentData } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
+  Alert,
   Animated,
   Dimensions,
   FlatList,
@@ -28,6 +32,10 @@ const { width, height } = Dimensions.get('window');
 
 // create a component
 const Favorites = () => {
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
+
+
   const [favoriteProducts, setFavoriteProducts] = useState<DocumentData[]>([]);
   const { likedProducts } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
@@ -90,9 +98,9 @@ const Favorites = () => {
             </LinearGradient>
           </View>
           
-          <Text style={styles.emptyTitle}>No Favorites Yet</Text>
+          <Text style={styles.emptyTitle}>{t('no_favorites')}</Text>
           <Text style={styles.emptySubtitle}>
-            Start liking products to build your collection
+            {t('start_liking_products')}
           </Text>
           
           <View style={styles.featuresContainer}>
@@ -100,14 +108,14 @@ const Favorites = () => {
               <View style={styles.featureIcon}>
                 <Ionicons name="heart-outline" size={18} color="#FF6B6B" />
               </View>
-              <Text style={styles.featureText}>Like products you love</Text>
+              <Text style={styles.featureText}>{t('like_products')}</Text>
             </View>
             
             <View style={styles.featureItem}>
               <View style={styles.featureIcon}>
                 <Ionicons name="cart-outline" size={16} color="#45B7D1" />
               </View>
-              <Text style={styles.featureText}>Easy access to favorites</Text>
+              <Text style={styles.featureText}>{t('easy_access')}</Text>
             </View>
           </View>
           
@@ -120,7 +128,7 @@ const Favorites = () => {
               style={styles.exploreButtonGradient}
             >
               <Ionicons name="search" size={18} color="white" style={{ marginRight: 6 }} />
-              <Text style={styles.exploreButtonText}>Explore Products</Text>
+              <Text style={styles.exploreButtonText}>{t('explore_products')}</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -159,7 +167,11 @@ const Favorites = () => {
   return (
     <View style={styles.container}>
       <Navbar title="My Favorites" showSearch={false} showBack={false} />
-      <Text style={styles.simpleTitle}>My Favorites</Text>
+      <FloatingCustomerServiceButton
+        onPressChat={() => Alert.alert(t('live_chat'), t('live_chat_coming_soon'))}
+        onPressCart={() => router.push('/cart')}
+     />
+      <Text style={styles.simpleTitle}>{t('my_favorites')}</Text>
       {likedProducts && likedProducts.length > 0 ? (
         <FlatList
           data={likedProducts}
@@ -205,7 +217,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   scrollContainer: {
-    flexGrow: 1,
+    flex: 1,
+    paddingBottom: 45
   },
   headerContainer: {
     marginBottom: 16,
@@ -397,7 +410,7 @@ const styles = StyleSheet.create({
     color: '#222',
     textAlign: 'center',
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 0,
   },
 });
 

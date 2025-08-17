@@ -1,8 +1,10 @@
 import ContactAdmin from '@/app/components/ContactAdmin';
+import { LanguageCode } from '@/utils/i18n';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Animated,
     Dimensions,
@@ -153,14 +155,18 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     gradientButton: {
-        padding: 6,
+        flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 16,
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        
     },
     shopNowText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+       
     },
     buttonContainer: {
         position: 'absolute',
@@ -387,6 +393,9 @@ const Cart = () => {
     const backgroundColor = useThemeColor({}, 'background');
     const cardColor = useThemeColor({}, 'card');
 
+    const { i18n, t } = useTranslation();
+    const currentLang: LanguageCode = i18n.language as LanguageCode;
+
     // Use the custom back handler hook
     useBackHandler({
         onBackPress: () => {
@@ -429,8 +438,8 @@ const Cart = () => {
                         </LinearGradient>
                     </View>
                     <View style={styles.titleTextContainer}>
-                        <Text style={styles.navbarTitle}>Shopping Cart</Text>
-                        <Text style={styles.navbarSubtitle}>{carts?.length || 0} items</Text>
+                        <Text style={styles.navbarTitle}>{t('shoppingCart')}</Text>
+                        <Text style={styles.navbarSubtitle}>{carts?.length || 0} {t('items')}</Text>
                     </View>
                 </View>
 
@@ -540,17 +549,19 @@ const Cart = () => {
                     <View style={styles.iconContainer}>
                         <FontAwesome name="shopping-cart" size={40} color={primaryColor} />
                     </View>
-                    <Text style={styles.emptyText}>Your Cart is Empty</Text>
-                    <Text style={styles.emptySubText}>Looks like you haven't added anything to your cart yet. Start shopping to add items to your cart.</Text>
+                    <Text style={styles.emptyText}>{t('cartEmptyTitle')}</Text>
+                    <Text style={styles.emptySubText}>{t('cartEmptySubtext')}</Text>
                     <TouchableOpacity 
                         style={styles.shopNowButton}
                         onPress={() => router.push('/(auth)/(tabs)/home')}
                     >
+                        
                         <LinearGradient
                             colors={[primaryColor, primaryColor]}
                             style={styles.gradientButton}
                         >
-                            <Text style={styles.shopNowText}>Start Shopping</Text>
+                            <Ionicons name="search" size={18} color="white" style={{ marginRight: 6 }} />
+                            <Text style={styles.shopNowText}>{t('startShopping')}</Text>
                         </LinearGradient>
                     </TouchableOpacity>
                 </Animated.View>
@@ -616,17 +627,17 @@ const Cart = () => {
                 ]}
             >
                 <View style={styles.priceAndTotal}>
-                    <Text style={styles.priceLabel}>Subtotal</Text>
-                    <Text style={styles.priceValue}>Birr {totalPrice}</Text>
+                    <Text style={styles.priceLabel}>{t('subtotal')}</Text>
+                    <Text style={styles.priceValue}>{t('birr')} {totalPrice}</Text>
                 </View>
                 <View style={styles.priceAndTotal}>
-                    <Text style={styles.shippingText}>Shipping</Text>
-                    <Text style={[styles.shippingText, styles.freeShipping]}>Free</Text>
+                    <Text style={styles.shippingText}>{t('shipping')}</Text>
+                    <Text style={[styles.shippingText, styles.freeShipping]}>{t('free')}</Text>
                 </View>
                 <View style={styles.divider} />
                 <View style={styles.priceAndTotal}>
-                    <Text style={styles.totalLabel}>Total Amount</Text>
-                    <Text style={styles.totalValue}>Birr {totalPrice}</Text>
+                    <Text style={styles.totalLabel}>{t('totalAmount')}</Text>
+                    <Text style={styles.totalValue}>{t('birr')} {totalPrice}</Text>
                 </View>
             </Animated.View>
 
@@ -649,7 +660,7 @@ const Cart = () => {
                         style={styles.gradientButton}
                     >
                         <Ionicons name="chatbubble-ellipses" size={20} color="white" />
-                        <Text style={styles.contactButtonText}>Contact Admin</Text>
+                        <Text style={styles.contactButtonText}>{t('contactAdmin')}</Text>
                     </LinearGradient>
                 </TouchableOpacity>
             </Animated.View>
@@ -661,17 +672,10 @@ const Cart = () => {
                 visible={showContactAdmin}
                 animationType="slide"
                 presentationStyle="fullScreen"
-                
-                
                 onRequestClose={() => setShowContactAdmin(false)}
             >    
-            
-
                <ContactAdmin onClose={() => setShowContactAdmin(false)} />
-               
-            
             </Modal>
-
         </View>
     );
 };
