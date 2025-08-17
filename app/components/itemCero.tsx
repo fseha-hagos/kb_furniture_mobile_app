@@ -1,6 +1,7 @@
 import { slidesType } from '@/types/type';
+import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Animated, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -81,7 +82,11 @@ const ImageWithRetry: React.FC<{ uri: string; style: any }> = ({ uri, style }) =
       <Image
         source={{ uri }}
         style={[style, styles.slideImage]}
-        resizeMode="cover"
+        contentFit='cover'
+        priority="high"
+        cachePolicy="memory-disk"
+        transition={300} // Optional smooth fade
+        placeholder={require("@/assets/logo/kb-furniture-high-resolution-logo-transparent.png")}
         onLoadStart={handleLoadStart}
         onLoadEnd={handleLoadEnd}
         onError={handleError}
