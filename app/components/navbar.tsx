@@ -1,12 +1,11 @@
-import { Colors } from '@/constants/Colors';
 import { LanguageCode } from '@/utils/i18n';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Image, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useThemeColor } from '../../hooks/useThemeColor';
 import { useAuth } from '../context/cartContext';
 
@@ -205,20 +204,7 @@ const Navbar = ({ title, showBack = false, showSearch = false, onSearch } :mypro
           <DynamicAdText />
         </View>
         
-        <TouchableOpacity style={styles.cartIcon} onPress={handleMyCart}>
-          <LinearGradient
-            colors={[Colors.dark.background, Colors.dark.background]}
-            style={styles.cartGradient}
-          >
-            {/* <MaterialCommunityIcons name="cart-outline" size={24} color="#00685C" /> */}
-            <MaterialCommunityIcons name="cart-outline" size={24} color="#fff" />
-            {carts && carts.length > 0 && (
-              <View style={styles.cartCount}>
-                <Text style={styles.cartCountText}>{carts.length}</Text>
-              </View>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
+      
       </LinearGradient>
     
       {showSearch && (

@@ -1,8 +1,10 @@
 //import liraries
 import { cartType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // create a component
@@ -17,7 +19,8 @@ interface prop {
 }
 
 const CartCard = ({item, deleteFromCart, updateQuantity}: prop) => {
-    const tempLanguage = "en";
+    const { i18n, t } = useTranslation();
+    const currentLang: LanguageCode = i18n.language as LanguageCode;
 
     const router = useRouter();
 
@@ -35,10 +38,13 @@ const CartCard = ({item, deleteFromCart, updateQuantity}: prop) => {
 
     return (
         <View style={styles.container}>
-            <Image source={{uri: item.product.images[0]}} style={styles.coverImage}/>
+            <TouchableOpacity style={styles.coverImage} onPress={handleCheckout}>
+               <Image source={{uri: item.product.images[0]}} style={{flex: 1, borderRadius: 10}}/>
+            </TouchableOpacity>
+            
             <View style={styles.cartContent}>
-                <Text style={styles.title}>{item.product.name[tempLanguage]}</Text>
-                <Text style={styles.price}>Birr {item.product.price}</Text>
+                <Text style={styles.title}>{item.product.name[currentLang]}</Text>
+                <Text style={styles.price}>{t('birr')} {item.product.price}</Text>
             <View style={styles.circleSizeContainer}>
                 <View style={[styles.circle, {backgroundColor: item.selectedColor === null ? '"#7094C1"' : item.selectedColor}]} /> 
                 
@@ -61,12 +67,9 @@ const CartCard = ({item, deleteFromCart, updateQuantity}: prop) => {
             </View>
             <View style={{alignItems: 'center', gap: 15}}>
                 <TouchableOpacity onPress={() => {deleteFromCart(item.product)}}>
-
-                <Ionicons name='trash-outline' size={24} color="black"/>
+                 <Ionicons name='trash-outline' size={24} color="black"/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleCheckout}>
-                    <Text style={styles.checkoutText}>checkout</Text>
-                </TouchableOpacity>
+               
             </View>
            
         </View>
