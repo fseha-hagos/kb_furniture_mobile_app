@@ -1,19 +1,27 @@
 import Navbar from '@/app/components/navbar';
 import { RequireAdmin } from '@/app/components/RequireAdmin';
+import { handleFirebaseError } from '@/app/utils/firebaseErrorHandler';
 import { CATEGORY_DATA } from '@/constants/configurations';
 import { db, storage } from '@/firebaseConfig';
 import { categoriesType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import NetworkError from '../../components/NetworkError';
 import { useUserRole } from '../../hooks/useUserRole';
 
 const AddCategoryContent = () => {
+
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
+
   // const [categoryId, setCategoryId] = useState('');
   // const [name, setName] = useState('');
   // const [image, setImage] = useState('');
@@ -27,6 +35,9 @@ const AddCategoryContent = () => {
   const [progress, setProgress] = useState(0);
   const router = useRouter();
   const { role } = useUserRole();
+  const [isCategoryLoading, setIsCategoryLoading] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [category, setCategory] = useState<categoriesType>({
     categoryId: "",
@@ -37,12 +48,87 @@ const AddCategoryContent = () => {
     updatedAt: "",
   });
 
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        // Load categories
+        setIsCategoryLoading(true);
+        await getCategoryList();
+
+      } catch (error) {
+        handleFirestoreError(error);
+      }
+    };
+    
+    loadInitialData();
+  }, []);
+
+
+  const getCategoryList = async() => {
+    try {
+      setCategoryList([]);
+      await fetchWithRetry(async () => {
+        const querySnapShot = await getDocs(collection(db, `${CATEGORY_DATA}`));
+        querySnapShot.forEach((doc) => {
+          setCategoryList(categoryList => [...categoryList, doc.data() as categoriesType]);
+        });
+      });
+    } catch (error) {
+      handleFirestoreError(error);
+    } finally {
+      setIsCategoryLoading(false);
+    }
+  };
+
+
+  // Add a generic retry helper at the top, after imports
+  const fetchWithRetry = async (fn: () => Promise<any>, retries = 3, delay = 1500) => {
+    try {
+      return await fn();
+    } catch (error) {
+      if (retries > 0) {
+        await new Promise(res => setTimeout(res, delay));
+        return fetchWithRetry(fn, retries - 1, delay * 2); // Exponential backoff
+      } else {
+        throw error;
+      }
+    }
+  };
+
+
+  const handleFirestoreError = async (error: any) => {
+    console.error("Firestore error:", error);
+    
+    const result = await handleFirebaseError(error, {
+      enableAppReload: true,
+      showAlert: true
+    });
+    
+    if (result.success) {
+      // Retry was successful, reset error states
+      setIsOffline(false);
+      setError(null);
+      return;
+    }
+    
+    if (result.shouldReload) {
+      // App will reload automatically, no need to set error states
+      return;
+    }
+    
+    // For other errors, show the offline state
+    setIsOffline(true);
+    setError("An error occurred while fetching data. Please check your internet connection and try again.");
+  };
+
   // Generate unique category ID
   const generateCategoryId = () => {
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 8);
     return `cat_${timestamp}_${random}`;
   };
+
+  
 
   useEffect(() => {
     // Generate category ID on component mount
@@ -147,6 +233,129 @@ const addSubcategory = (id: string, en: string, am: string) => {
   }));
 };
 
+  const oldCategoryView = (categoryItem : categoriesType) => {
+    return (
+      <View style={styles.catContainer}>
+          <TouchableOpacity 
+              onPress={() => {setCategory(categoryItem); setIsEditing(true)}}
+              style={[
+                  styles.categoryContainer,
+                  {
+                      backgroundColor: '#FFFFFF',
+                      borderColor: '#F0F0F0',
+                  },
+              ]}
+              activeOpacity={0.7}
+          >
+              <View style={styles.catImageContainer}>
+                          <View style={styles.imageWrapper}>
+                              <Image
+                                  
+                                  source={{ uri: categoryItem.image }}
+                                  style={styles.catCoverImage}
+                                  cachePolicy="memory-disk"
+                                  transition={300} // Optional smooth fade
+                                  priority="high"
+                                  placeholder={require("@/assets/logo/kb-furniture-high-resolution-logo-transparent.png")}
+                                  onError={(error) => console.log('Category image error:', error)}
+                                  onLoad={() => console.log('Category image loaded')}
+                               
+                                  />
+                             
+                          </View>
+              </View>
+              
+              {/* Category Name */}
+              <View style={styles.textContainer}>
+                  <Text 
+                      style={[
+                          styles.categoryText,
+                      ]}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                  >
+                      { categoryItem.name[currentLang]}
+                  </Text>
+              </View>
+          </TouchableOpacity>
+      </View>
+  );
+  }
+
+
+  const handleAddNew = () => {
+    setCategory({
+      categoryId: generateCategoryId(),
+      name: { en: "", am: "" },
+      subcategories: [],
+      image: "",
+      createdAt: "",
+      updatedAt: "",
+    });
+
+   setIsEditing(false);
+  }
+
+ 
+
+const handleEdit = async () => {
+  if (!category.name["am"].trim() && !category.name["en"].trim()) {
+    Alert.alert('Error', 'Please enter a category name');
+    return;
+  }
+
+  if (!category.image) {
+    Alert.alert('Error', 'Please select an image for the category');
+    return;
+  }
+
+  if (!category.categoryId) {
+    Alert.alert('Error', 'No category selected for editing');
+    return;
+  }
+
+  setLoading(true);
+  setError(null);
+  setSuccess(false);
+
+  try {
+    // Upload image if it's a new file, otherwise keep old URL
+    const imageUrl = category.image.startsWith("http")
+      ? category.image
+      : await uploadImage(category.image, category.categoryId);
+
+    const categoryRef = doc(db, CATEGORY_DATA, category.categoryId);
+
+    const categoryData = {
+      ...category,
+      name: { ...category.name },
+      image: imageUrl,
+      updatedAt: serverTimestamp(), // only update updatedAt
+    };
+
+    await updateDoc(categoryRef, categoryData);
+
+    setSuccess(true);
+
+    // Reset form
+    setCategory({
+      categoryId: "",
+      name: { en: "", am: "" },
+      subcategories: [],
+      image: "",
+      createdAt: "",
+      updatedAt: "",
+    });
+
+    // Refresh category list
+    await fetchCategories();
+  } catch (e: any) {
+    setError(e.message || "Something went wrong.");
+  } finally {
+    setLoading(false);
+  }
+};
+
   const handleSubmit = async () => {
     if (!category.name["am"].trim() && !category.name["en"].trim()) {
       Alert.alert('Error', 'Please enter a category name');
@@ -174,12 +383,13 @@ const addSubcategory = (id: string, en: string, am: string) => {
         updatedAt: serverTimestamp(),
       };
 
-      await addDoc(collection(db, CATEGORY_DATA), categoryData);
+      await setDoc(doc(db, CATEGORY_DATA, category.categoryId), categoryData);
+      // await addDoc(collection(db, CATEGORY_DATA), categoryData);
       
       setSuccess(true);
       // Reset form
       setCategory({
-        categoryId: "",
+        categoryId: generateCategoryId(),
         name: { en: "", am: "" },
         subcategories: [],
         image: "",
@@ -303,15 +513,48 @@ const addSubcategory = (id: string, en: string, am: string) => {
 
       {/* Submit Button */}
       {role === 'admin' && (
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Add Category</Text>}
-        </TouchableOpacity>
-      )}
+        
+          isEditing ?
+           (
+           <View style={{flexDirection:'row', justifyContent:"space-between"}}>
+              <TouchableOpacity
+                  style={[styles.button, loading && styles.buttonDisabled, {width: '35%'}]}
+                  onPress={handleAddNew}
+                  disabled={loading}
+                >
+                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Add New</Text>}
+              </TouchableOpacity>
+              <TouchableOpacity
+                  style={[styles.button, loading && styles.buttonDisabled, , {width: '60%'}]}
+                  onPress={handleEdit}
+                  disabled={loading}
+                >
+                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Edit Category</Text>}
+              </TouchableOpacity>
+          </View>
+          ) :
+          (<TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Add Category</Text>}
+          </TouchableOpacity>))
 
+      }
+
+        <FlatList 
+            data={categoryList} 
+            renderItem={({item,index}) =>(
+            
+              oldCategoryView(item)
+                
+
+            )} 
+            keyExtractor={(item, index) => item.categoryId?.toString() || "cat-" + index.toString()}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          />
       
 
       {/* Parent Category Modal */}
@@ -541,6 +784,78 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 20,
   },
+
+    catContainer: {
+        marginHorizontal: 4,
+        marginVertical: 6,
+    },
+    categoryContainer: {
+        width: 85,
+        height: 100,
+        borderRadius: 8,
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 12,
+        paddingHorizontal: 8,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    catImageContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 8,
+    },
+    imageWrapper: {
+        borderRadius: 6,
+        overflow: 'hidden',
+    },
+    catCoverImage: { 
+        height: 40,
+        width: 60,
+        borderRadius: 6,
+    },
+    allIconContainer: {
+        height: 40,
+        width: 40,
+        borderRadius: 6,
+        backgroundColor: '#F5F5F5',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    selectedIconContainer: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    },
+    textContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    categoryText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: "#333333",
+        textAlign: 'center',
+        lineHeight: 14,
+    },
+    selectedCategoryText: {
+        color: "#FFFFFF",
+        fontWeight: '600',
+    },
+    selectionIndicator: {
+        position: 'absolute',
+        bottom: -2,
+        width: 16,
+        height: 2,
+        backgroundColor: '#FF4747',
+        borderRadius: 1,
+    },
 });
 
 
