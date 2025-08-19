@@ -366,13 +366,13 @@ if(!productData) return;
                 </View>
                 <View style={styles.deliveryItem}>
                   <Ionicons name="car-outline" size={24} color="#00685C" />
-                  <Text style={styles.deliveryText}>Free Delivery</Text>
+                  <Text style={styles.deliveryText}>{t('freeDelivery')}</Text>
                 </View>
               </View>
 
               {/* Color Selection */}
               <View style={styles.colorSection}>
-                <Text style={styles.sectionTitle}>Available Colors</Text>
+                <Text style={styles.sectionTitle}>{t('availableColors')}</Text>
                 <View style={styles.colorsRow}>
                   {productData.colors.map((color: string, i: number) => (
                     <TouchableOpacity
@@ -408,7 +408,7 @@ if(!productData) return;
 
               {/* Description */}
               <View style={styles.descriptionSection}>
-                <Text style={styles.sectionTitle}>Description</Text>
+                <Text style={styles.sectionTitle}>{t('description')}</Text>
                 <Text style={styles.description}>{productData.description[currentLang]}</Text>
               </View>
 
@@ -431,7 +431,7 @@ if(!productData) return;
                 style={styles.shoppingBagIcon}
                 resizeMode="contain"
               />
-              <Text style={styles.addToCartText}>Add to Cart</Text>
+              <Text style={styles.addToCartText}>{t('addToCart')}</Text>
             </TouchableOpacity>
           </View>
         </View>

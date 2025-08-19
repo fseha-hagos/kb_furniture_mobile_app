@@ -1,10 +1,12 @@
 import { db } from '@/firebaseConfig';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { productsType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dimensions,
   Image,
@@ -41,7 +43,9 @@ const { width } = Dimensions.get('window');
 
 const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct }) => {
 
-  const tempLanguage = "en";
+  // const tempLanguage = "en";
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<productsType | null>(null);
@@ -110,33 +114,33 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
 
     const features: Feature[] = [
       { 
-        name: 'Price', 
-        current: `Birr ${currentProduct.price?.toString() || 'N/A'}`, 
-        compare: `Birr ${selectedProduct.price?.toString() || 'N/A'}`,
+        name: t('price'), 
+        current: `${t('birr')} ${currentProduct.price?.toString() || 'N/A'}`, 
+        compare: `${t('birr')} ${selectedProduct.price?.toString() || 'N/A'}`,
         icon: 'dollar'
       },
       { 
-        name: 'Rating', 
+        name: t('rating'), 
         current: calculateAverageRating(currentProductReviews), 
         compare: calculateAverageRating(selectedProductReviews),
         icon: 'star'
       },
       { 
-        name: 'Reviews', 
+        name: t('reviews'),  
         current: `${currentProductReviews.length} reviews`, 
         compare: `${selectedProductReviews.length} reviews`,
         icon: 'comments'
       },
       { 
-        name: 'Colors', 
+        name: t('colors'),  
         current: (currentProduct.colors || []).join(', ') || 'N/A', 
         compare: (selectedProduct.colors || []).join(', ') || 'N/A',
         icon: 'paint-brush'
       },
       { 
-        name: 'Description', 
-        current: currentProduct.description[tempLanguage] || 'N/A', 
-        compare: selectedProduct.description[tempLanguage] || 'N/A',
+        name: t('description'),  
+        current: currentProduct.description[currentLang] || 'N/A', 
+        compare: selectedProduct.description[currentLang] || 'N/A',
         icon: 'file-text'
       },
     ];
@@ -145,13 +149,13 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
       <View style={styles.comparisonTable}>
         <View style={styles.tableHeader}>
           <View style={styles.headerCell}>
-            <Text style={styles.headerText}>Features</Text>
+            <Text style={styles.headerText}>{t('features')}</Text>
           </View>
           <View style={styles.headerCell}>
-            <Text style={styles.headerText}>Current</Text>
+            <Text style={styles.headerText}>{t('current')}</Text>
           </View>
           <View style={styles.headerCell}>
-            <Text style={styles.headerText}>Compare</Text>
+            <Text style={styles.headerText}>{t('compare')}</Text>
           </View>
         </View>
         {features.map((feature, index) => (
@@ -178,7 +182,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
         style={[{backgroundColor: primaryColor}, styles.compareButton]}
         onPress={() => setModalVisible(true)}>
         <FontAwesome name="balance-scale" size={20} color="white" />
-        <Text style={styles.compareButtonText}>Compare Products</Text>
+        <Text style={styles.compareButtonText}>{t('compareProducts')}</Text>
       </TouchableOpacity>
 
       <Modal
@@ -192,7 +196,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Compare Products</Text>
+              <Text style={styles.modalTitle}>{t('compareProducts')}</Text>
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => {
@@ -206,7 +210,7 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
             <ScrollView style={styles.modalScroll}>
               {!selectedProduct ? (
                 <>
-                  <Text style={styles.sectionTitle}>Select a product to compare:</Text>
+                  <Text style={styles.sectionTitle}>{t('selectProductToCompare')}</Text>
                   <View style={styles.productGrid}>
                     {recentlyViewed && recentlyViewed.length > 0 ? (
                       recentlyViewed
@@ -226,23 +230,23 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                                 />
                               ) : (
                                 <View style={[styles.productImage, { backgroundColor: '#f0f0f0' }]}>
-                                  <Text>No image available</Text>
+                                  <Text>{t('noImageAvailable')}</Text>
                                 </View>
                               )}
                               <View style={styles.productInfo}>
                                 <Text style={styles.productName} numberOfLines={1}>
-                                  {product.name[tempLanguage]}
+                                  {product.name[currentLang]}
                                 </Text>
-                                <Text style={styles.productPrice}>Birr {product.price}</Text>
+                                <Text style={styles.productPrice}>{t('birr')} {product.price}</Text>
                                 <View style={styles.stockInfo}>
-                                  <Text style={styles.stockText}>Stock: {product.stock}</Text>
+                                  <Text style={styles.stockText}>{t('stock')}: {product.stock}</Text>
                                 </View>
                               </View>
                             </TouchableOpacity>
                           );
                         })
                     ) : (
-                      <Text style={styles.noProductsText}>No recently viewed products to compare</Text>
+                      <Text style={styles.noProductsText}>{t('noRecentlyViewed')}</Text>
                     )}
                   </View>
                 </>
@@ -255,10 +259,10 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                         style={styles.productImage}
                       />
                       <View style={styles.productInfo}>
-                        <Text style={styles.productName}>{currentProduct.name[tempLanguage]}</Text>
-                        <Text style={styles.productPrice}>Birr {currentProduct.price}</Text>
+                        <Text style={styles.productName}>{currentProduct.name[currentLang]}</Text>
+                        <Text style={styles.productPrice}>{t('birr')} {currentProduct.price}</Text>
                         <View style={styles.stockInfo}>
-                          <Text style={styles.stockText}>Stock: {currentProduct.stock}</Text>
+                          <Text style={styles.stockText}>{t('stock')}: {currentProduct.stock}</Text>
                         </View>
                       </View>
                     </View>
@@ -269,10 +273,10 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                         style={styles.productImage}
                       />
                       <View style={styles.productInfo}>
-                        <Text style={styles.productName}>{selectedProduct.name[tempLanguage]}</Text>
-                        <Text style={styles.productPrice}>Birr {selectedProduct.price}</Text>
+                        <Text style={styles.productName}>{selectedProduct.name[currentLang]}</Text>
+                        <Text style={styles.productPrice}>{t('birr')} {selectedProduct.price}</Text>
                         <View style={styles.stockInfo}>
-                          <Text style={styles.stockText}>Stock: {selectedProduct.stock}</Text>
+                          <Text style={styles.stockText}>{t('stock')}: {selectedProduct.stock}</Text>
                         </View>
                       </View>
                     </View>
@@ -285,13 +289,13 @@ const ProductComparison: React.FC<ProductComparisonProps> = ({ currentProduct })
                       key="current-product"
                       style={[styles.actionButton, styles.viewButton, {backgroundColor: primaryColor}]}
                       onPress={() => handleViewProduct(currentProduct)}>
-                      <Text style={styles.buttonText}>View Current</Text>
+                      <Text style={styles.buttonText}>{t('viewCurrent')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       key="compare-product"
                       style={[styles.actionButton, styles.viewButton, {backgroundColor: primaryColor}]}
                       onPress={() => handleViewProduct(selectedProduct)}>
-                      <Text style={styles.buttonText}>View Compare</Text>
+                      <Text style={styles.buttonText}>{t('viewCompare')}</Text>
                     </TouchableOpacity>
                   </View>
                 </>
