@@ -1,8 +1,10 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { reviewsType } from '@/types/type';
+import { LanguageCode } from '@/utils/i18n';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Image,
@@ -21,6 +23,11 @@ interface ReviewSectionProps {
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
+
+  const { i18n, t } = useTranslation();
+  const currentLang: LanguageCode = i18n.language as LanguageCode;
+
+
   const { reviews, addReview, getProductReviews, getAverageRating } = useProduct();
   const [modalVisible, setModalVisible] = useState(false);
   const [rating, setRating] = useState(0);
@@ -122,11 +129,11 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Reviews & Ratings</Text>
+        <Text style={styles.title}>{t('reviewsAndRatings')}</Text>
         <TouchableOpacity
           style={[styles.addReviewButton, {backgroundColor: secondaryColor}]}
           onPress={() => setModalVisible(true)}>
-          <Text style={styles.addReviewText}>Write a Review</Text>
+          <Text style={styles.addReviewText}>{t('writeAReview')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -143,7 +150,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
               />
             ))}
           </View>
-          <Text style={styles.totalReviews}>{productReviews.length} reviews</Text>
+          <Text style={styles.totalReviews}>{productReviews.length} {t('reviews')}</Text>
         </View>
       </View>
 
@@ -192,17 +199,17 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Write a Review</Text>
+            <Text style={styles.modalTitle}>{t('writeAReview')}</Text>
             
             <TextInput
               style={styles.input}
-              placeholder="Your Name"
+              placeholder={t('yourName')}
               value={userName}
               onChangeText={setUserName}
             />
 
             <View style={styles.ratingInput}>
-              <Text style={styles.ratingLabel}>Rating:</Text>
+              <Text style={styles.ratingLabel}>{t('rating')}:</Text>
               <View style={styles.stars}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <TouchableOpacity
@@ -220,7 +227,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
 
             <TextInput
               style={[styles.input, styles.commentInput]}
-              placeholder="Write your review..."
+              placeholder={t('writeAReview')}
               value={comment}
               onChangeText={setComment}
               multiline
@@ -228,7 +235,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
             />
 
             <View style={styles.imageSection}>
-              <Text style={styles.imageSectionTitle}>Add Photos (Optional)</Text>
+              <Text style={styles.imageSectionTitle}>{t('addPhotos')}</Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -248,7 +255,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
                     style={styles.addImageButton}
                     onPress={pickImage}>
                     <FontAwesome name="camera" size={24} color="#00685C" />
-                    <Text style={styles.addImageText}>Add Photo</Text>
+                    <Text style={styles.addImageText}>{t('addPhoto')}</Text>
                   </TouchableOpacity>
                 )}
               </ScrollView>
@@ -258,13 +265,13 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => setModalVisible(false)}>
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={styles.buttonText}>{t('cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.submitButton, {backgroundColor: primaryColor}]}
                 onPress={handleSubmitReview}>
                 <Text style={[styles.buttonText, styles.submitButtonText]}>
-                  Submit
+                {t('submit')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -367,7 +374,7 @@ const styles = StyleSheet.create({
     padding: 24,
     width: '90%',
     maxWidth: 400,
-    maxHeight: '80%',
+    maxHeight: '85%',
   },
   modalTitle: {
     fontSize: 24,
