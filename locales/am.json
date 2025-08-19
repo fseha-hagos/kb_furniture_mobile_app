@@ -157,6 +157,55 @@
   "start_liking_products": "ምርቶችን በመወደድ እቃ ማሰባሰብዎን ይጀምሩ",
   "like_products": "የምትወዱትን ምርቶች ይመርጡ",
   "easy_access": "ወደ ተወዳጆች ቀላል መድረሻ",
-  "explore_products": "ምርቶችን ያስሱ"
+  "explore_products": "ምርቶችን ያስሱ",
+
+
+ "productDetails": "የምርት ዝርዝር",    
+ "availableColors": "የሚገኙ ቀለሞች",      
+ "description": "መግለጫ",           
+  "addToCart": "ወደ ጋሪ ጨምር",      
+ "freeDelivery": "ነፃ መላኪያ",        
+ "location": "አካባቢ",           
+ "quantity": "ብዛት",            
+ "reviews":"ግምገማዎች",         
+ "price": "ዋጋ",             
+ "favorite": "ተወዳጅ",           
+ "share": "አጋራ",            
+ "recentlyViewed": "በቅርብ የታዩ",       
+ "comparison": "ማነፃፀር",          
+ "youOffline": "ከመስመር ውጭ ነህ",    
+ "connectionError": "የግንኙነት ችግኝ",
+ 
+ 
+ "reviewsAndRatings": "ግምገማና ደረጃ",
+ "writeAReview": "ግምገማ ጻፍ",
+ "yourName": "ስምህ",
+ "rating": "ደረጃ",
+ "review": "ግምገማ",
+ "addPhotos": "ፎቶ ጨምር (አማራጭ)",
+ "addPhoto": "ፎቶ ጨምር",
+ "cancel": "ተወው",
+ "submit": "አስገባ",
+ "reviews": "ግምገማዎች",
+ "reviewerName": "የገምጋሚ ስም",
+ "reviewDate": "ቀን",
+ "totalReviews": "ጠቅላላ ግምገማዎች",
+
+ "compareProducts": "ምርቶችን አወዳድር",
+  "features": "ባህሪዎች",
+  "current": "አሁን ያለው",
+  "compare": "አወዳድር",
+  "price": "ዋጋ",
+  "rating": "ደረጃ",
+  "reviews": "ግምገማዎች",
+  "colors": "ቀለሞች",
+  "description": "መግለጫ",
+  "selectProductToCompare": "ለማወዳደር ምርት ይምረጡ፡",
+  "noImageAvailable": "ምስል የለም",
+  "stock": "ክምችት",
+  "noRecentlyViewed": "ለማወዳደር በቅርቡ የታዩ ምርቶች የሉም",
+  "viewCurrent": "አሁኑን ይመልከቱ",
+  "viewCompare": "የተወዳደረውን ይመልከቱ"
+
   
   }
