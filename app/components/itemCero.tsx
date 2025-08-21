@@ -196,6 +196,7 @@ const ItemsCarousel: React.FC<{ sliderList: slidesType[] }> = ({ sliderList }) =
           }
         ]}>
         <ImageWithRetry uri={item.image} style={styles.slideImage} />
+        <Text>{item.title}</Text>
       </Animated.View>
     );
   };

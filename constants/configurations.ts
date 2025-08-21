@@ -1,5 +1,8 @@
 export const PRODUCTS_DATA = "products_data"
 export const CATEGORY_DATA = "category_data"
+export const SLIDER_DATA = "slider_data"
+export const MARQUEE_DATA = "marquee_data"
+
 export const REVIEW_DATA = "review_data"
 export const PRODUCTS_STORAGE = "products_storage"
 export const CATEGORY_STORAGE = "category_storage"

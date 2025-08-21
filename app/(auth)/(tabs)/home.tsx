@@ -250,6 +250,7 @@ useEffect(() => {
         const querySnapshots = await getDocs(collection(db, "Sliders"));
         querySnapshots.forEach((doc) => {
           setSliderList(sliderList => [...sliderList, doc.data() as slidesType]);
+          console.log(doc.data())
         });
       });
     } catch (error) {

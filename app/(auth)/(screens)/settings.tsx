@@ -122,19 +122,19 @@ const SettingsPage = () => {
       <View style={styles.settingContent}>
         <Text style={styles.settingTitle}>{t('chooseLanguage')}</Text>
         <View style={styles.langOptions}>
-                    <TouchableOpacity 
-                      style={[styles.button, selectedLang === 'en' && styles.active]} 
-                      onPress={() => handleLangChange('en')}
-                    >
-                      <Text>English</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                      style={[styles.button, selectedLang === 'am' && styles.active]} 
-                      onPress={() => handleLangChange('am')}
-                    >
-                      <Text>አማርኛ</Text>
-                    </TouchableOpacity>
-                  </View>
+          <TouchableOpacity 
+            style={[styles.button, selectedLang === 'en' && styles.active]} 
+            onPress={() => handleLangChange('en')}
+          >
+            <Text>English</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.button, selectedLang === 'am' && styles.active]} 
+            onPress={() => handleLangChange('am')}
+          >
+            <Text>አማርኛ</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

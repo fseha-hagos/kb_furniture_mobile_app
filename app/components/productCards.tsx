@@ -1,14 +1,19 @@
 //import liraries
+import { PRODUCTS_DATA } from '@/constants/configurations';
+import { db, storage } from '@/firebaseConfig';
 import { productsType } from '@/types/type';
 import { LanguageCode } from '@/utils/i18n';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteObject, ref } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../context/cartContext';
+import useUserRole from '../hooks/useUserRole';
 
 
 interface props {
@@ -25,6 +30,7 @@ const ProductCards = ({ item }: props) => {
     const router = useRouter();
     const [isLiked, setIsLiked] = useState(false);
     const [isPressed, setIsPressed] = useState(false);
+    const { role } = useUserRole();
 
     const {handleLiked, likedProducts} = useAuth();
     const itemToSend = {
@@ -84,6 +90,56 @@ const ProductCards = ({ item }: props) => {
      ]).start();
      handleLiked!(item);
    };
+
+
+   const handleDeleteProduct = async (product: productsType) => {
+    Alert.alert(
+      "⚠️ Delete Product",
+      "Are you sure you want to delete this product? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => onDelete(product), // call the delete function
+        },
+      ],
+      { cancelable: true }
+    );
+
+    const onDelete = async (product: productsType) => {
+      const getPathFromUrl = (url: string) => {
+        const baseUrl = "https://firebasestorage.googleapis.com/v0/b/kb-react-naitve-storage.appspot.com/o/";
+        return decodeURIComponent(url.replace(baseUrl, "").split("?")[0]);
+      };
+  
+      try {
+        // 1. Delete images from Storage
+        if (product.images && product.images.length > 0) {
+          for (const imageUrl of product.images) {
+            try {
+              const imagePath = getPathFromUrl(imageUrl);
+              const imageRef = ref(storage, imagePath);
+              await deleteObject(imageRef);
+              console.log("🗑️ Deleted image:", imagePath);
+            } catch (imgErr) {
+              console.error("❌ Error deleting image:", imgErr);
+            }
+          }
+        }
+    
+        // 2. Delete product document from Firestore
+        await deleteDoc(doc(db, PRODUCTS_DATA, product.productId));
+        console.log("✅ Product deleted successfully!");
+      } catch (error) {
+        console.error("❌ Error deleting product:", error);
+      }
+    }
+    
+  };
 
     return (
          <Animated.View
@@ -160,6 +216,21 @@ const ProductCards = ({ item }: props) => {
                  )}
                </TouchableOpacity>
              </Animated.View>
+           {
+             (role === 'admin')  && 
+             <View style={styles.editContainer}>
+                  <TouchableOpacity 
+                      onPress={() => handleDeleteProduct(item)}
+                      style={styles.likeButton}
+                      activeOpacity={0.8}
+                    >
+                       <View style={styles.likeButtonOutline}>
+                       <Ionicons name="trash-outline" size={24} color="red" />
+                        </View>
+                  </TouchableOpacity>
+                  </View>
+           }
+             
            </TouchableOpacity>
          </Animated.View>
             
@@ -236,6 +307,12 @@ const styles = StyleSheet.create({
        fontSize: 12,
        color: "#666666",
        fontWeight: "500",
+    },
+    editContainer: {
+      position: "absolute",
+      top: 12,
+      right: 55,
+      zIndex: 10,
     },
     likeContainer: {
         position: "absolute",

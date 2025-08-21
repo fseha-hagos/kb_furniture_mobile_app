@@ -385,6 +385,11 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               <Ionicons name="add-circle-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>{t('addProduct')} </Text>
             </TouchableOpacity>
+            <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/actionsScreen')}>
+              <Ionicons name="create-outline" size={24} color="#00685C" />
+              <Text style={styles.actionText}>{t('Actions')} </Text>
+            </TouchableOpacity>
+            
             <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(auth)/(screens)/cupens')}>
               <Ionicons name="pricetags-outline" size={24} color={primaryColor} />
               <Text style={styles.actionText}>{t('manageCoupons')} </Text>

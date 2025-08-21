@@ -1,13 +1,14 @@
 //import liraries
 import { db, storage } from '@/firebaseConfig';
 import * as ImagePicker from "expo-image-picker";
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 
 import Navbar from '@/app/components/navbar';
 import { RequireAdmin } from '@/app/components/RequireAdmin';
+import { PRODUCTS_DATA } from '@/constants/configurations';
 import { categoriesType, PRODUCT_COLORS, productsType } from '@/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -119,6 +120,10 @@ const AddPostContent = () => {
   const [progress, setProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const formikRef = React.useRef<any>(null);
+
+  const [isProductLoading, setIsProductLoading] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   // const [name, setName] = useState('');
   // const navigation = useNavigation();
   const router = useRouter();
@@ -339,7 +344,8 @@ const AddPostContent = () => {
         throw new Error('Category is required');
       }
 
-      await addDoc(collection(db, "products_data"), productData);
+      await setDoc(doc(db, PRODUCTS_DATA, productData.productId), productData);
+      // await addDoc(collection(db, "products_data"), productData);
       
       // Show success state
       setShowSuccess(true);

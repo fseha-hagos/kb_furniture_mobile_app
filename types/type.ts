@@ -116,10 +116,20 @@ export interface reviewsType {
 export interface slidesType {
   id: string;
   image: string;
-  title?: string;
-  price?: number;
-  isNew?: boolean;
-  isLiked?: boolean;
+  title: {
+    am: string,
+    en: string
+  };
+  description : {
+    am: string,
+    en: string
+  };
+  price: number;
+}
+
+export interface marqueeType {
+  id: string;
+  text: string
 }
 
 export interface myProductsFromDatabaseProps {

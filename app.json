@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "kb-furniture",
+    "name": "KB Furniture",
     "slug": "kb-furniture",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo/kb_logo_last.png",
+    "icon": "./assets/logo/logo_white_bg.png",
     "scheme": "kbfurniture",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,8 +13,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo/kb_logo_last.png",
-        "backgroundColor": "#00685C"
+        "foregroundImage": "./assets/logo/logo_transparent_last.png",
+        "backgroundColor": "#fff"
+      },
+      "splash": {
+        "image": "./assets/logo/kb-furniture-high-resolution-logo-transparent.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#2C1B14",
+        "imageWidth": 400,
+        "imageHeight": 400
       },
       "edgeToEdgeEnabled": true,
       "package": "com.kb.kbfurniture"
@@ -24,23 +31,13 @@
       "output": "static",
       "favicon": "./assets/logo/kb_logo_last.png"
     },
-     "splash": {
-      "image": "./assets/logo/kb-furniture-high-resolution-logo-transparent.png",
-      "imageWidth": 400,
+    "splash": {
+      "image": "@/assets/logo/kb-furniture-high-resolution-logo-transparent.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2C1B14"
+      "backgroundColor": "#2C1B14",
+      "imageWidth": 400,
+      "imageHeight": 400
     },
-    "plugins": [
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/logo/kb-furniture-high-resolution-logo-transparent.png",
-          "imageWidth": 400,
-          "resizeMode": "contain",
-          "backgroundColor": "#2C1B14"
-        }
-      ]
-    ],
     "experiments": {
       "typedRoutes": true
     },
